@@ -1,3 +1,6 @@
+/* Carbon Charts styles */
+@import "@carbon/charts/styles.css";
+
 /* Carbon-compatible custom styles */
 body {
   margin: 0;

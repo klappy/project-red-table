@@ -11,11 +11,13 @@
   },
   "dependencies": {
     "@carbon/charts": "^1.23.17",
+    "@carbon/charts-react": "^1.23.17",
     "@carbon/colors": "^11.40.0",
     "@carbon/icons": "^11.67.0",
     "@carbon/react": "^1.91.0",
     "@carbon/themes": "^11.60.0",
     "@carbon/type": "^11.47.0",
+    "d3": "^7.9.0",
     "papaparse": "^5.5.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

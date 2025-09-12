@@ -40,6 +40,10 @@ import {
   Information,
 } from "@carbon/icons-react";
 
+// Carbon Charts imports
+import { BarChart } from "@carbon/charts-react";
+import "@carbon/charts/styles.css";
+
 // ---------- Configuration ----------
 const DEFAULT_DATA_URL =
   "https://raw.githubusercontent.com/klappy/project-red-table/refs/heads/main/AAG_Languages_extracted.csv";
@@ -327,7 +331,7 @@ function DataTableView({
   );
 }
 
-// ---------- Chart Placeholder Component (Carbon Charts integration would go here) ----------
+// ---------- Carbon Charts Component ----------
 function ChartView({
   title,
   data,
@@ -341,10 +345,58 @@ function ChartView({
   description?: string;
   highlightRed?: boolean;
 }) {
-  const rows = Object.entries(data).map(([scope, count]) => {
+  const chartData = Object.entries(data).map(([scope, count]) => {
     const total = totals[scope] || 1;
-    return { scope, percent: (count / total) * 100 };
+    return {
+      group: scope,
+      value: (count / total) * 100,
+      count: count,
+      total: total,
+    };
   });
+
+  const chartOptions = {
+    title: "",
+    axes: {
+      left: {
+        mapsTo: "value",
+        title: "Percentage (%)",
+        ticks: {
+          formatter: (value: number) => `${value.toFixed(1)}%`,
+        },
+      },
+      bottom: {
+        mapsTo: "group",
+        scaleType: "labels" as const,
+      },
+    },
+    height: "300px",
+    color: {
+      scale: highlightRed
+        ? { "Portion": "#da1e28", "NT": "#fa4d56", "FB": "#ff8389", "Two FB": "#ffb3b8" }
+        : { "Portion": "#0f62fe", "NT": "#4589ff", "FB": "#78a9ff", "Two FB": "#a6c8ff" },
+    },
+    tooltip: {
+      formatter: (value: any, label: string) => {
+        const item = chartData.find(d => d.group === label);
+        if (item) {
+          return [`${item.count} of ${item.total}`, "Count"];
+        }
+        return [value, label];
+      },
+    },
+    legend: {
+      enabled: false,
+    },
+    grid: {
+      x: {
+        enabled: true,
+      },
+      y: {
+        enabled: true,
+      },
+    },
+  };
 
   return (
     <Tile className={highlightRed ? "border-red-500 bg-red-50" : ""}>
@@ -360,26 +412,19 @@ function ChartView({
         )}
       </div>
 
-      <div className='p-8 text-center border-2 border-dashed border-gray-300 rounded'>
-        <ChartBar size={48} className='mx-auto mb-4 text-gray-400' />
-        <p className='text-gray-500'>Chart visualization</p>
-        <p className='text-sm text-gray-400 mt-2'>Carbon Charts integration pending</p>
+      <div className="chart-container" style={{ height: "300px" }}>
+        <BarChart
+          data={chartData}
+          options={chartOptions}
+        />
       </div>
 
-      {/* Simple text representation for now */}
-      <div className='mt-4 space-y-2'>
-        {rows.map(({ scope, percent }) => (
-          <div key={scope} className='flex justify-between items-center'>
-            <span className='text-sm'>{scope}</span>
-            <div className='flex items-center gap-2'>
-              <div className='w-24 bg-gray-200 rounded-full h-2'>
-                <div
-                  className={`h-2 rounded-full ${highlightRed ? "bg-red-500" : "bg-blue-500"}`}
-                  style={{ width: `${Math.min(percent, 100)}%` }}
-                ></div>
-              </div>
-              <span className='text-sm font-medium'>{percent.toFixed(1)}%</span>
-            </div>
+      {/* Data summary below chart */}
+      <div className='mt-4 grid grid-cols-2 gap-2 text-xs'>
+        {chartData.map(({ group, value, count, total }) => (
+          <div key={group} className='flex justify-between'>
+            <span className='font-medium'>{group}:</span>
+            <span>{count}/{total} ({value.toFixed(1)}%)</span>
           </div>
         ))}
       </div>

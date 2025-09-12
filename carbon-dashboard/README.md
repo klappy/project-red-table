@@ -2,6 +2,8 @@
 
 A modern, enterprise-grade data visualization dashboard built with **IBM Carbon Design System** and React. This dashboard analyzes language access goals data with advanced filtering, categorization, and risk assessment capabilities.
 
+**📍 Location:** This is a subfolder within the main [Project Red Table](https://github.com/klappy/project-red-table) repository.
+
 ## 🎯 Features
 
 ### Core Functionality
