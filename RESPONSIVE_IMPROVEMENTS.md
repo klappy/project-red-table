@@ -1,5 +1,18 @@
 # Mobile Responsiveness Improvements
 
+## ⚠️ CRITICAL WARNING: CSS Property Name Issue
+
+**PROBLEM IDENTIFIED**: There's an editor/formatter that keeps lowercasing CSS property names in `index.css`:
+- `gridTemplateColumns` becomes `gridtemplatecolumns` (BROKEN)
+- CSS doesn't recognize lowercased property names
+- This breaks the entire responsive layout
+
+**SOLUTION**: 
+1. Always use proper camelCase for CSS properties
+2. Check your editor's formatter settings
+3. Disable auto-formatting on CSS files if necessary
+4. After any edits, verify property names remain camelCase
+
 ## Current State
 
 The dashboard uses Carbon Design System's responsive grid (sm, md, lg breakpoints) which handles basic column stacking. However, several elements need optimization for mobile viewing.

@@ -143,7 +143,7 @@ body {
 
   /* Footer goal cards */
   .footer-goals-grid {
-    gridTemplateColumns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
   }
 
   /* Stack summary stats vertically on very small screens */
@@ -155,50 +155,54 @@ body {
 }
 
 /* Ultra-mobile improvements (phones) */
+/* WARNING: DO NOT let formatters lowercase CSS property names like gridTemplateColumns */
 @media (max-width: 480px) {
-  /* Global padding reduction for mobile */
+  /* Global padding reduction for mobile - AGGRESSIVE */
   body {
     overflow-x: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
-  
-  /* Main container padding reduction */
-  div[style*="maxWidth: \"1400px\""] {
-    padding: 1rem !important;
+
+  /* Main container - MINIMAL padding */
+  div[style*='maxWidth: "1400px"'] {
+    padding: 0.5rem !important;
+    max-width: 100% !important;
   }
-  
-  /* RED TABLE adjustments */
+
+  /* RED TABLE adjustments - TIGHT spacing */
   .hero-red-table {
-    padding: 1rem 0.5rem !important;
+    padding: 0.5rem !important;
     margin: 0 !important;
   }
 
   /* RED TABLE title and numbers */
   .hero-red-table h1 {
-    font-size: 1.5rem !important;
-    margin-bottom: 0.5rem !important;
+    font-size: 1.25rem !important;
+    margin: 0 0 0.25rem 0 !important;
   }
-  
+
   .hero-red-table > div:first-child {
-    padding: 0.75rem !important;
+    padding: 0.5rem !important;
   }
 
   /* Risk breakdown grid - single column on mobile */
   .risk-breakdown-grid {
-    gridTemplateColumns: 1fr !important;
-    gap: 0.5rem !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.25rem !important;
   }
 
-  /* Risk breakdown cards - smaller text and padding on mobile */
+  /* Risk breakdown cards - MINIMAL padding on mobile */
   .risk-breakdown-grid > div {
-    padding: 0.75rem !important;
+    padding: 0.5rem !important;
   }
-  
+
   .risk-breakdown-grid > div > div:first-child {
-    font-size: 2rem !important;
+    font-size: 1.5rem !important;
   }
-  
+
   .risk-breakdown-grid > div > div:last-child {
-    font-size: 0.75rem !important;
+    font-size: 0.7rem !important;
   }
 
   /* Hide long countdown on mobile, show compact version */
@@ -210,9 +214,9 @@ body {
     display: block !important;
     font-size: 1.5rem !important;
   }
-  
+
   /* Countdown container adjustments */
-  div[style*="fontSize: \"2rem\""] {
+  div[style*='fontSize: "2rem"'] {
     font-size: 1.5rem !important;
   }
 
@@ -233,8 +237,8 @@ body {
 
   /* Footer goals grid - single column on mobile */
   .footer-goals-grid {
-    gridTemplateColumns: 1fr !important;
-    gap: 1rem !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
   }
 
   /* Footer cards stack */
@@ -242,55 +246,65 @@ body {
     margin-bottom: 1rem;
   }
 
-  /* Reduce padding in footer cards on mobile */
+  /* Reduce padding in footer cards on mobile - AGGRESSIVE */
   .footer-goals-grid > div {
-    padding: 1rem !important;
+    padding: 0.5rem !important;
   }
 
   /* Make progress bars more visible on mobile */
   .footer-goals-grid div[style*="height: 4px"] {
     height: 6px !important;
   }
-  
-  /* Carbon Grid adjustments for mobile */
+
+  /* Carbon Grid adjustments for mobile - NO PADDING */
   .cds--grid {
     margin: 0 !important;
     padding: 0 !important;
   }
-  
+
   .cds--col-sm-4 {
     padding: 0 !important;
   }
-  
-  /* Footer specific mobile fixes */
-  footer div[style*="background: \"#141414\""] {
-    padding: 1rem 0.5rem !important;
+
+  /* Footer specific mobile fixes - MINIMAL */
+  footer div[style*='background: "#141414"'] {
+    padding: 0.5rem !important;
   }
-  
-  /* Reduce all tile padding on mobile */
+
+  /* Reduce all tile padding on mobile - MINIMAL */
   .cds--tile {
-    padding: 1rem !important;
+    padding: 0.5rem !important;
+  }
+
+  /* Fix any elements with explicit large padding - OVERRIDE ALL */
+  div[style*='padding: "2rem"'] {
+    padding: 0.5rem !important;
   }
   
-  /* Fix any elements with explicit large padding */
-  div[style*="padding: \"2rem\""] {
-    padding: 1rem !important;
+  /* Additional aggressive overrides */
+  * {
+    max-width: 100% !important;
   }
   
+  /* Summary stats - tighter */
+  div[style*='padding: "1.5rem"'] {
+    padding: 0.5rem !important;
+  }
+
   /* Ensure buttons don't overflow */
   .cds--btn {
     max-width: 100%;
     white-space: normal;
     padding: 0.75rem 1rem !important;
   }
-  
+
   /* RED TABLE big number adjustments */
-  div[style*="fontSize: \"5rem\""] {
+  div[style*='fontSize: "5rem"'] {
     font-size: 3rem !important;
   }
-  
+
   /* Show Breakdown button specific */
-  button[style*="marginTop: \"1.5rem\""] {
+  button[style*='marginTop: "1.5rem"'] {
     margin-top: 1rem !important;
     font-size: 0.875rem !important;
   }

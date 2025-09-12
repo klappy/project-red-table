@@ -683,6 +683,7 @@ function HeroRedTable({
 
   return (
     <div
+      className="hero-red-table"
       style={{
         background: "linear-gradient(135deg, #dc2626 0%, #991b1b 100%)",
         borderRadius: "16px",
