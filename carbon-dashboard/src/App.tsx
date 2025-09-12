@@ -409,9 +409,10 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
         </h3>
 
           <div
+            className="footer-goals-grid"
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
               gap: "1.5rem",
             }}
           >
@@ -825,8 +826,8 @@ function HeroRedTable({
               <Time size={24} />
               <div>
                 <div style={{ fontSize: "2rem", fontWeight: 700 }}>
-                  <span className="countdown-long">{timeRemaining}</span>
-                  <span className="countdown-short" style={{ display: "none" }}>
+                  <span className='countdown-long'>{timeRemaining}</span>
+                  <span className='countdown-short' style={{ display: "none" }}>
                     {`${years}Y ${months}M ${days}D`}
             </span>
                 </div>
@@ -852,6 +853,7 @@ function HeroRedTable({
         <Column lg={8} md={8} sm={4}>
           {/* Risk breakdown cards */}
           <div
+            className="risk-breakdown-grid"
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(2, 1fr)",

@@ -1,13 +1,16 @@
 # Mobile Responsiveness Improvements
 
 ## Current State
+
 The dashboard uses Carbon Design System's responsive grid (sm, md, lg breakpoints) which handles basic column stacking. However, several elements need optimization for mobile viewing.
 
 ## Recommended Simple Improvements
 
 ### 1. **Importer Position (Top Priority)**
+
 **Issue**: The collapsed importer in top-right corner might overlap content on mobile.
 **Simple Fix**: Use CSS media query to reposition on mobile:
+
 ```css
 @media (max-width: 768px) {
   .collapsed-importer {
@@ -20,32 +23,38 @@ The dashboard uses Carbon Design System's responsive grid (sm, md, lg breakpoint
 ```
 
 ### 2. **RED TABLE Countdown Text**
+
 **Issue**: "7 YEARS 8 MONTHS 23 DAYS" is too long for mobile screens.
 **Simple Fix**: Already using compact format in footer. Could detect screen size and use:
+
 - Mobile: "7Y 8M 23D"
 - Desktop: "7 YEARS 8 MONTHS 23 DAYS"
 
 ### 3. **Expanded Table in RED TABLE**
+
 **Issue**: Table is too wide for mobile screens when expanded.
 **Simple Fix**: Add horizontal scroll:
+
 ```jsx
-<div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-  <table style={{ minWidth: '500px' }}>
-    {/* table content */}
-  </table>
+<div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+  <table style={{ minWidth: "500px" }}>{/* table content */}</table>
 </div>
 ```
 
 ### 4. **Footer All Access Goals Cards**
+
 **Issue**: Four cards side-by-side are cramped on mobile.
 **Simple Fix**: Carbon Grid already handles this with responsive columns, but we could improve the breakpoints:
+
 - Currently: `lg={3} md={6} sm={4}`
 - Better: `lg={3} md={6} sm={12}` (full width on mobile)
 
 ### 5. **Font Sizes**
+
 **Issue**: Some text might be too large on mobile.
 **Current**: Already have CSS reducing hero text on mobile.
 **Enhancement**: Add viewport-based sizing for key elements:
+
 ```css
 .hero-number {
   font-size: clamp(3rem, 8vw, 5rem);
@@ -81,6 +90,7 @@ The dashboard uses Carbon Design System's responsive grid (sm, md, lg breakpoint
 ## The Bottom Line
 
 The current setup is 80% there thanks to Carbon's responsive grid. We just need to:
+
 1. Make tables scrollable
 2. Adjust the importer position
 3. Maybe shorten the countdown text on mobile

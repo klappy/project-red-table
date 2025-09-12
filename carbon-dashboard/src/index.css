@@ -121,6 +121,11 @@ body {
     font-size: 3rem !important;
   }
   
+  /* Risk breakdown cards on tablet */
+  .risk-breakdown-grid {
+    gap: 0.75rem !important;
+  }
+  
   /* Make tables horizontally scrollable on mobile */
   .table-container {
     overflow-x: auto;
@@ -136,6 +141,11 @@ body {
     font-size: 1.1rem !important;
   }
   
+  /* Footer goal cards */
+  .footer-goals-grid {
+    gridTemplateColumns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+  }
+  
   /* Stack summary stats vertically on very small screens */
   @media (max-width: 480px) {
     .summary-stats > div {
@@ -149,6 +159,22 @@ body {
   /* RED TABLE adjustments */
   .hero-red-table {
     padding: 1.5rem 0.75rem;
+  }
+  
+  /* RED TABLE title and numbers */
+  h1 {
+    font-size: 1.75rem !important;
+  }
+  
+  /* Risk breakdown grid - single column on mobile */
+  .risk-breakdown-grid {
+    gridTemplateColumns: 1fr !important;
+    gap: 0.5rem !important;
+  }
+  
+  /* Risk breakdown cards - smaller text on mobile */
+  .risk-breakdown-grid > div {
+    padding: 1rem !important;
   }
   
   /* Hide long countdown on mobile, show compact version */
@@ -175,9 +201,25 @@ body {
     right: 1rem !important;
   }
   
+  /* Footer goals grid - single column on mobile */
+  .footer-goals-grid {
+    gridTemplateColumns: 1fr !important;
+    gap: 1rem !important;
+  }
+  
   /* Footer cards stack */
   .footer-goal-card {
     margin-bottom: 1rem;
+  }
+  
+  /* Reduce padding in footer cards on mobile */
+  .footer-goals-grid > div {
+    padding: 1rem !important;
+  }
+  
+  /* Make progress bars more visible on mobile */
+  .footer-goals-grid div[style*="height: 4px"] {
+    height: 6px !important;
   }
 }
 
