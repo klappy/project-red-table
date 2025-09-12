@@ -5,38 +5,24 @@ import * as XLSX from "xlsx";
 
 // Carbon imports
 import {
-  Theme,
-  Content,
   Grid,
   Column,
   Button,
   TextInput,
   FileUploaderDropContainer,
-  FileUploaderItem,
   Loading,
-  InlineLoading,
-  Accordion,
-  AccordionItem,
-  DataTable,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableHeader,
-  TableBody,
-  TableCell,
   Tile,
   Tag,
-  Link,
-  IconButton,
 } from "@carbon/react";
 import {
   Add,
   Upload,
-  DocumentDownload,
   DataTable as DataTableIcon,
   ChartBar,
-  Warning,
+  WarningFilled,
+  Time,
+  View,
+  ViewOff,
   Information,
 } from "@carbon/icons-react";
 
@@ -57,12 +43,11 @@ const toNumber = (x: unknown) => {
 
 // ---------- Derivation Rules ----------
 const RULES = {
-  goalNotMet: (row: any) =>
-    String(row["All Access Status"]).toLowerCase() !== "goal met in the language".toLowerCase(),
+  goalNotMet: (row: any) => !String(row["All Access Status"]).toLowerCase().includes("goal met"),
   isPortion: (row: any) => toNumber(row["All Access Chapter Goal"]) === 25,
   isNT: (row: any) => toNumber(row["All Access Chapter Goal"]) === 260,
   isFB: (row: any) => toNumber(row["All Access Chapter Goal"]) === 1189,
-  isTwoFB: (row: any) => toNumber(row["All Access Chapter Goal"]) >= 2000,
+  isTwoFB: (row: any) => (toNumber(row["All Access Chapter Goal"]) ?? 0) >= 2000,
   activeTranslation: (row: any) =>
     String(row["Translation Status"] || "")
       .toLowerCase()
@@ -90,6 +75,9 @@ function deriveSummary(rows: any[]) {
   const activeTx = rows.filter(RULES.activeTranslation);
   const risk = rows.filter(RULES.inRedSet);
 
+  // Get ALL languages that have goals (not met)
+  const goalNotMet = rows.filter(RULES.goalNotMet);
+
   function groupByScope(set: any[]) {
     const counts: Record<string, number> = { Portion: 0, NT: 0, FB: 0, "Two FB": 0 };
     set.forEach((r) => {
@@ -102,6 +90,7 @@ function deriveSummary(rows: any[]) {
   }
 
   const allCounts = groupByScope(rows);
+  const goalNotMetCounts = groupByScope(goalNotMet);
 
   return {
     noActivity: groupByScope(noActivity),
@@ -114,6 +103,7 @@ function deriveSummary(rows: any[]) {
       activeTx: activeTx.length,
       risk: risk.length,
       all: allCounts,
+      goalNotMet: goalNotMetCounts,
     },
   };
 }
@@ -190,302 +180,532 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
     }
   };
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, multiple: false });
+  const { getRootProps, isDragActive } = useDropzone({ onDrop, multiple: false });
 
   return (
-    <div>
+    <div style={{ position: "absolute", top: "1rem", right: "1rem", zIndex: 1000 }}>
       <Button
-        kind='ghost'
+        kind={expanded ? "secondary" : "primary"}
         size='sm'
         onClick={() => setExpanded((v) => !v)}
-        renderIcon={expanded ? DocumentDownload : Add}
+        renderIcon={expanded ? ViewOff : Add}
       >
-        {expanded ? "Hide importer" : "Import data"}
+        {expanded ? "Hide" : "Import Data"}
       </Button>
 
       {expanded && (
-        <Tile className='mt-4'>
-          <Grid>
-            <Column sm={4} md={8} lg={16}>
-              <div className='mb-4'>
+        <div
+          style={{
+            position: "absolute",
+            right: 0,
+            top: "3rem",
+            width: "400px",
+            background: "white",
+            border: "1px solid #e0e0e0",
+            borderRadius: "8px",
+            padding: "1rem",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          }}
+        >
+          <div style={{ marginBottom: "1rem" }}>
                 <TextInput
                   id='url-input'
-                  labelText='Load from public URL'
-                  placeholder={DEFAULT_DATA_URL}
+              labelText='Load from URL'
+              placeholder='CSV or Excel URL'
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
+              size='sm'
                 />
-                <p className='mt-2 text-sm text-gray-600'>
-                  CSV or Excel; Google Sheets (Publish CSV), GitHub raw, Dropbox (?dl=1), or S3 with
-                  CORS.
-                </p>
-                <div className='mt-3'>
                   <Button
                     onClick={loadFromUrl}
                     disabled={loading || !url}
                     renderIcon={loading ? Loading : Upload}
                     size='sm'
+              style={{ marginTop: "0.5rem" }}
                   >
                     {loading ? "Loading..." : "Load"}
                   </Button>
-                </div>
               </div>
 
-              <div className='mb-4'>
-                <p className='mb-2 text-sm font-medium'>…or drag & drop a file</p>
                 <div {...getRootProps()}>
                   <FileUploaderDropContainer
-                    {...getInputProps()}
                     accept={[".csv", ".xlsx", ".xls"]}
-                    labelText={
-                      isDragActive ? "Drop it here…" : "Drop CSV/XLSX here or click to browse"
-                    }
+              labelText={isDragActive ? "Drop it here…" : "Drop file or click to browse"}
                     multiple={false}
-                    size='sm'
+              onClick={() => {}}
                   />
-                </div>
               </div>
 
               {error && (
-                <div className='mt-3'>
-                  <Tag type='red' size='sm'>
+            <Tag type='red' size='sm' style={{ marginTop: "0.5rem" }}>
                     {error}
                   </Tag>
+          )}
                 </div>
-              )}
-            </Column>
-          </Grid>
-        </Tile>
       )}
     </div>
   );
 }
 
-// ---------- Data Table Component ----------
-function DataTableView({
-  title,
+// ---------- The Hero Red Table Component ----------
+function HeroRedTable({
   data,
-  description,
-  highlightRed = false,
+  total,
+  totalsByScope,
 }: {
-  title: string;
   data: Record<string, number>;
-  description?: string;
-  highlightRed?: boolean;
+  total: number;
+  totalsByScope: Record<string, number>;
 }) {
-  const rows = Object.entries(data).map(([scope, count]) => ({ id: scope, scope, count }));
+  const [showDetail, setShowDetail] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
 
-  const headers = [
-    { key: "scope", header: "Scope" },
-    { key: "count", header: "Count" },
-  ];
-
-  const totalRow = {
-    id: "total",
-    scope: "Total",
-    count: rows.reduce((a, r) => a + r.count, 0),
-  };
+  // Calculate deadline urgency
+  const currentYear = new Date().getFullYear();
+  const yearsRemaining = 2033 - currentYear;
 
   return (
-    <Tile className={highlightRed ? "border-red-500 bg-red-50" : ""}>
-      <div className='mb-4'>
-        <h3 className={`text-lg font-semibold ${highlightRed ? "text-red-700" : ""}`}>
-          {highlightRed && <Warning className='inline mr-2' size={20} />}
-          {title}
-        </h3>
-        {description && (
-          <p className={`mt-2 text-sm ${highlightRed ? "text-red-600" : "text-gray-600"}`}>
-            {description}
-          </p>
-        )}
+    <div
+      style={{
+        background: "linear-gradient(135deg, #dc2626 0%, #991b1b 100%)",
+        borderRadius: "16px",
+        padding: "3rem",
+        marginBottom: "3rem",
+        boxShadow: "0 20px 40px rgba(185, 28, 28, 0.3)",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Background pattern */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          opacity: 0.1,
+          backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.1) 35px, rgba(255,255,255,.1) 70px)`,
+          pointerEvents: "none",
+        }}
+      />
+
+      <Grid style={{ position: "relative" }}>
+        <Column lg={8} md={8} sm={4}>
+          <div style={{ color: "white" }}>
+            <div style={{ display: "flex", alignItems: "center", marginBottom: "1rem" }}>
+              <WarningFilled size={32} style={{ marginRight: "0.5rem" }} />
+              <h1
+                style={{
+                  fontSize: "2.5rem",
+                  fontWeight: 700,
+                  margin: 0,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                }}
+              >
+                THE RED TABLE
+              </h1>
+            </div>
+
+            <p
+              style={{
+                fontSize: "1.25rem",
+                marginBottom: "0.5rem",
+                opacity: 0.95,
+                fontWeight: 300,
+              }}
+            >
+              Languages at Critical Risk of Incompletion by 2033
+            </p>
+
+            <div
+              style={{
+                fontSize: "0.875rem",
+                marginBottom: "1.5rem",
+                opacity: 0.8,
+                fontWeight: 300,
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+              }}
+            >
+              <span style={{ fontStyle: "italic" }}>
+                * Excludes languages with access through second language
+              </span>
+              <button
+                onClick={() => setShowInfo(!showInfo)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: 0,
+                  color: "rgba(255,255,255,0.8)",
+                  display: "inline-flex",
+                  alignItems: "center",
+                }}
+                aria-label='More information about filtering'
+              >
+                <Information size={16} />
+              </button>
+            </div>
+
+            {showInfo && (
+              <div
+                style={{
+                  background: "rgba(0,0,0,0.3)",
+                  borderRadius: "8px",
+                  padding: "1rem",
+                  marginBottom: "1.5rem",
+                  fontSize: "0.875rem",
+                  color: "rgba(255,255,255,0.9)",
+                  lineHeight: 1.5,
+                }}
+              >
+                <strong>Why are some languages excluded?</strong>
+                <br />
+                26 languages show "Goal Met - Scripture accessed via second language" status. These
+                communities have Scripture access through another language they understand, so they
+                are not at critical risk of having no Scripture by 2033.
+                <br />
+                <br />
+                This ensures we focus on the 1,788 languages that truly lack any Scripture access.
+              </div>
+            )}
+
+            <div
+              style={{
+                fontSize: "5rem",
+                fontWeight: 800,
+                lineHeight: 1,
+                marginBottom: "0.5rem",
+                textShadow: "0 4px 8px rgba(0,0,0,0.2)",
+              }}
+            >
+              {total.toLocaleString()}
+            </div>
+
+            <p
+              style={{
+                fontSize: "1.5rem",
+                marginBottom: "2rem",
+                fontWeight: 500,
+              }}
+            >
+              LANGUAGES AT RISK
+            </p>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "1rem",
+                marginBottom: "2rem",
+                padding: "1rem",
+                background: "rgba(0,0,0,0.2)",
+                borderRadius: "8px",
+              }}
+            >
+              <Time size={24} />
+              <div>
+                <div style={{ fontSize: "2rem", fontWeight: 700 }}>{yearsRemaining} YEARS</div>
+                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>
+                  Remaining until 2033 deadline
+                </div>
+              </div>
       </div>
 
-      <DataTable rows={[...rows, totalRow]} headers={headers} size='sm'>
-        {({ rows, headers, getTableProps, getHeaderProps, getRowProps }) => (
-          <TableContainer>
-            <Table {...getTableProps()}>
-              <TableHead>
-                <TableRow>
-                  {headers.map((header) => {
-                    const { key, ...headerProps } = getHeaderProps({ header });
-                    return (
-                      <TableHeader key={key} {...headerProps}>
-                        {header.header}
-                      </TableHeader>
-                    );
-                  })}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map((row) => {
-                  const { key, ...rowProps } = getRowProps({ row });
+            <Button
+              kind='ghost'
+              size='lg'
+              onClick={() => setShowDetail(!showDetail)}
+              renderIcon={showDetail ? ViewOff : View}
+              style={{
+                color: "white",
+                borderColor: "white",
+              }}
+            >
+              {showDetail ? "Hide Details" : "Show Breakdown"}
+            </Button>
+          </div>
+        </Column>
+
+        <Column lg={8} md={8} sm={4}>
+          {/* Risk breakdown cards */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(2, 1fr)",
+              gap: "1rem",
+            }}
+          >
+            {Object.entries(data).map(([scope, count]) => (
+              <div
+                key={scope}
+                style={{
+                  background: "rgba(255,255,255,0.15)",
+                  backdropFilter: "blur(10px)",
+                  borderRadius: "12px",
+                  padding: "1.5rem",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "2.5rem",
+                    fontWeight: 700,
+                    color: "white",
+                    marginBottom: "0.25rem",
+                  }}
+                >
+                  {count.toLocaleString()}
+                </div>
+                <div
+                  style={{
+                    fontSize: "0.875rem",
+                    color: "rgba(255,255,255,0.9)",
+                    fontWeight: 500,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {scope}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Column>
+      </Grid>
+
+      {showDetail && (
+        <div
+          style={{
+            marginTop: "2rem",
+            paddingTop: "2rem",
+            borderTop: "1px solid rgba(255,255,255,0.2)",
+          }}
+        >
+          <div
+            style={{
+              background: "rgba(0,0,0,0.3)",
+              borderRadius: "8px",
+              padding: "1rem",
+            }}
+          >
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                color: "white",
+                fontSize: "1rem",
+              }}
+            >
+              <thead>
+                <tr style={{ borderBottom: "2px solid rgba(255,255,255,0.3)" }}>
+                  <th
+                    style={{
+                      textAlign: "left",
+                      padding: "0.75rem",
+                      fontWeight: 600,
+                      color: "rgba(255,255,255,0.95)",
+                    }}
+                  >
+                    Translation Scope
+                  </th>
+                  <th
+                    style={{
+                      textAlign: "right",
+                      padding: "0.75rem",
+                      fontWeight: 600,
+                      color: "rgba(255,255,255,0.95)",
+                    }}
+                  >
+                    At Risk / Total w/ Goal
+                  </th>
+                  <th
+                    style={{
+                      textAlign: "right",
+                      padding: "0.75rem",
+                      fontWeight: 600,
+                      color: "rgba(255,255,255,0.95)",
+                    }}
+                  >
+                    % At Risk
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(data).map(([scope, count]) => {
+                  const scopeTotal = totalsByScope[scope] || 1;
+                  const percentage = ((count / scopeTotal) * 100).toFixed(1);
                   return (
-                    <TableRow
-                      key={key}
-                      {...rowProps}
-                      className={row.id === "total" ? "font-semibold border-t-2" : ""}
-                    >
-                      {row.cells.map((cell) => (
-                        <TableCell key={cell.id}>{cell.value}</TableCell>
-                      ))}
-                    </TableRow>
+                    <tr key={scope} style={{ borderBottom: "1px solid rgba(255,255,255,0.15)" }}>
+                      <td
+                        style={{
+                          padding: "0.75rem",
+                          color: "rgba(255,255,255,0.9)",
+                        }}
+                      >
+                        {scope}
+                      </td>
+                      <td
+                        style={{
+                          padding: "0.75rem",
+                          textAlign: "right",
+                          fontWeight: 600,
+                          color: "white",
+                        }}
+                      >
+                        {count.toLocaleString()} / {scopeTotal.toLocaleString()}
+                      </td>
+                      <td
+                        style={{
+                          padding: "0.75rem",
+                          textAlign: "right",
+                          color: "rgba(255,255,255,0.9)",
+                        }}
+                      >
+                        {percentage}%
+                      </td>
+                    </tr>
                   );
                 })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-      </DataTable>
-    </Tile>
+                <tr style={{ borderTop: "2px solid rgba(255,255,255,0.3)" }}>
+                  <td
+                    style={{
+                      padding: "0.75rem",
+                      fontWeight: 700,
+                      color: "white",
+                    }}
+                  >
+                    TOTAL AT RISK
+                  </td>
+                  <td
+                    style={{
+                      padding: "0.75rem",
+                      textAlign: "right",
+                      fontWeight: 700,
+                      fontSize: "1.125rem",
+                      color: "white",
+                    }}
+                  >
+                    {total.toLocaleString()} /{" "}
+                    {Object.values(totalsByScope)
+                      .reduce((a, b) => a + b, 0)
+                      .toLocaleString()}
+                  </td>
+                  <td
+                    style={{
+                      padding: "0.75rem",
+                      textAlign: "right",
+                      fontWeight: 700,
+                      color: "white",
+                    }}
+                  >
+                    {(
+                      (total / Object.values(totalsByScope).reduce((a, b) => a + b, 0)) *
+                      100
+                    ).toFixed(1)}
+                    %
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
-// ---------- Carbon Charts Component ----------
-function ChartView({
+// ---------- Secondary Analysis Component ----------
+function SecondaryAnalysis({
   title,
   data,
-  totals,
-  description,
-  highlightRed = false,
+  total,
+  icon,
+  color = "#0f62fe",
 }: {
   title: string;
   data: Record<string, number>;
-  totals: Record<string, number>;
-  description?: string;
-  highlightRed?: boolean;
+  total: number;
+  icon?: React.ReactNode;
+  color?: string;
 }) {
-  const chartData = Object.entries(data).map(([scope, count]) => {
-    const total = totals[scope] || 1;
-    return {
-      group: scope,
-      value: (count / total) * 100,
-      count: count,
-      total: total,
-    };
-  });
+  const [mode, setMode] = useState<"table" | "chart">("chart");
 
-  const chartOptions = {
+  const chartData = Object.entries(data).map(([scope, count]) => ({
+      group: scope,
+    value: count,
+  }));
+
+  const chartOptions: any = {
     title: "",
     axes: {
-      left: {
-        mapsTo: "value",
-        title: "Percentage (%)",
-        ticks: {
-          formatter: (value: number) => `${value.toFixed(1)}%`,
-        },
-      },
-      bottom: {
-        mapsTo: "group",
-        scaleType: "labels" as const,
-      },
+      left: { mapsTo: "value" },
+      bottom: { mapsTo: "group", scaleType: "labels" },
     },
-    height: "300px",
-    color: {
-      scale: highlightRed
-        ? { Portion: "#da1e28", NT: "#fa4d56", FB: "#ff8389", "Two FB": "#ffb3b8" }
-        : { Portion: "#0f62fe", NT: "#4589ff", FB: "#78a9ff", "Two FB": "#a6c8ff" },
-    },
-    tooltip: {
-      formatter: (value: any, label: string) => {
-        const item = chartData.find((d) => d.group === label);
-        if (item) {
-          return [`${item.count} of ${item.total}`, "Count"];
-        }
-        return [value, label];
-      },
-    },
-    legend: {
-      enabled: false,
-    },
-    grid: {
-      x: {
-        enabled: true,
-      },
-      y: {
-        enabled: true,
-      },
-    },
+    height: "250px",
+    color: { scale: { [title]: color } },
+    legend: { enabled: false },
   };
 
   return (
-    <Tile className={highlightRed ? "border-red-500 bg-red-50" : ""}>
-      <div className='mb-4'>
-        <h3 className={`text-lg font-semibold ${highlightRed ? "text-red-700" : ""}`}>
-          {highlightRed && <Warning className='inline mr-2' size={20} />}
-          {title}
-        </h3>
-        {description && (
-          <p className={`mt-2 text-sm ${highlightRed ? "text-red-600" : "text-gray-600"}`}>
-            {description}
-          </p>
-        )}
-      </div>
-
-      <div className='chart-container' style={{ height: "300px" }}>
-        <SimpleBarChart data={chartData} options={chartOptions} />
-      </div>
-
-      {/* Data summary below chart */}
-      <div className='mt-4 grid grid-cols-2 gap-2 text-xs'>
-        {chartData.map(({ group, value, count, total }) => (
-          <div key={group} className='flex justify-between'>
-            <span className='font-medium'>{group}:</span>
-            <span>
-              {count}/{total} ({value.toFixed(1)}%)
-            </span>
+    <Tile style={{ height: "100%", position: "relative" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          marginBottom: "1rem",
+        }}
+      >
+        <div>
+          {icon && <span style={{ marginRight: "0.5rem" }}>{icon}</span>}
+          <h3 style={{ fontSize: "1.125rem", fontWeight: 600, display: "inline" }}>{title}</h3>
+          <div
+            style={{
+              fontSize: "2rem",
+              fontWeight: 700,
+              color,
+              marginTop: "0.5rem",
+            }}
+          >
+            {total.toLocaleString()}
           </div>
-        ))}
       </div>
-    </Tile>
-  );
-}
-
-// ---------- Box Wrapper Component ----------
-function Box({
-  title,
-  data,
-  totals,
-  highlightRed,
-  mode,
-  onToggle,
-  description,
-}: {
-  title: string;
-  data: Record<string, number>;
-  totals: Record<string, number>;
-  highlightRed?: boolean;
-  mode: "table" | "chart";
-  onToggle: () => void;
-  description?: string;
-}) {
-  return (
-    <div className='relative'>
-      <div className='absolute right-2 top-2 z-10'>
         <Button
           kind='ghost'
           size='sm'
-          onClick={onToggle}
+          onClick={() => setMode(mode === "table" ? "chart" : "table")}
           renderIcon={mode === "table" ? ChartBar : DataTableIcon}
+          hasIconOnly
           iconDescription={mode === "table" ? "Show chart" : "Show table"}
         />
       </div>
-      {mode === "table" ? (
-        <DataTableView
-          title={title}
-          data={data}
-          description={description}
-          highlightRed={!!highlightRed}
-        />
+
+      {mode === "chart" ? (
+        <SimpleBarChart data={chartData} options={chartOptions} />
       ) : (
-        <ChartView
-          title={title}
-          data={data}
-          totals={totals}
-          description={description}
-          highlightRed={!!highlightRed}
-        />
+        <div style={{ maxHeight: "250px", overflow: "auto" }}>
+          <table style={{ width: "100%", fontSize: "0.875rem" }}>
+            <thead>
+              <tr style={{ borderBottom: "2px solid #e0e0e0" }}>
+                <th style={{ textAlign: "left", padding: "0.5rem" }}>Scope</th>
+                <th style={{ textAlign: "right", padding: "0.5rem" }}>Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(data).map(([scope, count]) => (
+                <tr key={scope} style={{ borderBottom: "1px solid #f0f0f0" }}>
+                  <td style={{ padding: "0.5rem" }}>{scope}</td>
+                  <td style={{ padding: "0.5rem", textAlign: "right" }}>{count}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
-    </div>
+    </Tile>
   );
 }
 
@@ -537,20 +757,6 @@ export default function App() {
   const [rows, setRows] = useState<any[]>([]);
   const summary = useMemo(() => deriveSummary(rows), [rows]);
 
-  const [riskMode, setRiskMode] = useState<"table" | "chart">("table");
-  const [noActMode, setNoActMode] = useState<"table" | "chart">("table");
-  const [ldseMode, setLdseMode] = useState<"table" | "chart">("table");
-  const [txMode, setTxMode] = useState<"table" | "chart">("table");
-
-  const allModes = [riskMode, noActMode, ldseMode, txMode];
-  const everyChart = allModes.every((m) => m === "chart");
-  const setAll = (mode: "table" | "chart") => {
-    setRiskMode(mode);
-    setNoActMode(mode);
-    setLdseMode(mode);
-    setTxMode(mode);
-  };
-
   // Boot: self-tests + try auto-loading DEFAULT_DATA_URL
   useEffect(() => {
     runSelfTests();
@@ -577,7 +783,7 @@ export default function App() {
               header: true,
               skipEmptyLines: true,
               transformHeader: normalizeHeader,
-              complete: (res) => resolve(res.data as any[]),
+              complete: (res: any) => resolve(res.data as any[]),
             });
           });
           setRows(parsed);
@@ -592,134 +798,153 @@ export default function App() {
   const isEmpty = !rows || rows.length === 0;
 
   return (
-    <Theme theme='g100'>
-      <div className='min-h-screen bg-gray-50'>
-        <div className='max-w-6xl mx-auto p-8'>
-          <div className='flex items-center justify-between mb-8'>
-            <div>
-              <h1 className='text-4xl font-bold text-gray-900'>Project Red Table</h1>
-              <p className='text-lg text-gray-600'>All Access Goals Analysis Dashboard</p>
-              <p className='text-sm text-gray-500 mt-1'>
-                Interactive data visualization for language translation progress
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "linear-gradient(to bottom, #f5f5f5, #e0e0e0)",
+        position: "relative",
+      }}
+    >
+      <CollapsedImporter onRows={setRows} />
+
+      <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "2rem" }}>
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+          <h1
+            style={{
+              fontSize: "3rem",
+              fontWeight: 300,
+              marginBottom: "0.5rem",
+              color: "#161616",
+            }}
+          >
+            PROJECT RED TABLE
+          </h1>
+          <p
+            style={{
+              fontSize: "1.125rem",
+              color: "#525252",
+              fontWeight: 400,
+            }}
+          >
+            All Access Goals Critical Risk Assessment Dashboard
               </p>
             </div>
-            <div className='flex items-center gap-4'>
-              <Button
-                kind='primary'
-                size='lg'
-                onClick={() => setAll(everyChart ? "table" : "chart")}
-                renderIcon={everyChart ? DataTableIcon : ChartBar}
-              >
-                {everyChart ? "Show all tables" : "Show all charts"}
-              </Button>
-              <CollapsedImporter onRows={setRows} />
-            </div>
+
+        {isEmpty ? (
+          <div
+            style={{
+              background: "white",
+              borderRadius: "16px",
+              padding: "4rem",
+              textAlign: "center",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+            }}
+          >
+            <WarningFilled size={64} style={{ color: "#da1e28", marginBottom: "1rem" }} />
+            <h2 style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>No Data Loaded</h2>
+            <p style={{ color: "#525252", marginBottom: "2rem" }}>
+              Import your language data to view the risk assessment.
+              <br />
+              Click "Import Data" in the top right to get started.
+            </p>
           </div>
+        ) : (
+          <>
+            {/* THE HERO RED TABLE */}
+            <HeroRedTable
+              data={summary.risk}
+              total={summary.totals.risk}
+              totalsByScope={summary.totals.all}
+            />
 
-          {isEmpty && (
-            <div className='bg-white rounded-lg border border-gray-200 p-16 text-center shadow-sm'>
-              <Information size={80} className='mx-auto mb-6 text-blue-600' />
-              <h2 className='text-2xl font-semibold text-gray-900 mb-4'>
-                Welcome to the Dashboard
+            {/* Secondary Analysis Grid */}
+            <div style={{ marginTop: "3rem" }}>
+              <h2
+                style={{
+                  fontSize: "1.5rem",
+                  fontWeight: 600,
+                  marginBottom: "1.5rem",
+                  color: "#161616",
+                }}
+              >
+                Detailed Activity Analysis
               </h2>
-              <p className='text-gray-600 mb-6 max-w-md mx-auto text-lg'>
-                Get started by importing your language data. Click{" "}
-                <strong className='font-semibold text-blue-600'>Import data</strong> to load a CSV
-                or Excel file.
-              </p>
-              <div className='flex justify-center gap-4 text-sm text-gray-500'>
-                <span>📊 CSV files supported</span>
-                <span>📈 Excel files supported</span>
-                <span>🌐 URL import available</span>
-              </div>
-            </div>
-          )}
 
-          {!isEmpty && (
-            <div className='space-y-10'>
-              {/* Key Metrics Overview */}
-              <div className='grid grid-cols-2 md:grid-cols-4 gap-6'>
-                <Tile className='text-center p-6'>
-                  <div className='text-3xl font-bold text-red-600 mb-2'>{summary.totals.risk}</div>
-                  <div className='text-sm font-medium text-gray-900 mb-1'>At Risk</div>
-                  <div className='text-xs text-gray-600'>Critical priority</div>
-                </Tile>
-                <Tile className='text-center p-6'>
-                  <div className='text-3xl font-bold text-orange-600 mb-2'>
-                    {summary.totals.noActivity}
-                  </div>
-                  <div className='text-sm font-medium text-gray-900 mb-1'>No Activity</div>
-                  <div className='text-xs text-gray-600'>Needs attention</div>
-                </Tile>
-                <Tile className='text-center p-6'>
-                  <div className='text-3xl font-bold text-blue-600 mb-2'>
-                    {summary.totals.activeLDSE}
-                  </div>
-                  <div className='text-sm font-medium text-gray-900 mb-1'>Active LD/SE</div>
-                  <div className='text-xs text-gray-600'>In development</div>
-                </Tile>
-                <Tile className='text-center p-6'>
-                  <div className='text-3xl font-bold text-green-600 mb-2'>
-                    {summary.totals.activeTx}
-                  </div>
-                  <div className='text-sm font-medium text-gray-900 mb-1'>Active Translation</div>
-                  <div className='text-xs text-gray-600'>In progress</div>
-                </Tile>
-              </div>
-
-              {/* Risk Section */}
-              <div>
-                <h2 className='text-2xl font-bold text-gray-900 mb-6'>
-                  🚨 Critical Risk Assessment
-                </h2>
-                <Box
-                  title='Languages at Risk of Incompletion'
-                  data={summary.risk}
-                  totals={summary.totals.all}
-                  highlightRed
-                  mode={riskMode}
-                  onToggle={() => setRiskMode(riskMode === "table" ? "chart" : "table")}
-                  description='Languages most at risk of not finishing by 2033 — no activity, only language development/scripture engagement, or translation underway but uncertain pace.'
-                />
-              </div>
-
-              {/* Activity Analysis */}
-              <div>
-                <h2 className='text-2xl font-bold text-gray-900 mb-6'>📊 Activity Analysis</h2>
-                <div className='grid grid-cols-1 xl:grid-cols-3 gap-8'>
-                  <Box
+              <Grid>
+                <Column lg={5} md={8} sm={4} style={{ marginBottom: "1.5rem" }}>
+                  <SecondaryAnalysis
                     title='No Translation Activity'
                     data={summary.noActivity}
-                    totals={summary.totals.all}
-                    highlightRed={false}
-                    mode={noActMode}
-                    onToggle={() => setNoActMode(noActMode === "table" ? "chart" : "table")}
-                    description='Languages with an All Access Goal but no reported translation activity started.'
+                    total={summary.totals.noActivity}
+                    color='#fa4d56'
                   />
-                  <Box
-                    title='Language Development & Engagement'
+                </Column>
+                <Column lg={5} md={8} sm={4} style={{ marginBottom: "1.5rem" }}>
+                  <SecondaryAnalysis
+                    title='Language Development Only'
                     data={summary.activeLDSE}
-                    totals={summary.totals.all}
-                    highlightRed={false}
-                    mode={ldseMode}
-                    onToggle={() => setLdseMode(ldseMode === "table" ? "chart" : "table")}
-                    description='Languages showing work in language development or scripture engagement — no translation has begun.'
+                    total={summary.totals.activeLDSE}
+                    color='#ff832b'
                   />
-                  <Box
-                    title='Active Translation Projects'
+                </Column>
+                <Column lg={6} md={8} sm={4} style={{ marginBottom: "1.5rem" }}>
+                  <SecondaryAnalysis
+                    title='Active Translation (Pace Unknown)'
                     data={summary.activeTx}
-                    totals={summary.totals.all}
-                    highlightRed={false}
-                    mode={txMode}
-                    onToggle={() => setTxMode(txMode === "table" ? "chart" : "table")}
-                    description='Languages with active translation recorded, but progress rate and likelihood of completion remain unknown.'
+                    total={summary.totals.activeTx}
+                    color='#0f62fe'
                   />
+                </Column>
+              </Grid>
+            </div>
+
+            {/* Summary Statistics */}
+            <div
+              style={{
+                marginTop: "3rem",
+                padding: "2rem",
+                background: "white",
+                borderRadius: "12px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+              }}
+            >
+              <Grid>
+                <Column lg={4} md={4} sm={4}>
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#161616" }}>
+                      {rows.length.toLocaleString()}
+                    </div>
+                    <div style={{ fontSize: "0.875rem", color: "#525252" }}>
+                      Total Languages Analyzed
+                    </div>
+                  </div>
+                </Column>
+                <Column lg={4} md={4} sm={4}>
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#da1e28" }}>
+                      {((summary.totals.risk / rows.length) * 100).toFixed(0)}%
+                    </div>
+                    <div style={{ fontSize: "0.875rem", color: "#525252" }}>
+                      At Risk of Incompletion
+                    </div>
+                  </div>
+                </Column>
+                <Column lg={4} md={4} sm={4}>
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#0f62fe" }}>
+                      2033
+                    </div>
+                    <div style={{ fontSize: "0.875rem", color: "#525252" }}>
+                      Target Completion Year
                 </div>
               </div>
+                </Column>
+              </Grid>
             </div>
+          </>
           )}
         </div>
       </div>
-    </Theme>
   );
 }

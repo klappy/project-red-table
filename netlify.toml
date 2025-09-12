@@ -1,0 +1,13 @@
+[build]
+  command = "cd carbon-dashboard && npm ci && npm run build"
+  publish = "carbon-dashboard/dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+
