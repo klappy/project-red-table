@@ -310,29 +310,30 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
   const ntPercent = ntTotal > 0 ? ((ntGoalMet / ntTotal) * 100).toFixed(1) : "0.0";
   const portionPercent =
     portionTotal > 0 ? ((portionGoalMet / portionTotal) * 100).toFixed(1) : "0.0";
-  
+
   // Calculate time until Pentecost 2033 (June 5, 2033)
-  const pentecost2033 = new Date('2033-06-05');
+  const pentecost2033 = new Date("2033-06-05");
   const today = new Date();
-  
+
   let years = pentecost2033.getFullYear() - today.getFullYear();
   let months = pentecost2033.getMonth() - today.getMonth();
   let days = pentecost2033.getDate() - today.getDate();
-  
+
   if (days < 0) {
     months--;
     const lastMonth = new Date(pentecost2033.getFullYear(), pentecost2033.getMonth(), 0);
     days += lastMonth.getDate();
   }
-  
+
   if (months < 0) {
     years--;
     months += 12;
   }
-  
-  const timeRemaining = years > 0 || months > 0 || days > 0
-    ? `${years} ${years === 1 ? 'Year' : 'Years'} ${months} ${months === 1 ? 'Month' : 'Months'} ${days} ${days === 1 ? 'Day' : 'Days'}`
-    : 'TIME\'S UP';
+
+  const timeRemaining =
+    years > 0 || months > 0 || days > 0
+      ? `${years}Y ${months}M ${days}D`
+      : "TIME'S UP";
 
   return (
     <div
@@ -653,30 +654,33 @@ function HeroRedTable({
   const [showInfo, setShowInfo] = useState(false);
 
   // Calculate time until Pentecost 2033 (June 5, 2033)
-  const pentecost2033 = new Date('2033-06-05');
+  const pentecost2033 = new Date("2033-06-05");
   const today = new Date();
-  
+
   // Calculate years, months, days until Pentecost
   let years = pentecost2033.getFullYear() - today.getFullYear();
   let months = pentecost2033.getMonth() - today.getMonth();
   let days = pentecost2033.getDate() - today.getDate();
-  
+
   // Adjust for negative days
   if (days < 0) {
     months--;
     const lastMonth = new Date(pentecost2033.getFullYear(), pentecost2033.getMonth(), 0);
     days += lastMonth.getDate();
   }
-  
+
   // Adjust for negative months
   if (months < 0) {
     years--;
     months += 12;
   }
-  
-  const timeRemaining = years > 0 || months > 0 || days > 0
-    ? `${years} ${years === 1 ? 'Year' : 'Years'} ${months} ${months === 1 ? 'Month' : 'Months'} ${days} ${days === 1 ? 'Day' : 'Days'}`
-    : 'TIME\'S UP';
+
+  const timeRemaining =
+    years > 0 || months > 0 || days > 0
+      ? `${years} ${years === 1 ? "YEAR" : "YEARS"} ${months} ${
+          months === 1 ? "MONTH" : "MONTHS"
+        } ${days} ${days === 1 ? "DAY" : "DAYS"}`
+      : "TIME'S UP";
 
   return (
     <div
@@ -823,9 +827,7 @@ function HeroRedTable({
               <Time size={24} />
               <div>
                 <div style={{ fontSize: "2rem", fontWeight: 700 }}>{timeRemaining}</div>
-                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>
-                  Until Pentecost 2033
-                </div>
+                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>Until Pentecost 2033</div>
               </div>
       </div>
 
