@@ -413,10 +413,10 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                 <span style={{ fontSize: "1.5rem" }}>📖</span>
                 <div>
                   <div style={{ fontSize: "2rem", fontWeight: 700, color: "#0f62fe" }}>
-                    {fbGoalMet.toLocaleString()}
+                    {fbPercent}%
                   </div>
                   <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>
-                    {fbPercent}% of {fbTotal.toLocaleString()}
+                    {fbGoalMet.toLocaleString()}/{fbTotal.toLocaleString()} Complete
                   </div>
                 </div>
               </div>
@@ -462,10 +462,10 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                 <span style={{ fontSize: "1.5rem" }}>📘</span>
                 <div>
                   <div style={{ fontSize: "2rem", fontWeight: 700, color: "#24a148" }}>
-                    {ntGoalMet.toLocaleString()}
+                    {ntPercent}%
                   </div>
                   <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>
-                    {ntPercent}% of {ntTotal.toLocaleString()}
+                    {ntGoalMet.toLocaleString()}/{ntTotal.toLocaleString()} Complete
                   </div>
                 </div>
               </div>
@@ -511,10 +511,10 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                 <span style={{ fontSize: "1.5rem" }}>✨</span>
                 <div>
                   <div style={{ fontSize: "2rem", fontWeight: 700, color: "#8a3ffc" }}>
-                    {portionGoalMet.toLocaleString()}
+                    {portionPercent}%
                   </div>
                   <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>
-                    {portionPercent}% of {portionTotal.toLocaleString()}
+                    {portionGoalMet.toLocaleString()}/{portionTotal.toLocaleString()} Complete
                   </div>
                 </div>
               </div>
