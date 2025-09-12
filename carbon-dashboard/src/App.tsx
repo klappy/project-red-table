@@ -595,115 +595,129 @@ export default function App() {
     <Theme theme='g100'>
       <div className='min-h-screen bg-gray-50'>
         <div className='max-w-6xl mx-auto p-8'>
-            <div className='flex items-center justify-between mb-8'>
-              <div>
-                <h1 className='text-4xl font-bold text-gray-900'>Project Red Table</h1>
-                <p className='text-lg text-gray-600'>All Access Goals Analysis Dashboard</p>
-                <p className='text-sm text-gray-500 mt-1'>Interactive data visualization for language translation progress</p>
-              </div>
-              <div className='flex items-center gap-4'>
-                <Button
-                  kind='primary'
-                  size='lg'
-                  onClick={() => setAll(everyChart ? "table" : "chart")}
-                  renderIcon={everyChart ? DataTableIcon : ChartBar}
-                >
-                  {everyChart ? "Show all tables" : "Show all charts"}
-                </Button>
-                <CollapsedImporter onRows={setRows} />
+          <div className='flex items-center justify-between mb-8'>
+            <div>
+              <h1 className='text-4xl font-bold text-gray-900'>Project Red Table</h1>
+              <p className='text-lg text-gray-600'>All Access Goals Analysis Dashboard</p>
+              <p className='text-sm text-gray-500 mt-1'>
+                Interactive data visualization for language translation progress
+              </p>
+            </div>
+            <div className='flex items-center gap-4'>
+              <Button
+                kind='primary'
+                size='lg'
+                onClick={() => setAll(everyChart ? "table" : "chart")}
+                renderIcon={everyChart ? DataTableIcon : ChartBar}
+              >
+                {everyChart ? "Show all tables" : "Show all charts"}
+              </Button>
+              <CollapsedImporter onRows={setRows} />
+            </div>
+          </div>
+
+          {isEmpty && (
+            <div className='bg-white rounded-lg border border-gray-200 p-16 text-center shadow-sm'>
+              <Information size={80} className='mx-auto mb-6 text-blue-600' />
+              <h2 className='text-2xl font-semibold text-gray-900 mb-4'>
+                Welcome to the Dashboard
+              </h2>
+              <p className='text-gray-600 mb-6 max-w-md mx-auto text-lg'>
+                Get started by importing your language data. Click{" "}
+                <strong className='font-semibold text-blue-600'>Import data</strong> to load a CSV
+                or Excel file.
+              </p>
+              <div className='flex justify-center gap-4 text-sm text-gray-500'>
+                <span>📊 CSV files supported</span>
+                <span>📈 Excel files supported</span>
+                <span>🌐 URL import available</span>
               </div>
             </div>
+          )}
 
-            {isEmpty && (
-              <div className='bg-white rounded-lg border border-gray-200 p-16 text-center shadow-sm'>
-                <Information size={80} className='mx-auto mb-6 text-blue-600' />
-                <h2 className='text-2xl font-semibold text-gray-900 mb-4'>Welcome to the Dashboard</h2>
-                <p className='text-gray-600 mb-6 max-w-md mx-auto text-lg'>
-                  Get started by importing your language data. Click <strong className='font-semibold text-blue-600'>Import data</strong> to load a CSV or Excel file.
-                </p>
-                <div className='flex justify-center gap-4 text-sm text-gray-500'>
-                  <span>📊 CSV files supported</span>
-                  <span>📈 Excel files supported</span>
-                  <span>🌐 URL import available</span>
-                </div>
+          {!isEmpty && (
+            <div className='space-y-10'>
+              {/* Key Metrics Overview */}
+              <div className='grid grid-cols-2 md:grid-cols-4 gap-6'>
+                <Tile className='text-center p-6'>
+                  <div className='text-3xl font-bold text-red-600 mb-2'>{summary.totals.risk}</div>
+                  <div className='text-sm font-medium text-gray-900 mb-1'>At Risk</div>
+                  <div className='text-xs text-gray-600'>Critical priority</div>
+                </Tile>
+                <Tile className='text-center p-6'>
+                  <div className='text-3xl font-bold text-orange-600 mb-2'>
+                    {summary.totals.noActivity}
+                  </div>
+                  <div className='text-sm font-medium text-gray-900 mb-1'>No Activity</div>
+                  <div className='text-xs text-gray-600'>Needs attention</div>
+                </Tile>
+                <Tile className='text-center p-6'>
+                  <div className='text-3xl font-bold text-blue-600 mb-2'>
+                    {summary.totals.activeLDSE}
+                  </div>
+                  <div className='text-sm font-medium text-gray-900 mb-1'>Active LD/SE</div>
+                  <div className='text-xs text-gray-600'>In development</div>
+                </Tile>
+                <Tile className='text-center p-6'>
+                  <div className='text-3xl font-bold text-green-600 mb-2'>
+                    {summary.totals.activeTx}
+                  </div>
+                  <div className='text-sm font-medium text-gray-900 mb-1'>Active Translation</div>
+                  <div className='text-xs text-gray-600'>In progress</div>
+                </Tile>
               </div>
-            )}
 
-            {!isEmpty && (
-              <div className='space-y-10'>
-                {/* Key Metrics Overview */}
-                <div className='grid grid-cols-2 md:grid-cols-4 gap-6'>
-                  <Tile className='text-center p-6'>
-                    <div className='text-3xl font-bold text-red-600 mb-2'>{summary.totals.risk}</div>
-                    <div className='text-sm font-medium text-gray-900 mb-1'>At Risk</div>
-                    <div className='text-xs text-gray-600'>Critical priority</div>
-                  </Tile>
-                  <Tile className='text-center p-6'>
-                    <div className='text-3xl font-bold text-orange-600 mb-2'>{summary.totals.noActivity}</div>
-                    <div className='text-sm font-medium text-gray-900 mb-1'>No Activity</div>
-                    <div className='text-xs text-gray-600'>Needs attention</div>
-                  </Tile>
-                  <Tile className='text-center p-6'>
-                    <div className='text-3xl font-bold text-blue-600 mb-2'>{summary.totals.activeLDSE}</div>
-                    <div className='text-sm font-medium text-gray-900 mb-1'>Active LD/SE</div>
-                    <div className='text-xs text-gray-600'>In development</div>
-                  </Tile>
-                  <Tile className='text-center p-6'>
-                    <div className='text-3xl font-bold text-green-600 mb-2'>{summary.totals.activeTx}</div>
-                    <div className='text-sm font-medium text-gray-900 mb-1'>Active Translation</div>
-                    <div className='text-xs text-gray-600'>In progress</div>
-                  </Tile>
-                </div>
+              {/* Risk Section */}
+              <div>
+                <h2 className='text-2xl font-bold text-gray-900 mb-6'>
+                  🚨 Critical Risk Assessment
+                </h2>
+                <Box
+                  title='Languages at Risk of Incompletion'
+                  data={summary.risk}
+                  totals={summary.totals.all}
+                  highlightRed
+                  mode={riskMode}
+                  onToggle={() => setRiskMode(riskMode === "table" ? "chart" : "table")}
+                  description='Languages most at risk of not finishing by 2033 — no activity, only language development/scripture engagement, or translation underway but uncertain pace.'
+                />
+              </div>
 
-                {/* Risk Section */}
-                <div>
-                  <h2 className='text-2xl font-bold text-gray-900 mb-6'>🚨 Critical Risk Assessment</h2>
+              {/* Activity Analysis */}
+              <div>
+                <h2 className='text-2xl font-bold text-gray-900 mb-6'>📊 Activity Analysis</h2>
+                <div className='grid grid-cols-1 xl:grid-cols-3 gap-8'>
                   <Box
-                    title='Languages at Risk of Incompletion'
-                    data={summary.risk}
+                    title='No Translation Activity'
+                    data={summary.noActivity}
                     totals={summary.totals.all}
-                    highlightRed
-                    mode={riskMode}
-                    onToggle={() => setRiskMode(riskMode === "table" ? "chart" : "table")}
-                    description='Languages most at risk of not finishing by 2033 — no activity, only language development/scripture engagement, or translation underway but uncertain pace.'
+                    highlightRed={false}
+                    mode={noActMode}
+                    onToggle={() => setNoActMode(noActMode === "table" ? "chart" : "table")}
+                    description='Languages with an All Access Goal but no reported translation activity started.'
+                  />
+                  <Box
+                    title='Language Development & Engagement'
+                    data={summary.activeLDSE}
+                    totals={summary.totals.all}
+                    highlightRed={false}
+                    mode={ldseMode}
+                    onToggle={() => setLdseMode(ldseMode === "table" ? "chart" : "table")}
+                    description='Languages showing work in language development or scripture engagement — no translation has begun.'
+                  />
+                  <Box
+                    title='Active Translation Projects'
+                    data={summary.activeTx}
+                    totals={summary.totals.all}
+                    highlightRed={false}
+                    mode={txMode}
+                    onToggle={() => setTxMode(txMode === "table" ? "chart" : "table")}
+                    description='Languages with active translation recorded, but progress rate and likelihood of completion remain unknown.'
                   />
                 </div>
-
-                {/* Activity Analysis */}
-                <div>
-                  <h2 className='text-2xl font-bold text-gray-900 mb-6'>📊 Activity Analysis</h2>
-                  <div className='grid grid-cols-1 xl:grid-cols-3 gap-8'>
-                    <Box
-                      title='No Translation Activity'
-                      data={summary.noActivity}
-                      totals={summary.totals.all}
-                      highlightRed={false}
-                      mode={noActMode}
-                      onToggle={() => setNoActMode(noActMode === "table" ? "chart" : "table")}
-                      description='Languages with an All Access Goal but no reported translation activity started.'
-                    />
-                    <Box
-                      title='Language Development & Engagement'
-                      data={summary.activeLDSE}
-                      totals={summary.totals.all}
-                      highlightRed={false}
-                      mode={ldseMode}
-                      onToggle={() => setLdseMode(ldseMode === "table" ? "chart" : "table")}
-                      description='Languages showing work in language development or scripture engagement — no translation has begun.'
-                    />
-                    <Box
-                      title='Active Translation Projects'
-                      data={summary.activeTx}
-                      totals={summary.totals.all}
-                      highlightRed={false}
-                      mode={txMode}
-                      onToggle={() => setTxMode(txMode === "table" ? "chart" : "table")}
-                      description='Languages with active translation recorded, but progress rate and likelihood of completion remain unknown.'
-                    />
-                  </div>
-                </div>
               </div>
-            )}
+            </div>
+          )}
         </div>
       </div>
     </Theme>
