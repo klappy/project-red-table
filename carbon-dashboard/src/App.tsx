@@ -217,40 +217,40 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
           }}
         >
           <div style={{ marginBottom: "1rem" }}>
-                <TextInput
-                  id='url-input'
+            <TextInput
+              id='url-input'
               labelText='Load from URL'
               placeholder='CSV or Excel URL'
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
               size='sm'
-                />
-                  <Button
-                    onClick={loadFromUrl}
-                    disabled={loading || !url}
-                    renderIcon={loading ? Loading : Upload}
-                    size='sm'
+            />
+            <Button
+              onClick={loadFromUrl}
+              disabled={loading || !url}
+              renderIcon={loading ? Loading : Upload}
+              size='sm'
               style={{ marginTop: "0.5rem" }}
-                  >
-                    {loading ? "Loading..." : "Load"}
-                  </Button>
-              </div>
+            >
+              {loading ? "Loading..." : "Load"}
+            </Button>
+          </div>
 
-                <div {...getRootProps()}>
-                  <FileUploaderDropContainer
-                    accept={[".csv", ".xlsx", ".xls"]}
+          <div {...getRootProps()}>
+            <FileUploaderDropContainer
+              accept={[".csv", ".xlsx", ".xls"]}
               labelText={isDragActive ? "Drop it here…" : "Drop file or click to browse"}
-                    multiple={false}
+              multiple={false}
               onClick={() => {}}
-                  />
-              </div>
+            />
+          </div>
 
-              {error && (
+          {error && (
             <Tag type='red' size='sm' style={{ marginTop: "0.5rem" }}>
-                    {error}
-                  </Tag>
+              {error}
+            </Tag>
           )}
-                </div>
+        </div>
       )}
     </div>
   );
@@ -384,7 +384,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
             }}
           >
             The All Access Goals by 2033
-        </h3>
+          </h3>
 
           <div
             style={{
@@ -440,7 +440,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                   }}
                 />
               </div>
-      </div>
+            </div>
 
             {/* New Testament Goal */}
             <div
@@ -448,7 +448,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                 padding: "1.5rem",
                 background: "rgba(255,255,255,0.03)",
                 borderRadius: "8px",
-                borderLeft: "3px solid #24a148",
+                borderLeft: "3px solid #c1d72e",
               }}
             >
               <div
@@ -461,7 +461,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
               >
                 <span style={{ fontSize: "1.5rem" }}>📘</span>
                 <div>
-                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#24a148" }}>
+                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#c1d72e" }}>
                     {ntPercent}%
                   </div>
                   <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>
@@ -485,7 +485,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                   style={{
                     height: "100%",
                     width: `${(parseFloat(ntPercent) / 99.96) * 100}%`,
-                    background: "#24a148",
+                    background: "#c1d72e",
                   }}
                 />
               </div>
@@ -595,7 +595,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
             </div>
           </div>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "2rem", fontWeight: 700, color: "#24a148" }}>
+            <div style={{ fontSize: "2rem", fontWeight: 700, color: "#c1d72e" }}>
               {goalMet.length.toLocaleString()}
             </div>
             <div style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.6)" }}>
@@ -752,7 +752,7 @@ function HeroRedTable({
               }}
             >
               {total.toLocaleString()}
-      </div>
+            </div>
 
             <p
               style={{
@@ -782,7 +782,7 @@ function HeroRedTable({
                   Remaining until 2033 deadline
                 </div>
               </div>
-      </div>
+            </div>
 
             <Button
               kind='ghost'
@@ -839,9 +839,9 @@ function HeroRedTable({
                 >
                   {scope}
                 </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
         </Column>
       </Grid>
 
@@ -1072,7 +1072,7 @@ function SecondaryAnalysis({
               ))}
             </tbody>
           </table>
-    </div>
+        </div>
       )}
     </Tile>
   );
@@ -1174,7 +1174,7 @@ export default function App() {
         position: "relative",
       }}
     >
-              <CollapsedImporter onRows={setRows} />
+      <CollapsedImporter onRows={setRows} />
 
       <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "2rem" }}>
         {/* Header */}
@@ -1198,7 +1198,7 @@ export default function App() {
           >
             All Access Goals Critical Risk Assessment Dashboard
           </p>
-              </div>
+        </div>
 
         {isEmpty ? (
           <div
@@ -1217,12 +1217,12 @@ export default function App() {
               <br />
               Click "Import Data" in the top right to get started.
             </p>
-                  </div>
+          </div>
         ) : (
           <>
             {/* THE HERO RED TABLE */}
             <HeroRedTable
-                  data={summary.risk}
+              data={summary.risk}
               total={summary.totals.risk}
               totalsByScope={summary.totals.all}
             />
@@ -1266,7 +1266,7 @@ export default function App() {
                   />
                 </Column>
               </Grid>
-                </div>
+            </div>
 
             {/* Summary Statistics */}
             <div
@@ -1283,15 +1283,15 @@ export default function App() {
                   <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#161616" }}>
                       {rows.length.toLocaleString()}
-              </div>
+                    </div>
                     <div style={{ fontSize: "0.875rem", color: "#525252" }}>
                       Total Languages Analyzed
-            </div>
+                    </div>
                   </div>
                 </Column>
                 <Column lg={3} md={6} sm={4}>
                   <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#24a148" }}>
+                    <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#c1d72e" }}>
                       {summary.totals.goalMet.toLocaleString()}
                     </div>
                     <div style={{ fontSize: "0.875rem", color: "#525252" }}>
@@ -1327,7 +1327,7 @@ export default function App() {
 
         {/* Footer with All Access Goals */}
         {!isEmpty && <AllAccessGoalsFooter rows={rows} />}
-        </div>
       </div>
+    </div>
   );
 }
