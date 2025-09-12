@@ -75,8 +75,14 @@ function deriveSummary(rows: any[]) {
   const activeTx = rows.filter(RULES.activeTranslation);
   const risk = rows.filter(RULES.inRedSet);
 
-  // Get ALL languages that have goals (not met)
+  // Get ALL languages that have goals NOT YET MET (includes in-progress)
   const goalNotMet = rows.filter(RULES.goalNotMet);
+  
+  // Get languages where goal IS ACTUALLY COMPLETED (Goal Met status)
+  // This is NOT the inverse of "at risk" - many languages are on track but not complete
+  const goalMet = rows.filter(row => 
+    String(row["All Access Status"] || "").toLowerCase().includes("goal met")
+  );
 
   function groupByScope(set: any[]) {
     const counts: Record<string, number> = { Portion: 0, NT: 0, FB: 0, "Two FB": 0 };
@@ -102,6 +108,7 @@ function deriveSummary(rows: any[]) {
       activeLDSE: activeLDSE.length,
       activeTx: activeTx.length,
       risk: risk.length,
+      goalMet: goalMet.length,
       all: allCounts,
       goalNotMet: goalNotMetCounts,
     },
@@ -208,40 +215,40 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
           }}
         >
           <div style={{ marginBottom: "1rem" }}>
-            <TextInput
-              id='url-input'
+                <TextInput
+                  id='url-input'
               labelText='Load from URL'
               placeholder='CSV or Excel URL'
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
               size='sm'
-            />
-            <Button
-              onClick={loadFromUrl}
-              disabled={loading || !url}
-              renderIcon={loading ? Loading : Upload}
-              size='sm'
+                />
+                  <Button
+                    onClick={loadFromUrl}
+                    disabled={loading || !url}
+                    renderIcon={loading ? Loading : Upload}
+                    size='sm'
               style={{ marginTop: "0.5rem" }}
-            >
-              {loading ? "Loading..." : "Load"}
-            </Button>
-          </div>
+                  >
+                    {loading ? "Loading..." : "Load"}
+                  </Button>
+              </div>
 
-          <div {...getRootProps()}>
-            <FileUploaderDropContainer
-              accept={[".csv", ".xlsx", ".xls"]}
+                <div {...getRootProps()}>
+                  <FileUploaderDropContainer
+                    accept={[".csv", ".xlsx", ".xls"]}
               labelText={isDragActive ? "Drop it here…" : "Drop file or click to browse"}
-              multiple={false}
+                    multiple={false}
               onClick={() => {}}
-            />
-          </div>
+                  />
+              </div>
 
-          {error && (
+              {error && (
             <Tag type='red' size='sm' style={{ marginTop: "0.5rem" }}>
-              {error}
-            </Tag>
+                    {error}
+                  </Tag>
           )}
-        </div>
+                </div>
       )}
     </div>
   );
@@ -249,7 +256,8 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
 
 // ---------- Mission Bar Component ----------
 function MissionBar({ rows }: { rows: any[] }) {
-  // Calculate progress based on "Goal Met" statuses
+  // Calculate progress based on ACTUAL COMPLETION ("Goal Met" statuses)
+  // NOT based on languages that aren't at risk - those may still be in progress
   const goalMet = rows.filter((row) =>
     String(row["All Access Status"] || "")
       .toLowerCase()
@@ -257,7 +265,9 @@ function MissionBar({ rows }: { rows: any[] }) {
   );
   const total = rows.length;
 
-  // Estimate progress percentages (these would ideally come from actual population data)
+  // Note: These percentages use language counts, not population data
+  // A language with 10M speakers counts the same as one with 10K speakers
+  // True progress toward 95%/99.96%/100% population goals would need demographic data
   const fbProgress = goalMet.filter(
     (row: any) =>
       toNumber(row["All Access Chapter Goal"]) === 1189 ||
@@ -300,7 +310,7 @@ function MissionBar({ rows }: { rows: any[] }) {
       >
         <div style={{ fontSize: "1.125rem", fontWeight: 300 }}>
           "Ensuring all people have access to God's Word by 2033"
-        </div>
+      </div>
 
         <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
           <div
@@ -355,6 +365,8 @@ function MissionBar({ rows }: { rows: any[] }) {
 
 // ---------- Footer Component ----------
 function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
+  // IMPORTANT: This shows ACTUAL COMPLETION (Goal Met), not just "not at risk"
+  // Many languages are on track but not yet complete
   const goalMet = rows.filter((row) =>
     String(row["All Access Status"] || "")
       .toLowerCase()
@@ -362,7 +374,8 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
   );
   const total = rows.length;
 
-  // Calculate progress for each goal type
+  // Calculate COMPLETED languages for each goal type
+  // Note: Uses language counts, not population-weighted percentages
   const fbGoalMet = goalMet.filter(
     (row: any) =>
       toNumber(row["All Access Chapter Goal"]) === 1189 ||
@@ -383,7 +396,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
   const ntPercent = ((ntGoalMet / total) * 100).toFixed(1);
   const portionPercent = ((portionGoalMet / total) * 100).toFixed(1);
 
-  return (
+                  return (
     <div
       style={{
         marginTop: "4rem",
@@ -824,7 +837,7 @@ function HeroRedTable({
               }}
             >
               {total.toLocaleString()}
-            </div>
+      </div>
 
             <p
               style={{
@@ -854,7 +867,7 @@ function HeroRedTable({
                   Remaining until 2033 deadline
                 </div>
               </div>
-            </div>
+      </div>
 
             <Button
               kind='ghost'
@@ -911,9 +924,9 @@ function HeroRedTable({
                 >
                   {scope}
                 </div>
-              </div>
-            ))}
           </div>
+        ))}
+      </div>
         </Column>
       </Grid>
 
@@ -1144,7 +1157,7 @@ function SecondaryAnalysis({
               ))}
             </tbody>
           </table>
-        </div>
+    </div>
       )}
     </Tile>
   );
@@ -1246,7 +1259,7 @@ export default function App() {
         position: "relative",
       }}
     >
-      <CollapsedImporter onRows={setRows} />
+              <CollapsedImporter onRows={setRows} />
 
       <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "2rem" }}>
         {/* Header */}
@@ -1270,7 +1283,7 @@ export default function App() {
           >
             All Access Goals Critical Risk Assessment Dashboard
           </p>
-        </div>
+              </div>
 
         {/* Mission Bar */}
         {!isEmpty && <MissionBar rows={rows} />}
@@ -1297,7 +1310,7 @@ export default function App() {
           <>
             {/* THE HERO RED TABLE */}
             <HeroRedTable
-              data={summary.risk}
+                  data={summary.risk}
               total={summary.totals.risk}
               totalsByScope={summary.totals.all}
             />
@@ -1341,7 +1354,7 @@ export default function App() {
                   />
                 </Column>
               </Grid>
-            </div>
+                </div>
 
             {/* Summary Statistics */}
             <div
@@ -1358,29 +1371,29 @@ export default function App() {
                   <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#161616" }}>
                       {rows.length.toLocaleString()}
-                    </div>
+              </div>
                     <div style={{ fontSize: "0.875rem", color: "#525252" }}>
                       Total Languages Analyzed
-                    </div>
+            </div>
                   </div>
                 </Column>
                 <Column lg={3} md={6} sm={4}>
                   <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#24a148" }}>
-                      {(((rows.length - summary.totals.risk) / rows.length) * 100).toFixed(0)}%
+                      {summary.totals.goalMet.toLocaleString()}
                     </div>
                     <div style={{ fontSize: "0.875rem", color: "#525252" }}>
-                      Goal Achieved
+                      Languages Completed ({((summary.totals.goalMet / rows.length) * 100).toFixed(1)}%)
                     </div>
                   </div>
                 </Column>
                 <Column lg={3} md={6} sm={4}>
                   <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#da1e28" }}>
-                      {((summary.totals.risk / rows.length) * 100).toFixed(0)}%
+                      {summary.totals.risk.toLocaleString()}
                     </div>
                     <div style={{ fontSize: "0.875rem", color: "#525252" }}>
-                      At Risk of Incompletion
+                      At Risk ({((summary.totals.risk / rows.length) * 100).toFixed(1)}%)
                     </div>
                   </div>
                 </Column>
@@ -1401,7 +1414,7 @@ export default function App() {
 
         {/* Footer with All Access Goals */}
         {!isEmpty && <AllAccessGoalsFooter rows={rows} />}
+        </div>
       </div>
-    </div>
   );
 }

@@ -78,11 +78,45 @@ The filtering logic ensures we focus resources on languages that:
 2. Have substantial translation goals (not just portions)
 3. Show signs of being at risk of missing the 2033 deadline
 
+## Progress Calculations
+
+### IMPORTANT: Completion vs At-Risk Distinction
+
+The dashboard tracks two different metrics that must not be confused:
+
+1. **Languages Completed** (Goal Met): Languages where Scripture goals have been ACHIEVED
+   - These have "Goal Met" in their All Access Status
+   - Currently: ~4,117 languages (69.7% of total)
+   
+2. **Languages At Risk**: Languages unlikely to complete by 2033
+   - These lack adequate activity to meet the deadline
+   - Currently: 1,788 languages (30.3% of total)
+
+**Critical Note**: The remaining languages (not completed but not at risk) are ON TRACK to complete by 2033. They have active translation at a pace expected to meet the deadline.
+
+### Progress Percentages
+
+All progress indicators show **actual completion** percentages:
+- Based on languages with "Goal Met" status
+- NOT based on languages that aren't at risk
+- Calculated as: (Languages with Goal Met) / (Total Languages) × 100
+
+**Data Limitation**: Current percentages use language counts, not population data. For example:
+- A language with 10 million speakers counts the same as one with 10,000 speakers
+- True population-weighted progress toward the 95%/99.96%/100% goals would require demographic data
+- The current display provides a simplified view based on available data
+
 ## Visual Indicators on Dashboard
 
 The dashboard displays:
 - **Hero Red Table**: Prominent display of the 1,788 at-risk languages
 - **Subtle Note**: "* Excludes languages with access through second language"
+- **Mission Bar**: Shows actual completion progress (not just non-at-risk)
+- **Summary Statistics**: 
+  - Total Languages Analyzed
+  - Languages Completed (actual Goal Met count with percentage)
+  - At Risk (languages unlikely to finish by 2033 with percentage)
+  - Target Year (2033)
 - **Breakdown Cards**: Show distribution across NT/FB/Two FB goals
 - **Detailed Table**: Available on demand with "Show Breakdown" button
 
