@@ -331,9 +331,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
   }
 
   const timeRemaining =
-    years > 0 || months > 0 || days > 0
-      ? `${years}Y ${months}M ${days}D`
-      : "TIME'S UP";
+    years > 0 || months > 0 || days > 0 ? `${years}Y ${months}M ${days}D` : "TIME'S UP";
 
   return (
     <div
@@ -766,7 +764,7 @@ function HeroRedTable({
               >
                 <Information size={16} />
               </button>
-            </div>
+      </div>
 
             {showInfo && (
               <div
@@ -788,7 +786,7 @@ function HeroRedTable({
                 <br />
                 <br />
                 This ensures we focus on the 1,788 languages that truly lack any Scripture access.
-              </div>
+      </div>
             )}
 
             <div
@@ -801,7 +799,7 @@ function HeroRedTable({
               }}
             >
               {total.toLocaleString()}
-      </div>
+            </div>
 
             <p
               style={{
@@ -826,10 +824,15 @@ function HeroRedTable({
             >
               <Time size={24} />
               <div>
-                <div style={{ fontSize: "2rem", fontWeight: 700 }}>{timeRemaining}</div>
+                <div style={{ fontSize: "2rem", fontWeight: 700 }}>
+                  <span className="countdown-long">{timeRemaining}</span>
+                  <span className="countdown-short" style={{ display: "none" }}>
+                    {`${years}Y ${months}M ${days}D`}
+            </span>
+                </div>
                 <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>Until Pentecost 2033</div>
               </div>
-      </div>
+            </div>
 
             <Button
               kind='ghost'
@@ -905,11 +908,13 @@ function HeroRedTable({
               background: "rgba(0,0,0,0.3)",
               borderRadius: "8px",
               padding: "1rem",
+              overflowX: "auto",
             }}
           >
             <table
               style={{
                 width: "100%",
+                minWidth: "400px",
                 borderCollapse: "collapse",
                 color: "white",
                 fontSize: "1rem",

@@ -107,6 +107,7 @@ body {
 }
 
 /* Responsive adjustments */
+/* Mobile responsiveness */
 @media (max-width: 768px) {
   .hero-red-table {
     padding: 2rem 1rem;
@@ -118,6 +119,72 @@ body {
 
   .hero-red-table .big-number {
     font-size: 3rem !important;
+  }
+  
+  /* Make tables horizontally scrollable on mobile */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  table {
+    min-width: 500px;
+  }
+  
+  /* Adjust footer text size */
+  .footer-goals h3 {
+    font-size: 1.1rem !important;
+  }
+  
+  /* Stack summary stats vertically on very small screens */
+  @media (max-width: 480px) {
+    .summary-stats > div {
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+/* Ultra-mobile improvements (phones) */
+@media (max-width: 480px) {
+  /* RED TABLE adjustments */
+  .hero-red-table {
+    padding: 1.5rem 0.75rem;
+  }
+  
+  /* Hide long countdown on mobile, show compact version */
+  .countdown-long {
+    display: none;
+  }
+  
+  .countdown-short {
+    display: block !important;
+  }
+  
+  /* Importer position on mobile */
+  .data-importer {
+    position: fixed !important;
+    bottom: 1rem !important;
+    right: 1rem !important;
+    top: auto !important;
+  }
+  
+  /* Expanded importer takes full width */
+  .data-importer-expanded {
+    width: calc(100% - 2rem) !important;
+    left: 1rem !important;
+    right: 1rem !important;
+  }
+  
+  /* Footer cards stack */
+  .footer-goal-card {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Desktop-only styles */
+@media (min-width: 769px) {
+  .countdown-short {
+    display: none;
   }
 }
 
