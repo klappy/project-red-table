@@ -208,41 +208,446 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
           }}
         >
           <div style={{ marginBottom: "1rem" }}>
-                <TextInput
-                  id='url-input'
+            <TextInput
+              id='url-input'
               labelText='Load from URL'
               placeholder='CSV or Excel URL'
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
               size='sm'
-                />
-                  <Button
-                    onClick={loadFromUrl}
-                    disabled={loading || !url}
-                    renderIcon={loading ? Loading : Upload}
-                    size='sm'
+            />
+            <Button
+              onClick={loadFromUrl}
+              disabled={loading || !url}
+              renderIcon={loading ? Loading : Upload}
+              size='sm'
               style={{ marginTop: "0.5rem" }}
-                  >
-                    {loading ? "Loading..." : "Load"}
-                  </Button>
-              </div>
+            >
+              {loading ? "Loading..." : "Load"}
+            </Button>
+          </div>
 
-                <div {...getRootProps()}>
-                  <FileUploaderDropContainer
-                    accept={[".csv", ".xlsx", ".xls"]}
+          <div {...getRootProps()}>
+            <FileUploaderDropContainer
+              accept={[".csv", ".xlsx", ".xls"]}
               labelText={isDragActive ? "Drop it here…" : "Drop file or click to browse"}
-                    multiple={false}
+              multiple={false}
               onClick={() => {}}
-                  />
-              </div>
+            />
+          </div>
 
-              {error && (
+          {error && (
             <Tag type='red' size='sm' style={{ marginTop: "0.5rem" }}>
-                    {error}
-                  </Tag>
+              {error}
+            </Tag>
           )}
-                </div>
+        </div>
       )}
+    </div>
+  );
+}
+
+// ---------- Mission Bar Component ----------
+function MissionBar({ rows }: { rows: any[] }) {
+  // Calculate progress based on "Goal Met" statuses
+  const goalMet = rows.filter(row => 
+    String(row["All Access Status"] || "").toLowerCase().includes("goal met")
+  );
+  const total = rows.length;
+  
+  // Estimate progress percentages (these would ideally come from actual population data)
+  const fbProgress = goalMet.filter((row: any) => 
+    toNumber(row["All Access Chapter Goal"]) === 1189 || 
+    (toNumber(row["All Access Chapter Goal"]) ?? 0) >= 2000
+  ).length;
+  
+  const ntProgress = goalMet.filter((row: any) => 
+    toNumber(row["All Access Chapter Goal"]) === 260 ||
+    toNumber(row["All Access Chapter Goal"]) === 1189 ||
+    (toNumber(row["All Access Chapter Goal"]) ?? 0) >= 2000
+  ).length;
+  
+  const portionProgress = goalMet.length;
+  
+  // Calculate percentages (simplified - in reality would use population data)
+  const fbPercent = ((fbProgress / total) * 100).toFixed(1);
+  const ntPercent = ((ntProgress / total) * 100).toFixed(1);
+  const portionPercent = ((portionProgress / total) * 100).toFixed(1);
+  
+  return (
+    <div
+      style={{
+        background: "linear-gradient(90deg, #3c1515 0%, #5a1e1e 100%)",
+        color: "white",
+        padding: "1rem 2rem",
+        marginBottom: "2rem",
+        borderRadius: "8px",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "1rem",
+        }}
+      >
+        <div style={{ fontSize: "1.125rem", fontWeight: 300 }}>
+          "Ensuring all people have access to God's Word by 2033"
+        </div>
+        
+        <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              padding: "0.25rem 0.75rem",
+              background: "rgba(255,255,255,0.1)",
+              borderRadius: "16px",
+              fontSize: "0.875rem",
+            }}
+          >
+            <span>📖</span>
+            <span>{fbPercent}% → Full Bible</span>
+          </div>
+          
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              padding: "0.25rem 0.75rem",
+              background: "rgba(255,255,255,0.1)",
+              borderRadius: "16px",
+              fontSize: "0.875rem",
+            }}
+          >
+            <span>📘</span>
+            <span>{ntPercent}% → New Testament</span>
+          </div>
+          
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              padding: "0.25rem 0.75rem",
+              background: "rgba(255,255,255,0.1)",
+              borderRadius: "16px",
+              fontSize: "0.875rem",
+            }}
+          >
+            <span>✨</span>
+            <span>{portionPercent}% → Some Scripture</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------- Footer Component ----------
+function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
+  const goalMet = rows.filter(row => 
+    String(row["All Access Status"] || "").toLowerCase().includes("goal met")
+  );
+  const total = rows.length;
+  
+  // Calculate progress for each goal type
+  const fbGoalMet = goalMet.filter((row: any) => 
+    toNumber(row["All Access Chapter Goal"]) === 1189 || 
+    (toNumber(row["All Access Chapter Goal"]) ?? 0) >= 2000
+  ).length;
+  
+  const ntGoalMet = goalMet.filter((row: any) => 
+    toNumber(row["All Access Chapter Goal"]) === 260 ||
+    toNumber(row["All Access Chapter Goal"]) === 1189 ||
+    (toNumber(row["All Access Chapter Goal"]) ?? 0) >= 2000
+  ).length;
+  
+  const portionGoalMet = goalMet.length;
+  
+  // Calculate percentages
+  const fbPercent = ((fbGoalMet / total) * 100).toFixed(1);
+  const ntPercent = ((ntGoalMet / total) * 100).toFixed(1);
+  const portionPercent = ((portionGoalMet / total) * 100).toFixed(1);
+  
+  return (
+    <div
+      style={{
+        marginTop: "4rem",
+        padding: "3rem 2rem",
+        background: "linear-gradient(135deg, #1c1c1c 0%, #2d2d2d 100%)",
+        color: "white",
+        borderRadius: "16px 16px 0 0",
+      }}
+    >
+      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+        {/* Header Section */}
+        <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+          <h2
+            style={{
+              fontSize: "1.25rem",
+              fontWeight: 400,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              marginBottom: "1.5rem",
+              color: "#e0e0e0",
+            }}
+          >
+            Collective Impact Alliance
+          </h2>
+          
+          <p
+            style={{
+              fontSize: "1.125rem",
+              fontWeight: 300,
+              lineHeight: 1.6,
+              maxWidth: "800px",
+              margin: "0 auto 2rem",
+              color: "rgba(255,255,255,0.85)",
+            }}
+          >
+            Generosity, humility, and integrity create unity of vision, mission, and purpose.
+          </p>
+          
+          <p
+            style={{
+              fontSize: "0.95rem",
+              lineHeight: 1.8,
+              maxWidth: "900px",
+              margin: "0 auto",
+              color: "rgba(255,255,255,0.7)",
+            }}
+          >
+            Shared strategy, technology, training, operating principles, and funding work together 
+            to accelerate the process of better quality, faster, and cheaper Scripture translation 
+            like never before. ETEN envisions all people having access to God's Word by 2033.
+          </p>
+        </div>
+        
+        {/* All Access Goals Section */}
+        <div
+          style={{
+            padding: "2rem",
+            background: "rgba(255,255,255,0.05)",
+            borderRadius: "12px",
+            marginBottom: "2rem",
+          }}
+        >
+          <h3
+            style={{
+              fontSize: "1.25rem",
+              fontWeight: 600,
+              marginBottom: "1.5rem",
+              textAlign: "center",
+              color: "#f0f0f0",
+            }}
+          >
+            The All Access Goals by 2033
+          </h3>
+          
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+              gap: "1.5rem",
+            }}
+          >
+            {/* Full Bible Goal */}
+            <div
+              style={{
+                padding: "1.5rem",
+                background: "rgba(255,255,255,0.03)",
+                borderRadius: "8px",
+                borderLeft: "3px solid #0f62fe",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "baseline", gap: "1rem", marginBottom: "0.75rem" }}>
+                <span style={{ fontSize: "1.5rem" }}>📖</span>
+                <div>
+                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#0f62fe" }}>
+                    {fbPercent}%
+                  </div>
+                  <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>
+                    Current Progress
+                  </div>
+                </div>
+              </div>
+              <p style={{ fontSize: "0.95rem", lineHeight: 1.6, color: "rgba(255,255,255,0.8)" }}>
+                <strong>95%</strong> of the global population will have access to a Full Bible
+              </p>
+              <div
+                style={{
+                  marginTop: "0.75rem",
+                  height: "4px",
+                  background: "rgba(255,255,255,0.1)",
+                  borderRadius: "2px",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    height: "100%",
+                    width: `${(parseFloat(fbPercent) / 95) * 100}%`,
+                    background: "#0f62fe",
+                  }}
+                />
+              </div>
+            </div>
+            
+            {/* New Testament Goal */}
+            <div
+              style={{
+                padding: "1.5rem",
+                background: "rgba(255,255,255,0.03)",
+                borderRadius: "8px",
+                borderLeft: "3px solid #24a148",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "baseline", gap: "1rem", marginBottom: "0.75rem" }}>
+                <span style={{ fontSize: "1.5rem" }}>📘</span>
+                <div>
+                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#24a148" }}>
+                    {ntPercent}%
+                  </div>
+                  <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>
+                    Current Progress
+                  </div>
+                </div>
+              </div>
+              <p style={{ fontSize: "0.95rem", lineHeight: 1.6, color: "rgba(255,255,255,0.8)" }}>
+                <strong>99.96%</strong> of the global population will have access to a New Testament
+              </p>
+              <div
+                style={{
+                  marginTop: "0.75rem",
+                  height: "4px",
+                  background: "rgba(255,255,255,0.1)",
+                  borderRadius: "2px",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    height: "100%",
+                    width: `${(parseFloat(ntPercent) / 99.96) * 100}%`,
+                    background: "#24a148",
+                  }}
+                />
+              </div>
+            </div>
+            
+            {/* Some Scripture Goal */}
+            <div
+              style={{
+                padding: "1.5rem",
+                background: "rgba(255,255,255,0.03)",
+                borderRadius: "8px",
+                borderLeft: "3px solid #8a3ffc",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "baseline", gap: "1rem", marginBottom: "0.75rem" }}>
+                <span style={{ fontSize: "1.5rem" }}>✨</span>
+                <div>
+                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#8a3ffc" }}>
+                    {portionPercent}%
+                  </div>
+                  <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>
+                    Current Progress
+                  </div>
+                </div>
+              </div>
+              <p style={{ fontSize: "0.95rem", lineHeight: 1.6, color: "rgba(255,255,255,0.8)" }}>
+                <strong>100%</strong> of the world's population will have access to at least some portion of Scripture
+              </p>
+              <div
+                style={{
+                  marginTop: "0.75rem",
+                  height: "4px",
+                  background: "rgba(255,255,255,0.1)",
+                  borderRadius: "2px",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    height: "100%",
+                    width: `${parseFloat(portionPercent)}%`,
+                    background: "#8a3ffc",
+                  }}
+                />
+              </div>
+            </div>
+            
+            {/* Second Translation Goal */}
+            <div
+              style={{
+                padding: "1.5rem",
+                background: "rgba(255,255,255,0.03)",
+                borderRadius: "8px",
+                borderLeft: "3px solid #ff832b",
+                gridColumn: "span 1",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "baseline", gap: "1rem", marginBottom: "0.75rem" }}>
+                <span style={{ fontSize: "1.5rem" }}>🌍</span>
+                <div>
+                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#ff832b" }}>
+                    100
+                  </div>
+                  <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>
+                    Strategic Languages
+                  </div>
+                </div>
+              </div>
+              <p style={{ fontSize: "0.95rem", lineHeight: 1.6, color: "rgba(255,255,255,0.8)" }}>
+                Access to a <strong>second translation</strong> will be available in the world's most strategic 100 written languages
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Summary Stats */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "3rem",
+            paddingTop: "2rem",
+            borderTop: "1px solid rgba(255,255,255,0.1)",
+            flexWrap: "wrap",
+          }}
+        >
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "2rem", fontWeight: 700, color: "#da1e28" }}>
+              {(total - portionGoalMet).toLocaleString()}
+            </div>
+            <div style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.6)" }}>
+              Languages Still At Risk
+            </div>
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "2rem", fontWeight: 700, color: "#24a148" }}>
+              {portionGoalMet.toLocaleString()}
+            </div>
+            <div style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.6)" }}>
+              Languages Goal Met
+            </div>
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "2rem", fontWeight: 700, color: "#0f62fe" }}>
+              {new Date().getFullYear() <= 2033 ? 2033 - new Date().getFullYear() : 0}
+            </div>
+            <div style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.6)" }}>
+              Years Remaining
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -413,7 +818,7 @@ function HeroRedTable({
                   Remaining until 2033 deadline
                 </div>
               </div>
-      </div>
+            </div>
 
             <Button
               kind='ghost'
@@ -634,7 +1039,7 @@ function SecondaryAnalysis({
   const [mode, setMode] = useState<"table" | "chart">("chart");
 
   const chartData = Object.entries(data).map(([scope, count]) => ({
-      group: scope,
+    group: scope,
     value: count,
   }));
 
@@ -672,7 +1077,7 @@ function SecondaryAnalysis({
           >
             {total.toLocaleString()}
           </div>
-      </div>
+        </div>
         <Button
           kind='ghost'
           size='sm'
@@ -828,9 +1233,12 @@ export default function App() {
             }}
           >
             All Access Goals Critical Risk Assessment Dashboard
-              </p>
-            </div>
+          </p>
+        </div>
 
+        {/* Mission Bar */}
+        {!isEmpty && <MissionBar rows={rows} />}
+        
         {isEmpty ? (
           <div
             style={{
@@ -937,14 +1345,17 @@ export default function App() {
                     </div>
                     <div style={{ fontSize: "0.875rem", color: "#525252" }}>
                       Target Completion Year
-                </div>
-              </div>
+                    </div>
+                  </div>
                 </Column>
               </Grid>
             </div>
           </>
-          )}
-        </div>
+        )}
+        
+        {/* Footer with All Access Goals */}
+        {!isEmpty && <AllAccessGoalsFooter rows={rows} />}
       </div>
+    </div>
   );
 }
