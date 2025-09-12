@@ -306,22 +306,31 @@ function DataTableView({
             <Table {...getTableProps()}>
               <TableHead>
                 <TableRow>
-                  {headers.map((header) => (
-                    <TableHeader {...getHeaderProps({ header })}>{header.header}</TableHeader>
-                  ))}
+                  {headers.map((header) => {
+                    const { key, ...headerProps } = getHeaderProps({ header });
+                    return (
+                      <TableHeader key={key} {...headerProps}>
+                        {header.header}
+                      </TableHeader>
+                    );
+                  })}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
-                  <TableRow
-                    {...getRowProps({ row })}
-                    className={row.id === "total" ? "font-semibold border-t-2" : ""}
-                  >
-                    {row.cells.map((cell) => (
-                      <TableCell key={cell.id}>{cell.value}</TableCell>
-                    ))}
-                  </TableRow>
-                ))}
+                {rows.map((row) => {
+                  const { key, ...rowProps } = getRowProps({ row });
+                  return (
+                    <TableRow
+                      key={key}
+                      {...rowProps}
+                      className={row.id === "total" ? "font-semibold border-t-2" : ""}
+                    >
+                      {row.cells.map((cell) => (
+                        <TableCell key={cell.id}>{cell.value}</TableCell>
+                      ))}
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>
