@@ -146,22 +146,6 @@ Languages are flagged as "at risk" if they:
 - **Risk**: Red variants for high-priority items
 - **Interactive**: Blue variants for buttons/links
 
-## 📈 Future Enhancements
-
-### Planned Features
-
-- [ ] **Carbon Charts Integration**: Replace placeholder with actual Carbon charts
-- [ ] **Advanced Filtering**: Multi-select filters and search
-- [ ] **Export Functionality**: Download processed data
-- [ ] **Real-time Updates**: Live data refresh capabilities
-- [ ] **Custom Dashboards**: User-configurable views
-
-### Performance Optimizations
-
-- [ ] **Virtual Scrolling**: For large datasets
-- [ ] **Data Memoization**: Optimize expensive calculations
-- [ ] **Progressive Loading**: Load data in chunks
-
 ## 🤝 Contributing
 
 1. Fork the repository
