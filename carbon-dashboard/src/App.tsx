@@ -217,40 +217,40 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
           }}
         >
           <div style={{ marginBottom: "1rem" }}>
-            <TextInput
-              id='url-input'
+                <TextInput
+                  id='url-input'
               labelText='Load from URL'
               placeholder='CSV or Excel URL'
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
               size='sm'
-            />
-            <Button
-              onClick={loadFromUrl}
-              disabled={loading || !url}
-              renderIcon={loading ? Loading : Upload}
-              size='sm'
+                />
+                  <Button
+                    onClick={loadFromUrl}
+                    disabled={loading || !url}
+                    renderIcon={loading ? Loading : Upload}
+                    size='sm'
               style={{ marginTop: "0.5rem" }}
-            >
-              {loading ? "Loading..." : "Load"}
-            </Button>
-          </div>
+                  >
+                    {loading ? "Loading..." : "Load"}
+                  </Button>
+              </div>
 
-          <div {...getRootProps()}>
-            <FileUploaderDropContainer
-              accept={[".csv", ".xlsx", ".xls"]}
+                <div {...getRootProps()}>
+                  <FileUploaderDropContainer
+                    accept={[".csv", ".xlsx", ".xls"]}
               labelText={isDragActive ? "Drop it here…" : "Drop file or click to browse"}
-              multiple={false}
+                    multiple={false}
               onClick={() => {}}
-            />
-          </div>
+                  />
+              </div>
 
-          {error && (
+              {error && (
             <Tag type='red' size='sm' style={{ marginTop: "0.5rem" }}>
-              {error}
-            </Tag>
+                    {error}
+                  </Tag>
           )}
-        </div>
+                </div>
       )}
     </div>
   );
@@ -406,7 +406,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
             }}
           >
             The All Access Goals by 2033
-          </h3>
+        </h3>
 
           <div
             className='footer-goals-grid'
@@ -463,7 +463,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                   }}
                 />
               </div>
-            </div>
+      </div>
 
             {/* New Testament Goal */}
             <div
@@ -651,6 +651,9 @@ function HeroRedTable({
 }) {
   const [showDetail, setShowDetail] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  
+  // Check if mobile
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 480;
 
   // Calculate time until Pentecost 2033 (June 5, 2033)
   const pentecost2033 = new Date("2033-06-05");
@@ -683,12 +686,12 @@ function HeroRedTable({
 
   return (
     <div
-      className="hero-red-table"
+      className='hero-red-table'
       style={{
         background: "linear-gradient(135deg, #dc2626 0%, #991b1b 100%)",
         borderRadius: "16px",
-        padding: "3rem",
-        marginBottom: "3rem",
+        padding: isMobile ? "0.75rem" : "3rem",
+        marginBottom: isMobile ? "1rem" : "3rem",
         boxShadow: "0 20px 40px rgba(185, 28, 28, 0.3)",
         position: "relative",
         overflow: "hidden",
@@ -766,7 +769,7 @@ function HeroRedTable({
               >
                 <Information size={16} />
               </button>
-            </div>
+      </div>
 
             {showInfo && (
               <div
@@ -788,7 +791,7 @@ function HeroRedTable({
                 <br />
                 <br />
                 This ensures we focus on the 1,788 languages that truly lack any Scripture access.
-              </div>
+      </div>
             )}
 
             <div
@@ -830,7 +833,7 @@ function HeroRedTable({
                   <span className='countdown-long'>{timeRemaining}</span>
                   <span className='countdown-short' style={{ display: "none" }}>
                     {`${years}Y ${months}M ${days}D`}
-                  </span>
+            </span>
                 </div>
                 <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>Until Pentecost 2033</div>
               </div>
@@ -857,8 +860,8 @@ function HeroRedTable({
             className='risk-breakdown-grid'
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(2, 1fr)",
-              gap: "1rem",
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
+              gap: isMobile ? "0.5rem" : "1rem",
             }}
           >
             {Object.entries(data).map(([scope, count]) => (
@@ -868,13 +871,13 @@ function HeroRedTable({
                   background: "rgba(255,255,255,0.15)",
                   backdropFilter: "blur(10px)",
                   borderRadius: "12px",
-                  padding: "1.5rem",
+                  padding: isMobile ? "0.75rem" : "1.5rem",
                   border: "1px solid rgba(255,255,255,0.2)",
                 }}
               >
                 <div
                   style={{
-                    fontSize: "2.5rem",
+                    fontSize: isMobile ? "1.75rem" : "2.5rem",
                     fontWeight: 700,
                     color: "white",
                     marginBottom: "0.25rem",
@@ -884,7 +887,7 @@ function HeroRedTable({
                 </div>
                 <div
                   style={{
-                    fontSize: "0.875rem",
+                    fontSize: isMobile ? "0.75rem" : "0.875rem",
                     color: "rgba(255,255,255,0.9)",
                     fontWeight: 500,
                     textTransform: "uppercase",
@@ -892,9 +895,9 @@ function HeroRedTable({
                 >
                   {scope}
                 </div>
-              </div>
-            ))}
           </div>
+        ))}
+      </div>
         </Column>
       </Grid>
 
@@ -1127,7 +1130,7 @@ function SecondaryAnalysis({
               ))}
             </tbody>
           </table>
-        </div>
+    </div>
       )}
     </Tile>
   );
@@ -1180,6 +1183,9 @@ function runSelfTests() {
 export default function App() {
   const [rows, setRows] = useState<any[]>([]);
   const summary = useMemo(() => deriveSummary(rows), [rows]);
+  
+  // Check if mobile
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 480;
 
   // Boot: self-tests + try auto-loading DEFAULT_DATA_URL
   useEffect(() => {
@@ -1229,9 +1235,15 @@ export default function App() {
         position: "relative",
       }}
     >
-      <CollapsedImporter onRows={setRows} />
+              <CollapsedImporter onRows={setRows} />
 
-      <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "2rem" }}>
+      <div 
+        className="main-container"
+        style={{ 
+          maxWidth: "1400px", 
+          margin: "0 auto", 
+          padding: isMobile ? "0.5rem" : "2rem" 
+        }}>
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "3rem" }}>
           <h1
@@ -1253,7 +1265,7 @@ export default function App() {
           >
             All Access Goals Critical Risk Assessment Dashboard
           </p>
-        </div>
+              </div>
 
         {isEmpty ? (
           <div
@@ -1272,12 +1284,12 @@ export default function App() {
               <br />
               Click "Import Data" in the top right to get started.
             </p>
-          </div>
+                  </div>
         ) : (
           <>
             {/* THE HERO RED TABLE */}
             <HeroRedTable
-              data={summary.risk}
+                  data={summary.risk}
               total={summary.totals.risk}
               totalsByScope={summary.totals.all}
             />
@@ -1321,7 +1333,7 @@ export default function App() {
                   />
                 </Column>
               </Grid>
-            </div>
+                </div>
 
             {/* Summary Statistics */}
             <div
@@ -1338,10 +1350,10 @@ export default function App() {
                   <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#161616" }}>
                       {rows.length.toLocaleString()}
-                    </div>
+              </div>
                     <div style={{ fontSize: "0.875rem", color: "#525252" }}>
                       Total Languages Analyzed
-                    </div>
+            </div>
                   </div>
                 </Column>
                 <Column lg={3} md={6} sm={4}>
@@ -1382,7 +1394,7 @@ export default function App() {
 
         {/* Footer with All Access Goals */}
         {!isEmpty && <AllAccessGoalsFooter rows={rows} />}
+        </div>
       </div>
-    </div>
   );
 }

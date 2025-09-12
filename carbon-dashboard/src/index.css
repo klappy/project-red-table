@@ -164,10 +164,17 @@ body {
     padding: 0 !important;
   }
 
-  /* Main container - MINIMAL padding */
-  div[style*='maxWidth: "1400px"'] {
+  /* Main container - FORCE MINIMAL padding with class selector */
+  .main-container {
     padding: 0.5rem !important;
-    max-width: 100% !important;
+    max-width: 100vw !important;
+    margin: 0 !important;
+  }
+  
+  /* Also target by attribute selector as backup */
+  div[style*='maxWidth'] {
+    padding: 0.5rem !important;
+    max-width: 100vw !important;
   }
 
   /* RED TABLE adjustments - TIGHT spacing */
@@ -280,12 +287,12 @@ body {
   div[style*='padding: "2rem"'] {
     padding: 0.5rem !important;
   }
-  
+
   /* Additional aggressive overrides */
   * {
     max-width: 100% !important;
   }
-  
+
   /* Summary stats - tighter */
   div[style*='padding: "1.5rem"'] {
     padding: 0.5rem !important;

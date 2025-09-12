@@ -3,11 +3,13 @@
 ## ⚠️ CRITICAL WARNING: CSS Property Name Issue
 
 **PROBLEM IDENTIFIED**: There's an editor/formatter that keeps lowercasing CSS property names in `index.css`:
+
 - `gridTemplateColumns` becomes `gridtemplatecolumns` (BROKEN)
 - CSS doesn't recognize lowercased property names
 - This breaks the entire responsive layout
 
-**SOLUTION**: 
+**SOLUTION**:
+
 1. Always use proper camelCase for CSS properties
 2. Check your editor's formatter settings
 3. Disable auto-formatting on CSS files if necessary
