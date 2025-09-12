@@ -256,135 +256,6 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
   );
 }
 
-// ---------- Mission Bar Component ----------
-function MissionBar({ rows }: { rows: any[] }) {
-  // Calculate progress based on ACTUAL COMPLETION ("Goal Met" statuses)
-  // NOT based on languages that aren't at risk - those may still be in progress
-  const goalMet = rows.filter((row) =>
-    String(row["All Access Status"] || "")
-      .toLowerCase()
-      .includes("goal met")
-  );
-
-  // Note: These percentages use language counts, not population data
-  // A language with 10M speakers counts the same as one with 10K speakers
-  // True progress toward 95%/99.96%/100% population goals would need demographic data
-  const fbProgress = goalMet.filter(
-    (row: any) =>
-      toNumber(row["All Access Chapter Goal"]) === 1189 ||
-      (toNumber(row["All Access Chapter Goal"]) ?? 0) >= 2000
-  ).length;
-
-  const ntProgress = goalMet.filter(
-    (row: any) =>
-      toNumber(row["All Access Chapter Goal"]) === 260 ||
-      toNumber(row["All Access Chapter Goal"]) === 1189 ||
-      (toNumber(row["All Access Chapter Goal"]) ?? 0) >= 2000
-  ).length;
-
-  // Portions are specifically languages with 25-chapter goals that are complete
-  const portionProgress = goalMet.filter(
-    (row: any) => toNumber(row["All Access Chapter Goal"]) === 25
-  ).length;
-
-  // Get total counts for each goal type (for denominators)
-  const fbTotal = rows.filter(
-    (row: any) =>
-      toNumber(row["All Access Chapter Goal"]) === 1189 ||
-      (toNumber(row["All Access Chapter Goal"]) ?? 0) >= 2000
-  ).length;
-  
-  const ntTotal = rows.filter(
-    (row: any) =>
-      toNumber(row["All Access Chapter Goal"]) === 260 ||
-      toNumber(row["All Access Chapter Goal"]) === 1189 ||
-      (toNumber(row["All Access Chapter Goal"]) ?? 0) >= 2000
-  ).length;
-  
-  const portionTotal = rows.filter(
-    (row: any) => toNumber(row["All Access Chapter Goal"]) === 25
-  ).length;
-
-  // Calculate percentages (simplified - in reality would use population data)
-  const fbPercent = fbTotal > 0 ? ((fbProgress / fbTotal) * 100).toFixed(1) : "0.0";
-  const ntPercent = ntTotal > 0 ? ((ntProgress / ntTotal) * 100).toFixed(1) : "0.0";
-  const portionPercent = portionTotal > 0 ? ((portionProgress / portionTotal) * 100).toFixed(1) : "0.0";
-
-  return (
-    <div
-      style={{
-        background: "linear-gradient(90deg, #3c1515 0%, #5a1e1e 100%)",
-        color: "white",
-        padding: "1rem 2rem",
-        marginBottom: "2rem",
-        borderRadius: "8px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: "1rem",
-        }}
-      >
-        <div style={{ fontSize: "1.125rem", fontWeight: 300 }}>
-          "Ensuring all people have access to God's Word by 2033"
-      </div>
-
-        <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              padding: "0.25rem 0.75rem",
-              background: "rgba(255,255,255,0.1)",
-              borderRadius: "16px",
-              fontSize: "0.875rem",
-            }}
-          >
-            <span>📖</span>
-            <span>{fbProgress.toLocaleString()}/{fbTotal.toLocaleString()} ({fbPercent}%) → Full Bible</span>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              padding: "0.25rem 0.75rem",
-              background: "rgba(255,255,255,0.1)",
-              borderRadius: "16px",
-              fontSize: "0.875rem",
-            }}
-          >
-            <span>📘</span>
-            <span>{ntProgress.toLocaleString()}/{ntTotal.toLocaleString()} ({ntPercent}%) → New Testament</span>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              padding: "0.25rem 0.75rem",
-              background: "rgba(255,255,255,0.1)",
-              borderRadius: "16px",
-              fontSize: "0.875rem",
-            }}
-          >
-            <span>✨</span>
-            <span>{portionProgress.toLocaleString()}/{portionTotal.toLocaleString()} ({portionPercent}%) → Portions</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ---------- Footer Component ----------
 function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
   // IMPORTANT: This shows ACTUAL COMPLETION (Goal Met), not just "not at risk"
@@ -415,21 +286,21 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
   const portionGoalMet = goalMet.filter(
     (row: any) => toNumber(row["All Access Chapter Goal"]) === 25
   ).length;
-  
+
   // Get total counts for each goal type
   const fbTotal = rows.filter(
     (row: any) =>
       toNumber(row["All Access Chapter Goal"]) === 1189 ||
       (toNumber(row["All Access Chapter Goal"]) ?? 0) >= 2000
   ).length;
-  
+
   const ntTotal = rows.filter(
     (row: any) =>
       toNumber(row["All Access Chapter Goal"]) === 260 ||
       toNumber(row["All Access Chapter Goal"]) === 1189 ||
       (toNumber(row["All Access Chapter Goal"]) ?? 0) >= 2000
   ).length;
-  
+
   const portionTotal = rows.filter(
     (row: any) => toNumber(row["All Access Chapter Goal"]) === 25
   ).length;
@@ -437,9 +308,10 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
   // Calculate percentages based on goal-specific totals
   const fbPercent = fbTotal > 0 ? ((fbGoalMet / fbTotal) * 100).toFixed(1) : "0.0";
   const ntPercent = ntTotal > 0 ? ((ntGoalMet / ntTotal) * 100).toFixed(1) : "0.0";
-  const portionPercent = portionTotal > 0 ? ((portionGoalMet / portionTotal) * 100).toFixed(1) : "0.0";
+  const portionPercent =
+    portionTotal > 0 ? ((portionGoalMet / portionTotal) * 100).toFixed(1) : "0.0";
 
-                  return (
+  return (
     <div
       style={{
         marginTop: "4rem",
@@ -512,7 +384,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
             }}
           >
             The All Access Goals by 2033
-          </h3>
+        </h3>
 
           <div
             style={{
@@ -568,7 +440,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                   }}
                 />
               </div>
-            </div>
+      </div>
 
             {/* New Testament Goal */}
             <div
@@ -647,8 +519,8 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                 </div>
               </div>
               <p style={{ fontSize: "0.95rem", lineHeight: 1.6, color: "rgba(255,255,255,0.8)" }}>
-                <strong>100%</strong> of the world's population will have access to 
-                Scripture Portions (25 chapters)
+                <strong>100%</strong> of the world's population will have access to Scripture
+                Portions (25 chapters)
               </p>
               <div
                 style={{
@@ -1328,9 +1200,6 @@ export default function App() {
           </p>
               </div>
 
-        {/* Mission Bar */}
-        {!isEmpty && <MissionBar rows={rows} />}
-
         {isEmpty ? (
           <div
             style={{
@@ -1348,7 +1217,7 @@ export default function App() {
               <br />
               Click "Import Data" in the top right to get started.
             </p>
-          </div>
+                  </div>
         ) : (
           <>
             {/* THE HERO RED TABLE */}
