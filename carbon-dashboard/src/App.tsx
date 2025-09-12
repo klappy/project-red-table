@@ -77,11 +77,13 @@ function deriveSummary(rows: any[]) {
 
   // Get ALL languages that have goals NOT YET MET (includes in-progress)
   const goalNotMet = rows.filter(RULES.goalNotMet);
-  
+
   // Get languages where goal IS ACTUALLY COMPLETED (Goal Met status)
   // This is NOT the inverse of "at risk" - many languages are on track but not complete
-  const goalMet = rows.filter(row => 
-    String(row["All Access Status"] || "").toLowerCase().includes("goal met")
+  const goalMet = rows.filter((row) =>
+    String(row["All Access Status"] || "")
+      .toLowerCase()
+      .includes("goal met")
   );
 
   function groupByScope(set: any[]) {
@@ -263,7 +265,6 @@ function MissionBar({ rows }: { rows: any[] }) {
       .toLowerCase()
       .includes("goal met")
   );
-  const total = rows.length;
 
   // Note: These percentages use language counts, not population data
   // A language with 10M speakers counts the same as one with 10K speakers
@@ -281,12 +282,33 @@ function MissionBar({ rows }: { rows: any[] }) {
       (toNumber(row["All Access Chapter Goal"]) ?? 0) >= 2000
   ).length;
 
-  const portionProgress = goalMet.length;
+  // Portions are specifically languages with 25-chapter goals that are complete
+  const portionProgress = goalMet.filter(
+    (row: any) => toNumber(row["All Access Chapter Goal"]) === 25
+  ).length;
+
+  // Get total counts for each goal type (for denominators)
+  const fbTotal = rows.filter(
+    (row: any) =>
+      toNumber(row["All Access Chapter Goal"]) === 1189 ||
+      (toNumber(row["All Access Chapter Goal"]) ?? 0) >= 2000
+  ).length;
+  
+  const ntTotal = rows.filter(
+    (row: any) =>
+      toNumber(row["All Access Chapter Goal"]) === 260 ||
+      toNumber(row["All Access Chapter Goal"]) === 1189 ||
+      (toNumber(row["All Access Chapter Goal"]) ?? 0) >= 2000
+  ).length;
+  
+  const portionTotal = rows.filter(
+    (row: any) => toNumber(row["All Access Chapter Goal"]) === 25
+  ).length;
 
   // Calculate percentages (simplified - in reality would use population data)
-  const fbPercent = ((fbProgress / total) * 100).toFixed(1);
-  const ntPercent = ((ntProgress / total) * 100).toFixed(1);
-  const portionPercent = ((portionProgress / total) * 100).toFixed(1);
+  const fbPercent = fbTotal > 0 ? ((fbProgress / fbTotal) * 100).toFixed(1) : "0.0";
+  const ntPercent = ntTotal > 0 ? ((ntProgress / ntTotal) * 100).toFixed(1) : "0.0";
+  const portionPercent = portionTotal > 0 ? ((portionProgress / portionTotal) * 100).toFixed(1) : "0.0";
 
   return (
     <div
@@ -325,7 +347,7 @@ function MissionBar({ rows }: { rows: any[] }) {
             }}
           >
             <span>📖</span>
-            <span>{fbPercent}% → Full Bible</span>
+            <span>{fbProgress.toLocaleString()}/{fbTotal.toLocaleString()} ({fbPercent}%) → Full Bible</span>
           </div>
 
           <div
@@ -340,7 +362,7 @@ function MissionBar({ rows }: { rows: any[] }) {
             }}
           >
             <span>📘</span>
-            <span>{ntPercent}% → New Testament</span>
+            <span>{ntProgress.toLocaleString()}/{ntTotal.toLocaleString()} ({ntPercent}%) → New Testament</span>
           </div>
 
           <div
@@ -355,7 +377,7 @@ function MissionBar({ rows }: { rows: any[] }) {
             }}
           >
             <span>✨</span>
-            <span>{portionPercent}% → Some Scripture</span>
+            <span>{portionProgress.toLocaleString()}/{portionTotal.toLocaleString()} ({portionPercent}%) → Portions</span>
           </div>
         </div>
       </div>
@@ -389,12 +411,33 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
       (toNumber(row["All Access Chapter Goal"]) ?? 0) >= 2000
   ).length;
 
-  const portionGoalMet = goalMet.length;
+  // Portions are specifically languages with 25-chapter goals that are complete
+  const portionGoalMet = goalMet.filter(
+    (row: any) => toNumber(row["All Access Chapter Goal"]) === 25
+  ).length;
+  
+  // Get total counts for each goal type
+  const fbTotal = rows.filter(
+    (row: any) =>
+      toNumber(row["All Access Chapter Goal"]) === 1189 ||
+      (toNumber(row["All Access Chapter Goal"]) ?? 0) >= 2000
+  ).length;
+  
+  const ntTotal = rows.filter(
+    (row: any) =>
+      toNumber(row["All Access Chapter Goal"]) === 260 ||
+      toNumber(row["All Access Chapter Goal"]) === 1189 ||
+      (toNumber(row["All Access Chapter Goal"]) ?? 0) >= 2000
+  ).length;
+  
+  const portionTotal = rows.filter(
+    (row: any) => toNumber(row["All Access Chapter Goal"]) === 25
+  ).length;
 
-  // Calculate percentages
-  const fbPercent = ((fbGoalMet / total) * 100).toFixed(1);
-  const ntPercent = ((ntGoalMet / total) * 100).toFixed(1);
-  const portionPercent = ((portionGoalMet / total) * 100).toFixed(1);
+  // Calculate percentages based on goal-specific totals
+  const fbPercent = fbTotal > 0 ? ((fbGoalMet / fbTotal) * 100).toFixed(1) : "0.0";
+  const ntPercent = ntTotal > 0 ? ((ntGoalMet / ntTotal) * 100).toFixed(1) : "0.0";
+  const portionPercent = portionTotal > 0 ? ((portionGoalMet / portionTotal) * 100).toFixed(1) : "0.0";
 
                   return (
     <div
@@ -498,10 +541,10 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                 <span style={{ fontSize: "1.5rem" }}>📖</span>
                 <div>
                   <div style={{ fontSize: "2rem", fontWeight: 700, color: "#0f62fe" }}>
-                    {fbPercent}%
+                    {fbGoalMet.toLocaleString()}/{fbTotal.toLocaleString()}
                   </div>
                   <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>
-                    Current Progress
+                    {fbPercent}% Complete
                   </div>
                 </div>
               </div>
@@ -547,10 +590,10 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                 <span style={{ fontSize: "1.5rem" }}>📘</span>
                 <div>
                   <div style={{ fontSize: "2rem", fontWeight: 700, color: "#24a148" }}>
-                    {ntPercent}%
+                    {ntGoalMet.toLocaleString()}/{ntTotal.toLocaleString()}
                   </div>
                   <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>
-                    Current Progress
+                    {ntPercent}% Complete
                   </div>
                 </div>
               </div>
@@ -576,7 +619,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
               </div>
             </div>
 
-            {/* Some Scripture Goal */}
+            {/* Scripture Portions Goal */}
             <div
               style={{
                 padding: "1.5rem",
@@ -596,16 +639,16 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                 <span style={{ fontSize: "1.5rem" }}>✨</span>
                 <div>
                   <div style={{ fontSize: "2rem", fontWeight: 700, color: "#8a3ffc" }}>
-                    {portionPercent}%
+                    {portionGoalMet.toLocaleString()}/{portionTotal.toLocaleString()}
                   </div>
                   <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>
-                    Current Progress
+                    {portionPercent}% Complete
                   </div>
                 </div>
               </div>
               <p style={{ fontSize: "0.95rem", lineHeight: 1.6, color: "rgba(255,255,255,0.8)" }}>
-                <strong>100%</strong> of the world's population will have access to at least some
-                portion of Scripture
+                <strong>100%</strong> of the world's population will have access to 
+                Scripture Portions (25 chapters)
               </p>
               <div
                 style={{
@@ -673,18 +716,18 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
         >
           <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: "2rem", fontWeight: 700, color: "#da1e28" }}>
-              {(total - portionGoalMet).toLocaleString()}
+              {(total - goalMet.length).toLocaleString()}
             </div>
             <div style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.6)" }}>
-              Languages Still At Risk
+              Languages Remaining
             </div>
           </div>
           <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: "2rem", fontWeight: 700, color: "#24a148" }}>
-              {portionGoalMet.toLocaleString()}
+              {goalMet.length.toLocaleString()}
             </div>
             <div style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.6)" }}>
-              Languages Goal Met
+              Languages Completed
             </div>
           </div>
           <div style={{ textAlign: "center" }}>
@@ -1383,7 +1426,8 @@ export default function App() {
                       {summary.totals.goalMet.toLocaleString()}
                     </div>
                     <div style={{ fontSize: "0.875rem", color: "#525252" }}>
-                      Languages Completed ({((summary.totals.goalMet / rows.length) * 100).toFixed(1)}%)
+                      Languages Completed (
+                      {((summary.totals.goalMet / rows.length) * 100).toFixed(1)}%)
                     </div>
                   </div>
                 </Column>
