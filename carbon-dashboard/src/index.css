@@ -170,9 +170,9 @@ body {
     max-width: 100vw !important;
     margin: 0 !important;
   }
-  
+
   /* Also target by attribute selector as backup */
-  div[style*='maxWidth'] {
+  div[style*="maxWidth"] {
     padding: 0.5rem !important;
     max-width: 100vw !important;
   }

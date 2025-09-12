@@ -651,9 +651,9 @@ function HeroRedTable({
 }) {
   const [showDetail, setShowDetail] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
-  
+
   // Check if mobile
-  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 480;
+  const isMobile = typeof window !== "undefined" && window.innerWidth <= 480;
 
   // Calculate time until Pentecost 2033 (June 5, 2033)
   const pentecost2033 = new Date("2033-06-05");
@@ -769,7 +769,7 @@ function HeroRedTable({
               >
                 <Information size={16} />
               </button>
-      </div>
+            </div>
 
             {showInfo && (
               <div
@@ -791,37 +791,64 @@ function HeroRedTable({
                 <br />
                 <br />
                 This ensures we focus on the 1,788 languages that truly lack any Scripture access.
-      </div>
+              </div>
             )}
 
             <div
               style={{
-                fontSize: "5rem",
-                fontWeight: 800,
-                lineHeight: 1,
-                marginBottom: "0.5rem",
-                textShadow: "0 4px 8px rgba(0,0,0,0.2)",
-              }}
-            >
-              {total.toLocaleString()}
-            </div>
-
-            <p
-              style={{
-                fontSize: "1.5rem",
+                display: isMobile ? "block" : "flex",
+                alignItems: "flex-start",
+                justifyContent: "space-between",
                 marginBottom: "2rem",
-                fontWeight: 500,
               }}
             >
-              LANGUAGES AT RISK
-            </p>
+              <div>
+                <div
+                  style={{
+                    fontSize: isMobile ? "3.5rem" : "5rem",
+                    fontWeight: 800,
+                    lineHeight: 1,
+                    marginBottom: "0.5rem",
+                    textShadow: "0 4px 8px rgba(0,0,0,0.2)",
+                  }}
+                >
+                  {total.toLocaleString()}
+      </div>
+
+                <p
+                  style={{
+                    fontSize: "1.5rem",
+                    marginBottom: isMobile ? "1rem" : 0,
+                    fontWeight: 500,
+                  }}
+                >
+                  LANGUAGES AT RISK
+                </p>
+      </div>
+
+              {!isMobile && (
+                <Button
+                  kind='ghost'
+                  size='lg'
+                  onClick={() => setShowDetail(!showDetail)}
+                  renderIcon={showDetail ? ViewOff : View}
+                  style={{
+                    color: "white",
+                    borderColor: "white",
+                    marginTop: "1rem",
+                  }}
+                >
+                  {showDetail ? "Hide Details" : "Show Breakdown"}
+                </Button>
+              )}
+            </div>
 
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: "1rem",
-                marginBottom: "2rem",
+                marginBottom: isMobile ? "1.5rem" : "2rem",
                 padding: "1rem",
                 background: "rgba(0,0,0,0.2)",
                 borderRadius: "8px",
@@ -829,7 +856,7 @@ function HeroRedTable({
             >
               <Time size={24} />
               <div>
-                <div style={{ fontSize: "2rem", fontWeight: 700 }}>
+                <div style={{ fontSize: isMobile ? "1.5rem" : "2rem", fontWeight: 700 }}>
                   <span className='countdown-long'>{timeRemaining}</span>
                   <span className='countdown-short' style={{ display: "none" }}>
                     {`${years}Y ${months}M ${days}D`}
@@ -839,18 +866,24 @@ function HeroRedTable({
               </div>
             </div>
 
-            <Button
-              kind='ghost'
-              size='lg'
-              onClick={() => setShowDetail(!showDetail)}
-              renderIcon={showDetail ? ViewOff : View}
-              style={{
-                color: "white",
-                borderColor: "white",
-              }}
-            >
-              {showDetail ? "Hide Details" : "Show Breakdown"}
-            </Button>
+            {isMobile && (
+              <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+                <Button
+                  kind='ghost'
+                  size='lg'
+                  onClick={() => setShowDetail(!showDetail)}
+                  renderIcon={showDetail ? ViewOff : View}
+                  style={{
+                    color: "white",
+                    borderColor: "white",
+                    width: "100%",
+                    maxWidth: "300px",
+                  }}
+                >
+                  {showDetail ? "Hide Details" : "Show Breakdown"}
+                </Button>
+              </div>
+            )}
           </div>
         </Column>
 
@@ -1183,9 +1216,9 @@ function runSelfTests() {
 export default function App() {
   const [rows, setRows] = useState<any[]>([]);
   const summary = useMemo(() => deriveSummary(rows), [rows]);
-  
+
   // Check if mobile
-  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 480;
+  const isMobile = typeof window !== "undefined" && window.innerWidth <= 480;
 
   // Boot: self-tests + try auto-loading DEFAULT_DATA_URL
   useEffect(() => {
@@ -1237,13 +1270,14 @@ export default function App() {
     >
               <CollapsedImporter onRows={setRows} />
 
-      <div 
-        className="main-container"
-        style={{ 
-          maxWidth: "1400px", 
-          margin: "0 auto", 
-          padding: isMobile ? "0.5rem" : "2rem" 
-        }}>
+      <div
+        className='main-container'
+        style={{
+          maxWidth: "1400px",
+          margin: "0 auto",
+          padding: isMobile ? "0.5rem" : "2rem",
+        }}
+      >
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "3rem" }}>
           <h1
