@@ -120,32 +120,32 @@ body {
   .hero-red-table .big-number {
     font-size: 3rem !important;
   }
-  
+
   /* Risk breakdown cards on tablet */
   .risk-breakdown-grid {
     gap: 0.75rem !important;
   }
-  
+
   /* Make tables horizontally scrollable on mobile */
   .table-container {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
-  
+
   table {
     min-width: 500px;
   }
-  
+
   /* Adjust footer text size */
   .footer-goals h3 {
     font-size: 1.1rem !important;
   }
-  
+
   /* Footer goal cards */
   .footer-goals-grid {
     gridTemplateColumns: repeat(auto-fit, minmax(250px, 1fr)) !important;
   }
-  
+
   /* Stack summary stats vertically on very small screens */
   @media (max-width: 480px) {
     .summary-stats > div {
@@ -156,36 +156,66 @@ body {
 
 /* Ultra-mobile improvements (phones) */
 @media (max-width: 480px) {
+  /* Global padding reduction for mobile */
+  body {
+    overflow-x: hidden !important;
+  }
+  
+  /* Main container padding reduction */
+  div[style*="maxWidth: \"1400px\""] {
+    padding: 1rem !important;
+  }
+  
   /* RED TABLE adjustments */
   .hero-red-table {
-    padding: 1.5rem 0.75rem;
+    padding: 1rem 0.5rem !important;
+    margin: 0 !important;
   }
-  
+
   /* RED TABLE title and numbers */
-  h1 {
-    font-size: 1.75rem !important;
+  .hero-red-table h1 {
+    font-size: 1.5rem !important;
+    margin-bottom: 0.5rem !important;
   }
   
+  .hero-red-table > div:first-child {
+    padding: 0.75rem !important;
+  }
+
   /* Risk breakdown grid - single column on mobile */
   .risk-breakdown-grid {
     gridTemplateColumns: 1fr !important;
     gap: 0.5rem !important;
   }
-  
-  /* Risk breakdown cards - smaller text on mobile */
+
+  /* Risk breakdown cards - smaller text and padding on mobile */
   .risk-breakdown-grid > div {
-    padding: 1rem !important;
+    padding: 0.75rem !important;
   }
   
+  .risk-breakdown-grid > div > div:first-child {
+    font-size: 2rem !important;
+  }
+  
+  .risk-breakdown-grid > div > div:last-child {
+    font-size: 0.75rem !important;
+  }
+
   /* Hide long countdown on mobile, show compact version */
   .countdown-long {
     display: none;
   }
-  
+
   .countdown-short {
     display: block !important;
+    font-size: 1.5rem !important;
   }
   
+  /* Countdown container adjustments */
+  div[style*="fontSize: \"2rem\""] {
+    font-size: 1.5rem !important;
+  }
+
   /* Importer position on mobile */
   .data-importer {
     position: fixed !important;
@@ -193,33 +223,76 @@ body {
     right: 1rem !important;
     top: auto !important;
   }
-  
+
   /* Expanded importer takes full width */
   .data-importer-expanded {
     width: calc(100% - 2rem) !important;
     left: 1rem !important;
     right: 1rem !important;
   }
-  
+
   /* Footer goals grid - single column on mobile */
   .footer-goals-grid {
     gridTemplateColumns: 1fr !important;
     gap: 1rem !important;
   }
-  
+
   /* Footer cards stack */
   .footer-goal-card {
     margin-bottom: 1rem;
   }
-  
+
   /* Reduce padding in footer cards on mobile */
   .footer-goals-grid > div {
     padding: 1rem !important;
   }
-  
+
   /* Make progress bars more visible on mobile */
   .footer-goals-grid div[style*="height: 4px"] {
     height: 6px !important;
+  }
+  
+  /* Carbon Grid adjustments for mobile */
+  .cds--grid {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .cds--col-sm-4 {
+    padding: 0 !important;
+  }
+  
+  /* Footer specific mobile fixes */
+  footer div[style*="background: \"#141414\""] {
+    padding: 1rem 0.5rem !important;
+  }
+  
+  /* Reduce all tile padding on mobile */
+  .cds--tile {
+    padding: 1rem !important;
+  }
+  
+  /* Fix any elements with explicit large padding */
+  div[style*="padding: \"2rem\""] {
+    padding: 1rem !important;
+  }
+  
+  /* Ensure buttons don't overflow */
+  .cds--btn {
+    max-width: 100%;
+    white-space: normal;
+    padding: 0.75rem 1rem !important;
+  }
+  
+  /* RED TABLE big number adjustments */
+  div[style*="fontSize: \"5rem\""] {
+    font-size: 3rem !important;
+  }
+  
+  /* Show Breakdown button specific */
+  button[style*="marginTop: \"1.5rem\""] {
+    margin-top: 1rem !important;
+    font-size: 0.875rem !important;
   }
 }
 
