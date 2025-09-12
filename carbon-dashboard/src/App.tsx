@@ -41,7 +41,7 @@ import {
 } from "@carbon/icons-react";
 
 // Carbon Charts imports
-import { BarChart } from "@carbon/charts-react";
+import { SimpleBarChart } from "@carbon/charts-react";
 import "@carbon/charts/styles.css";
 
 // ---------- Configuration ----------
@@ -193,7 +193,7 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, multiple: false });
 
   return (
-    <div>
+      <div>
       <Button
         kind='ghost'
         size='sm'
@@ -373,12 +373,12 @@ function ChartView({
     height: "300px",
     color: {
       scale: highlightRed
-        ? { "Portion": "#da1e28", "NT": "#fa4d56", "FB": "#ff8389", "Two FB": "#ffb3b8" }
-        : { "Portion": "#0f62fe", "NT": "#4589ff", "FB": "#78a9ff", "Two FB": "#a6c8ff" },
+        ? { Portion: "#da1e28", NT: "#fa4d56", FB: "#ff8389", "Two FB": "#ffb3b8" }
+        : { Portion: "#0f62fe", NT: "#4589ff", FB: "#78a9ff", "Two FB": "#a6c8ff" },
     },
     tooltip: {
       formatter: (value: any, label: string) => {
-        const item = chartData.find(d => d.group === label);
+        const item = chartData.find((d) => d.group === label);
         if (item) {
           return [`${item.count} of ${item.total}`, "Count"];
         }
@@ -412,11 +412,8 @@ function ChartView({
         )}
       </div>
 
-      <div className="chart-container" style={{ height: "300px" }}>
-        <BarChart
-          data={chartData}
-          options={chartOptions}
-        />
+      <div className='chart-container' style={{ height: "300px" }}>
+        <SimpleBarChart data={chartData} options={chartOptions} />
       </div>
 
       {/* Data summary below chart */}
@@ -424,7 +421,9 @@ function ChartView({
         {chartData.map(({ group, value, count, total }) => (
           <div key={group} className='flex justify-between'>
             <span className='font-medium'>{group}:</span>
-            <span>{count}/{total} ({value.toFixed(1)}%)</span>
+            <span>
+              {count}/{total} ({value.toFixed(1)}%)
+            </span>
           </div>
         ))}
       </div>
