@@ -86,13 +86,8 @@ function LanguageListModal({
   const [hasScriptureFilter, setHasScriptureFilter] = useState<string[]>([]);
   const [activeTranslationFilter, setActiveTranslationFilter] = useState<string | null>(null);
   const [activeLangDevFilter, setActiveLangDevFilter] = useState<string | null>(null);
-  const [accessStatusFilter, setAccessStatusFilter] = useState<string[]>(
-    initialFilters.completed ? ["Goal met in language", "Goal met via second language"] : []
-  );
+  const [accessStatusFilter, setAccessStatusFilter] = useState<string[]>([]);
   const [translationStatusFilter, setTranslationStatusFilter] = useState<string[]>([]);
-
-  // Don't apply initial filters - let the regular filter system handle it
-  const baseLanguages = languages;
 
   // Get unique values for filters from full dataset
   const filterOptions = useMemo(() => {
@@ -117,8 +112,8 @@ function LanguageListModal({
         hasScripture.add("None");
       }
 
-      // Access Status
-      const access = lang["All Access Status"];
+      // Access Status - using the correct field name
+      const access = lang["All Access Status"] || lang["Access Status"];
       if (access && access !== "") accessStatuses.add(access);
 
       // Translation Status
@@ -140,11 +135,22 @@ function LanguageListModal({
 
     return result;
   }, [languages]);
+  
+  // Don't pre-select filters - the completed filter is handled separately
 
   // Filter languages based on search and filters
   const filteredLanguages = useMemo(() => {
-    // Start with base languages (already has initial filters applied)
-    let filtered = [...baseLanguages];
+    // Start with all languages
+    let filtered = [...languages];
+    
+    // Apply initial "completed" filter if specified
+    if (initialFilters.completed === true) {
+      filtered = filtered.filter((lang) => {
+        const completed = toNumber(lang["Text Chapters Completed"]) || 0;
+        const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
+        return goal > 0 && completed >= goal;
+      });
+    }
 
     // Apply search filter
     if (searchTerm) {
@@ -194,7 +200,7 @@ function LanguageListModal({
     // Apply Access Status filter
     if (accessStatusFilter.length > 0) {
       filtered = filtered.filter((lang) => {
-        const status = lang["All Access Status"];
+        const status = lang["All Access Status"] || lang["Access Status"];
         return status && accessStatusFilter.includes(status);
       });
     }
@@ -209,7 +215,8 @@ function LanguageListModal({
 
     return filtered;
   }, [
-    baseLanguages,
+    languages,
+    initialFilters.completed,
     searchTerm,
     goalTypeFilter,
     hasScriptureFilter,
@@ -259,8 +266,8 @@ function LanguageListModal({
           bVal = (bCompleted / bGoal) * 100;
           break;
         case "status":
-          aVal = a["All Access Status"] || "";
-          bVal = b["All Access Status"] || "";
+          aVal = a["All Access Status"] || a["Access Status"] || "";
+          bVal = b["All Access Status"] || b["Access Status"] || "";
           break;
         case "translationStatus":
           aVal = a["Translation Status"] || "";
@@ -336,7 +343,7 @@ function LanguageListModal({
     })(),
     activeTranslation: lang["Active Translation"] === "Yes" ? "✓" : "—",
     activeLangDev: lang["Active Language Development"] === "Yes" ? "✓" : "—",
-    status: lang["All Access Status"] || "—",
+    status: lang["All Access Status"] || lang["Access Status"] || "—",
     translationStatus: lang["Translation Status"] || "—",
     raw: lang, // Keep raw data for potential expansion
   }));
@@ -379,14 +386,7 @@ function LanguageListModal({
           />
           <span>{title}</span>
           <Tag type='blue' size='md'>
-            {(initialFilters.completed
-              ? languages.filter((lang) => {
-                  const completed = toNumber(lang["Text Chapters Completed"]) || 0;
-                  const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
-                  return goal > 0 && completed >= goal;
-                }).length
-              : languages.length
-            ).toLocaleString()} languages
+            {filteredLanguages.length.toLocaleString()} languages
           </Tag>
         </div>
       }
@@ -723,8 +723,8 @@ function LanguageListModal({
                       color: "#525252",
                     }}
                   >
-                    Showing {filteredLanguages.length.toLocaleString()} of{" "}
-                    {languages.length.toLocaleString()} languages
+                    Showing {paginatedLanguages.length.toLocaleString()} of{" "}
+                    {filteredLanguages.length.toLocaleString()} filtered ({languages.length.toLocaleString()} total)
                     {(searchTerm ||
                       goalTypeFilter.length > 0 ||
                       hasScriptureFilter.length > 0 ||
