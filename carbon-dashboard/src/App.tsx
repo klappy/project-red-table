@@ -425,35 +425,33 @@ function LanguageListModal({
                   size='sm'
                   onClick={() => setShowFilters(!showFilters)}
                   renderIcon={showFilters ? ChevronUp : ChevronDown}
-                  style={{ 
+                  style={{
                     marginLeft: "1rem",
-                    display: "flex",
-                    alignItems: "center"
                   }}
                 >
-                  <span style={{ marginRight: "0.25rem" }}>
-                    <Filter size={16} />
-                  </span>
+                  <Filter size={16} style={{ 
+                    verticalAlign: "middle",
+                    marginRight: "0.375rem",
+                    marginTop: "-2px"
+                  }} />
                   Filters
                   {(goalTypeFilter.length > 0 ||
-                  hasScriptureFilter.length > 0 ||
-                  activeTranslationFilter ||
-                  activeLangDevFilter ||
-                  accessStatusFilter.length > 0 ||
-                  translationStatusFilter.length > 0) && (
-                    <Tag 
-                      type="blue" 
-                      size="sm" 
-                      style={{ marginLeft: "0.5rem" }}
-                    >
-                      {[
-                        ...goalTypeFilter,
-                        ...hasScriptureFilter,
-                        ...accessStatusFilter,
-                        ...translationStatusFilter,
-                        activeTranslationFilter ? 1 : 0,
-                        activeLangDevFilter ? 1 : 0
-                      ].filter(Boolean).length}
+                    hasScriptureFilter.length > 0 ||
+                    activeTranslationFilter ||
+                    activeLangDevFilter ||
+                    accessStatusFilter.length > 0 ||
+                    translationStatusFilter.length > 0) && (
+                    <Tag type='blue' size='sm' style={{ marginLeft: "0.5rem" }}>
+                      {
+                        [
+                          ...goalTypeFilter,
+                          ...hasScriptureFilter,
+                          ...accessStatusFilter,
+                          ...translationStatusFilter,
+                          activeTranslationFilter ? 1 : 0,
+                          activeLangDevFilter ? 1 : 0,
+                        ].filter(Boolean).length
+                      }
                     </Tag>
                   )}
                 </Button>
@@ -568,7 +566,7 @@ function LanguageListModal({
                       size='sm'
                     />
                   </Column>
-                  
+
                   {/* Second row: 1 dropdown and 2 checkbox groups */}
                   <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
                     <MultiSelect
@@ -597,12 +595,14 @@ function LanguageListModal({
                   </Column>
                   <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
                     <fieldset style={{ border: "none", padding: 0, margin: 0 }}>
-                      <legend style={{ 
-                        fontSize: "0.75rem", 
-                        fontWeight: 600,
-                        marginBottom: "0.5rem",
-                        color: "#161616"
-                      }}>
+                      <legend
+                        style={{
+                          fontSize: "0.75rem",
+                          fontWeight: 600,
+                          marginBottom: "0.5rem",
+                          color: "#161616",
+                        }}
+                      >
                         Active Translation
                       </legend>
                       <div style={{ display: "flex", gap: "1.5rem" }}>
@@ -629,12 +629,14 @@ function LanguageListModal({
                   </Column>
                   <Column lg={6} md={4} sm={4} style={{ marginBottom: "1rem" }}>
                     <fieldset style={{ border: "none", padding: 0, margin: 0 }}>
-                      <legend style={{ 
-                        fontSize: "0.75rem", 
-                        fontWeight: 600,
-                        marginBottom: "0.5rem",
-                        color: "#161616"
-                      }}>
+                      <legend
+                        style={{
+                          fontSize: "0.75rem",
+                          fontWeight: 600,
+                          marginBottom: "0.5rem",
+                          color: "#161616",
+                        }}
+                      >
                         Active Language Dev
                       </legend>
                       <div style={{ display: "flex", gap: "1.5rem" }}>
