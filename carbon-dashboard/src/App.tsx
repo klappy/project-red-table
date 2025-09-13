@@ -217,40 +217,40 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
           }}
         >
           <div style={{ marginBottom: "1rem" }}>
-            <TextInput
-              id='url-input'
+                <TextInput
+                  id='url-input'
               labelText='Load from URL'
               placeholder='CSV or Excel URL'
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
               size='sm'
-            />
-            <Button
-              onClick={loadFromUrl}
-              disabled={loading || !url}
-              renderIcon={loading ? Loading : Upload}
-              size='sm'
+                />
+                  <Button
+                    onClick={loadFromUrl}
+                    disabled={loading || !url}
+                    renderIcon={loading ? Loading : Upload}
+                    size='sm'
               style={{ marginTop: "0.5rem" }}
-            >
-              {loading ? "Loading..." : "Load"}
-            </Button>
-          </div>
+                  >
+                    {loading ? "Loading..." : "Load"}
+                  </Button>
+              </div>
 
-          <div {...getRootProps()}>
-            <FileUploaderDropContainer
-              accept={[".csv", ".xlsx", ".xls"]}
+                <div {...getRootProps()}>
+                  <FileUploaderDropContainer
+                    accept={[".csv", ".xlsx", ".xls"]}
               labelText={isDragActive ? "Drop it here…" : "Drop file or click to browse"}
-              multiple={false}
+                    multiple={false}
               onClick={() => {}}
-            />
-          </div>
+                  />
+              </div>
 
-          {error && (
+              {error && (
             <Tag type='red' size='sm' style={{ marginTop: "0.5rem" }}>
-              {error}
-            </Tag>
+                    {error}
+                  </Tag>
           )}
-        </div>
+                </div>
       )}
     </div>
   );
@@ -406,7 +406,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
             }}
           >
             The All Access Goals by 2033
-          </h3>
+        </h3>
 
           <div
             className='footer-goals-grid'
@@ -463,7 +463,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                   }}
                 />
               </div>
-            </div>
+      </div>
 
             {/* New Testament Goal */}
             <div
@@ -769,7 +769,7 @@ function HeroRedTable({
               >
                 <Information size={16} />
               </button>
-            </div>
+      </div>
 
             {showInfo && (
               <div
@@ -791,7 +791,7 @@ function HeroRedTable({
                 <br />
                 <br />
                 This ensures we focus on the 1,788 languages that truly lack any Scripture access.
-              </div>
+      </div>
             )}
 
             <div
@@ -822,47 +822,21 @@ function HeroRedTable({
                 alignItems: "center",
                 gap: "1rem",
                 marginBottom: isMobile ? "1.5rem" : "2rem",
-                justifyContent: isMobile ? "flex-start" : "space-between",
+                padding: "1rem",
+                background: "rgba(0,0,0,0.2)",
+                borderRadius: "8px",
               }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "1rem",
-                  padding: "1rem",
-                  background: "rgba(0,0,0,0.2)",
-                  borderRadius: "8px",
-                  flex: isMobile ? 1 : "0 1 auto",
-                }}
-              >
-                <Time size={24} />
-                <div>
-                  <div style={{ fontSize: isMobile ? "1.5rem" : "2rem", fontWeight: 700 }}>
-                    <span className='countdown-long'>{timeRemaining}</span>
-                    <span className='countdown-short' style={{ display: "none" }}>
-                      {`${years}Y ${months}M ${days}D`}
-                    </span>
-                  </div>
-                  <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>Until Pentecost 2033</div>
+              <Time size={24} />
+              <div>
+                <div style={{ fontSize: isMobile ? "1.5rem" : "2rem", fontWeight: 700 }}>
+                  <span className='countdown-long'>{timeRemaining}</span>
+                  <span className='countdown-short' style={{ display: "none" }}>
+                    {`${years}Y ${months}M ${days}D`}
+            </span>
                 </div>
+                <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>Until Pentecost 2033</div>
               </div>
-              
-              {!isMobile && (
-                <Button
-                  kind='ghost'
-                  size='lg'
-                  onClick={() => setShowDetail(!showDetail)}
-                  renderIcon={showDetail ? ViewOff : View}
-                  style={{
-                    color: "white",
-                    borderColor: "white",
-                    flexShrink: 0,
-                  }}
-                >
-                  {showDetail ? "Hide Details" : "Show Breakdown"}
-                </Button>
-              )}
             </div>
 
             {isMobile && (
@@ -927,9 +901,27 @@ function HeroRedTable({
                 >
                   {scope}
                 </div>
-              </div>
-            ))}
           </div>
+        ))}
+      </div>
+          
+          {/* Button below the stats */}
+          {!isMobile && (
+            <div style={{ marginTop: "1.5rem", textAlign: "right" }}>
+              <Button
+                kind='ghost'
+                size='lg'
+                onClick={() => setShowDetail(!showDetail)}
+                renderIcon={showDetail ? ViewOff : View}
+                style={{
+                  color: "white",
+                  borderColor: "white",
+                }}
+              >
+                {showDetail ? "Hide Details" : "Show Breakdown"}
+              </Button>
+            </div>
+          )}
         </Column>
       </Grid>
 
@@ -1162,7 +1154,7 @@ function SecondaryAnalysis({
               ))}
             </tbody>
           </table>
-        </div>
+    </div>
       )}
     </Tile>
   );
@@ -1267,7 +1259,7 @@ export default function App() {
         position: "relative",
       }}
     >
-      <CollapsedImporter onRows={setRows} />
+              <CollapsedImporter onRows={setRows} />
 
       <div
         className='main-container'
@@ -1298,7 +1290,7 @@ export default function App() {
           >
             All Access Goals Critical Risk Assessment Dashboard
           </p>
-        </div>
+              </div>
 
         {isEmpty ? (
           <div
@@ -1317,12 +1309,12 @@ export default function App() {
               <br />
               Click "Import Data" in the top right to get started.
             </p>
-          </div>
+                  </div>
         ) : (
           <>
             {/* THE HERO RED TABLE */}
             <HeroRedTable
-              data={summary.risk}
+                  data={summary.risk}
               total={summary.totals.risk}
               totalsByScope={summary.totals.all}
             />
@@ -1366,7 +1358,7 @@ export default function App() {
                   />
                 </Column>
               </Grid>
-            </div>
+                </div>
 
             {/* Summary Statistics */}
             <div
@@ -1383,10 +1375,10 @@ export default function App() {
                   <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#161616" }}>
                       {rows.length.toLocaleString()}
-                    </div>
+              </div>
                     <div style={{ fontSize: "0.875rem", color: "#525252" }}>
                       Total Languages Analyzed
-                    </div>
+            </div>
                   </div>
                 </Column>
                 <Column lg={3} md={6} sm={4}>
@@ -1427,7 +1419,7 @@ export default function App() {
 
         {/* Footer with All Access Goals */}
         {!isEmpty && <AllAccessGoalsFooter rows={rows} />}
+        </div>
       </div>
-    </div>
   );
 }
