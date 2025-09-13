@@ -1325,7 +1325,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                 padding: "1.5rem",
                 background: "rgba(255,255,255,0.03)",
                 borderRadius: "8px",
-                borderLeft: "3px solid #8a3ffc",
+                borderLeft: "3px solid #24a148",
               }}
             >
               <div
@@ -1338,7 +1338,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
               >
                 <span style={{ fontSize: "1.5rem" }}>✨</span>
                 <div>
-                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#8a3ffc" }}>
+                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#24a148" }}>
                     {portionPercent}%
                   </div>
                   <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>
@@ -1363,7 +1363,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                   style={{
                     height: "100%",
                     width: `${parseFloat(portionPercent)}%`,
-                    background: "#8a3ffc",
+                    background: "#24a148",
                   }}
                 />
               </div>
@@ -1375,7 +1375,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                 padding: "1.5rem",
                 background: "rgba(255,255,255,0.03)",
                 borderRadius: "8px",
-                borderLeft: "3px solid #ff832b",
+                borderLeft: "3px solid #24a148",
                 gridColumn: "span 1",
               }}
             >
@@ -1389,7 +1389,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
               >
                 <span style={{ fontSize: "1.5rem" }}>🌍</span>
                 <div>
-                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#ff832b" }}>100</div>
+                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#24a148" }}>100</div>
                   <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>
                     Strategic Languages
                   </div>
@@ -2228,7 +2228,7 @@ export default function App() {
                     title='Language Development Only'
                     data={summary.activeLDSE}
                     total={summary.totals.activeLDSE}
-                    color='#ff832b'
+                    color='#24a148'
                     languages={summary.languages.activeLDSE}
                   />
                 </Column>
