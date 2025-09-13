@@ -69,6 +69,7 @@ function LanguageListModal({
   color?: string;
   initialFilters?: {
     completed?: boolean;
+    atRisk?: boolean;
     goalType?: string;
   };
 }) {
@@ -144,13 +145,33 @@ function LanguageListModal({
         status.toLowerCase().includes("goal met")
       );
       setAccessStatusFilter(goalMetStatuses);
+    } else if (initialFilters.atRisk) {
+      // For at-risk, we just use the atRisk flag in filtering
+      // No need to pre-select specific filters
     }
-  }, [initialFilters.completed, filterOptions.accessStatuses]);
+  }, [initialFilters.completed, initialFilters.atRisk, filterOptions.accessStatuses]);
 
   // Filter languages based on search and filters
   const filteredLanguages = useMemo(() => {
     // Start with all languages - NO PRE-FILTERING!
     let filtered = [...languages];
+    
+    // Apply initial "at-risk" filter if specified
+    if (initialFilters.atRisk === true) {
+      filtered = filtered.filter((lang) => {
+        const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
+        const isPortion = goal === 25;
+        const goalNotMet = !String(lang["All Access Status"] || "").toLowerCase().includes("goal met");
+        const noActivity = String(lang["All Access Status"] || "").toLowerCase().includes("translation not started");
+        const activeLDSE = ["expressed need", "potential need", "limited or old scripture"].some((k) =>
+          String(lang["Translation Status"] || "").toLowerCase().includes(k)
+        );
+        const activeTranslation = String(lang["Translation Status"] || "").toLowerCase().includes("work in progress");
+        
+        // At risk = not portion goal AND goal not met AND (no activity OR language dev OR active translation)
+        return !isPortion && goalNotMet && (noActivity || activeLDSE || activeTranslation);
+      });
+    }
 
     // Apply search filter
     if (searchTerm) {
@@ -216,6 +237,7 @@ function LanguageListModal({
     return filtered;
   }, [
     languages,
+    initialFilters.atRisk,
     searchTerm,
     goalTypeFilter,
     hasScriptureFilter,
@@ -385,7 +407,29 @@ function LanguageListModal({
           />
           <span>{title}</span>
           <Tag type='green' size='md'>
-            {filteredLanguages.length.toLocaleString()} languages
+            {(() => {
+              if (initialFilters.atRisk) {
+                return languages.filter((lang) => {
+                  const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
+                  const isPortion = goal === 25;
+                  const goalNotMet = !String(lang["All Access Status"] || "").toLowerCase().includes("goal met");
+                  const noActivity = String(lang["All Access Status"] || "").toLowerCase().includes("translation not started");
+                  const activeLDSE = ["expressed need", "potential need", "limited or old scripture"].some((k) =>
+                    String(lang["Translation Status"] || "").toLowerCase().includes(k)
+                  );
+                  const activeTranslation = String(lang["Translation Status"] || "").toLowerCase().includes("work in progress");
+                  return !isPortion && goalNotMet && (noActivity || activeLDSE || activeTranslation);
+                }).length;
+              } else if (initialFilters.completed) {
+                return languages.filter((lang) => {
+                  const completed = toNumber(lang["Text Chapters Completed"]) || 0;
+                  const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
+                  return goal > 0 && completed >= goal;
+                }).length;
+              } else {
+                return languages.length;
+              }
+            })().toLocaleString()} languages
           </Tag>
         </div>
       }
@@ -2102,6 +2146,7 @@ export default function App() {
   // Modal states for all languages view
   const [allLanguagesModalOpen, setAllLanguagesModalOpen] = useState(false);
   const [completedLanguagesModalOpen, setCompletedLanguagesModalOpen] = useState(false);
+  const [atRiskModalOpen, setAtRiskModalOpen] = useState(false);
 
   // Check if mobile
   const isMobile = typeof window !== "undefined" && window.innerWidth <= 480;
@@ -2317,12 +2362,24 @@ export default function App() {
                   </div>
                 </Column>
                 <Column lg={4} md={6} sm={4}>
-                  <div style={{ textAlign: "center" }}>
+                  <div 
+                    style={{ 
+                      textAlign: "center",
+                      cursor: "pointer",
+                      transition: "transform 0.2s",
+                    }}
+                    onClick={() => setAtRiskModalOpen(true)}
+                    onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                  >
                     <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#da1e28" }}>
                       {summary.totals.risk.toLocaleString()}
                     </div>
                     <div style={{ fontSize: "0.875rem", color: "#525252" }}>
                       At Risk ({((summary.totals.risk / rows.length) * 100).toFixed(1)}%)
+                    </div>
+                    <div style={{ fontSize: "0.75rem", color: "#da1e28", marginTop: "0.25rem" }}>
+                      Click to view at-risk languages
                     </div>
                   </div>
                 </Column>
@@ -2362,6 +2419,16 @@ export default function App() {
         languages={rows}
         color='#24a148'
         initialFilters={{ completed: true }}
+      />
+      
+      {/* Modal for At Risk Languages */}
+      <LanguageListModal
+        isOpen={atRiskModalOpen}
+        onClose={() => setAtRiskModalOpen(false)}
+        title='Languages at Risk'
+        languages={rows}
+        color='#da1e28'
+        initialFilters={{ atRisk: true }}
       />
     </div>
   );
