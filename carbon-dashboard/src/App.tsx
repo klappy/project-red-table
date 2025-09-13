@@ -1215,7 +1215,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
             className='footer-goals-grid'
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gridTemplateColumns: "repeat(2, minmax(320px, 1fr))",
               gap: "1.5rem",
             }}
           >
@@ -1415,8 +1415,8 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
         >
           {/* ETEN Logo */}
           <img
-            src="/eten-logo-on-dark.png"
-            alt="ETEN Logo"
+            src='/eten-logo-on-dark.png'
+            alt='ETEN Logo'
             style={{
               height: "50px",
               opacity: 0.8,
@@ -1427,7 +1427,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
             onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.8")}
             onClick={() => window.open("https://eten.org", "_blank")}
           />
-          
+
           <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: "2rem", fontWeight: 700, color: "#da1e28" }}>
               {(total - goalMet.length).toLocaleString()}

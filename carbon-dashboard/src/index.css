@@ -405,6 +405,13 @@ td {
   animation: urgency 2s ease-in-out infinite;
 }
 
+/* Responsive grid for All Access Goals */
+@media (max-width: 768px) {
+  .footer-goals-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 /* Override all blue colors to green */
 .cds--file__drop-container {
   border-color: #24a148 !important;
