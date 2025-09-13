@@ -348,54 +348,13 @@ function LanguageListModal({
     setPage(1);
   }, [searchTerm, sortKey, sortDirection]);
 
-  // Prevent ALL scroll jumping in the modal
-  useEffect(() => {
-    if (isOpen) {
-      // Store original methods
-      const originalScrollIntoView = Element.prototype.scrollIntoView;
-      const originalScrollTo = window.scrollTo;
-      const originalScroll = window.scroll;
-      const originalScrollBy = window.scrollBy;
-
-      // Block scrollIntoView for modal elements
-      Element.prototype.scrollIntoView = function (arg?: boolean | ScrollIntoViewOptions) {
-        if ((this as HTMLElement).closest(".cds--modal")) {
-          return;
-        }
-        return originalScrollIntoView.call(this, arg);
-      };
-
-      // Block all window scroll methods
-      window.scrollTo = () => {};
-      window.scroll = () => {};
-      window.scrollBy = () => {};
-
-      // Also prevent scrolling on the modal container itself
-      const preventModalScroll = (e: Event) => {
-        const target = e.target as HTMLElement;
-        if (target.closest(".cds--modal-container")) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      };
-
-      document.addEventListener("scroll", preventModalScroll, true);
-
-      return () => {
-        // Restore everything
-        Element.prototype.scrollIntoView = originalScrollIntoView;
-        window.scrollTo = originalScrollTo;
-        window.scroll = originalScroll;
-        window.scrollBy = originalScrollBy;
-        document.removeEventListener("scroll", preventModalScroll, true);
-      };
-    }
-  }, [isOpen]);
 
   return (
     <Modal
       open={isOpen}
       onRequestClose={onClose}
+      hasScrollingContent={true}
+      aria-label="Language list modal"
       selectorPrimaryFocus='.cds--modal-header__heading'
       modalHeading={
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
