@@ -1901,7 +1901,7 @@ function HeroRedTable({ languages = [] }: { languages: any[] }) {
                 borderColor: "white",
               }}
             >
-              View All {stats.total.toLocaleString()} Languages
+              View All {stats.total.toLocaleString()} At Risk
             </Button>
             <Button
               kind='ghost'
@@ -2065,9 +2065,7 @@ function HeroRedTable({ languages = [] }: { languages: any[] }) {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         title={
-          modalScope 
-            ? `At Risk Languages - ${modalScope} Goal` 
-            : "All Languages at Critical Risk"
+          modalScope ? `At Risk Languages - ${modalScope} Goal` : "All Languages at Critical Risk"
         }
         languages={languages}
         color='#dc2626'
