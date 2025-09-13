@@ -346,28 +346,20 @@ function LanguageListModal({
     setPage(1);
   }, [searchTerm, sortKey, sortDirection]);
 
-  // Add a style to prevent ANY scrolling on focus
+  // Prevent automatic scrolling on focus
   useEffect(() => {
     if (isOpen) {
-      const style = document.createElement('style');
-      style.textContent = `
-        .cds--modal * {
-          scroll-behavior: auto !important;
-        }
-        .cds--modal *:focus {
-          scroll-margin: 0 !important;
-          scroll-padding: 0 !important;
-        }
-        .cds--search-input:focus {
-          scroll-margin-top: 0 !important;
-          scroll-margin-bottom: 0 !important;
-        }
-      `;
-      style.id = 'no-scroll-on-focus';
-      document.head.appendChild(style);
+      // Store original focus method
+      const originalFocus = HTMLElement.prototype.focus;
+      
+      // Override focus to prevent scrolling
+      HTMLElement.prototype.focus = function(options?: FocusOptions) {
+        originalFocus.call(this, { ...options, preventScroll: true });
+      };
+      
       return () => {
-        const styleEl = document.getElementById('no-scroll-on-focus');
-        if (styleEl) document.head.removeChild(styleEl);
+        // Restore original focus
+        HTMLElement.prototype.focus = originalFocus;
       };
     }
   }, [isOpen]);
