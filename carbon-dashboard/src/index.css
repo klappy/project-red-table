@@ -145,7 +145,6 @@ body {
   .footer-goals-grid {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
   }
-
 }
 
 /* Ultra-mobile improvements (phones) - SINGLE CONSOLIDATED MEDIA QUERY */
@@ -155,7 +154,7 @@ body {
   .summary-stats > div {
     margin-bottom: 1rem;
   }
-  
+
   /* Global padding reduction for mobile - AGGRESSIVE */
   body {
     overflow-x: hidden !important;
@@ -329,7 +328,7 @@ body {
     text-align: center !important;
     margin-top: 1rem !important;
   }
-  
+
   .show-breakdown-button button {
     width: 100%;
     max-width: 300px;

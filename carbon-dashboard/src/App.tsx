@@ -838,7 +838,6 @@ function HeroRedTable({
                 <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>Until Pentecost 2033</div>
               </div>
             </div>
-
           </div>
         </Column>
 
@@ -888,7 +887,10 @@ function HeroRedTable({
       </div>
 
           {/* Button below the stats - always render, let CSS handle responsive */}
-          <div className="show-breakdown-button" style={{ marginTop: "1.5rem", textAlign: "right" }}>
+          <div
+            className='show-breakdown-button'
+            style={{ marginTop: "1.5rem", textAlign: "right" }}
+          >
             <Button
               kind='ghost'
               size='lg'
@@ -1350,8 +1352,8 @@ export default function App() {
                 boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
               }}
             >
-              <Grid>
-                <Column lg={3} md={6} sm={4}>
+              <Grid style={{ display: "flex", justifyContent: "center" }}>
+                <Column lg={4} md={6} sm={4}>
                   <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#161616" }}>
                       {rows.length.toLocaleString()}
@@ -1361,7 +1363,7 @@ export default function App() {
             </div>
                   </div>
                 </Column>
-                <Column lg={3} md={6} sm={4}>
+                <Column lg={4} md={6} sm={4}>
                   <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#c1d72e" }}>
                       {summary.totals.goalMet.toLocaleString()}
@@ -1372,7 +1374,7 @@ export default function App() {
                     </div>
                   </div>
                 </Column>
-                <Column lg={3} md={6} sm={4}>
+                <Column lg={4} md={6} sm={4}>
                   <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#da1e28" }}>
                       {summary.totals.risk.toLocaleString()}
@@ -1382,7 +1384,7 @@ export default function App() {
                     </div>
                   </div>
                 </Column>
-                <Column lg={3} md={6} sm={4}>
+                <Column lg={4} md={6} sm={4}>
                   <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#0f62fe" }}>
                       2033
