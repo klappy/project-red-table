@@ -965,6 +965,23 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
         size='sm'
         onClick={() => setExpanded((v) => !v)}
         renderIcon={expanded ? ViewOff : Add}
+        style={!expanded ? { 
+          backgroundColor: "#c1d72e",
+          borderColor: "#c1d72e",
+          color: "#000000"
+        } : {}}
+        onMouseEnter={(e) => {
+          if (!expanded) {
+            e.currentTarget.style.backgroundColor = "#a6ba00";
+            e.currentTarget.style.borderColor = "#a6ba00";
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!expanded) {
+            e.currentTarget.style.backgroundColor = "#c1d72e";
+            e.currentTarget.style.borderColor = "#c1d72e";
+          }
+        }}
       >
         {expanded ? "Hide" : "Import Data"}
       </Button>
