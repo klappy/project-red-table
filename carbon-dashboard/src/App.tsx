@@ -1950,10 +1950,8 @@ function SecondaryAnalysis({
       bottom: { mapsTo: "group", scaleType: "labels" },
     },
     height: "250px",
-    color: { 
-      scale: Object.fromEntries(
-        Object.keys(data).map(key => [key, color])
-      )
+    color: {
+      scale: Object.fromEntries(Object.keys(data).map((key) => [key, color])),
     },
     legend: { enabled: false },
   };
@@ -2230,7 +2228,7 @@ export default function App() {
                     title='Language Development Only'
                     data={summary.activeLDSE}
                     total={summary.totals.activeLDSE}
-                    color='#24a148'
+                    color='#161616'
                     languages={summary.languages.activeLDSE}
                   />
                 </Column>
