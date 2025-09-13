@@ -59,7 +59,7 @@ function LanguageListModal({
   onClose,
   title,
   languages,
-  color = "#0f62fe",
+  color = "#24a148",
   initialFilters = {},
 }: {
   isOpen: boolean;
@@ -384,7 +384,7 @@ function LanguageListModal({
             }}
           />
           <span>{title}</span>
-          <Tag type='blue' size='md'>
+          <Tag type='green' size='md'>
             {filteredLanguages.length.toLocaleString()} languages
           </Tag>
         </div>
@@ -444,7 +444,7 @@ function LanguageListModal({
                         activeLangDevFilter ||
                         accessStatusFilter.length > 0 ||
                         translationStatusFilter.length > 0) && (
-                        <Tag type='blue' size='sm' style={{ marginLeft: "0.25rem" }}>
+                        <Tag type='green' size='sm' style={{ marginLeft: "0.25rem" }}>
                           {
                             [
                               ...goalTypeFilter,
@@ -965,21 +965,25 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
         size='sm'
         onClick={() => setExpanded((v) => !v)}
         renderIcon={expanded ? ViewOff : Add}
-        style={!expanded ? { 
-          backgroundColor: "#c1d72e",
-          borderColor: "#c1d72e",
-          color: "#000000"
-        } : {}}
+        style={
+          !expanded
+            ? {
+                backgroundColor: "#24a148",
+                borderColor: "#24a148",
+                color: "#000000",
+              }
+            : {}
+        }
         onMouseEnter={(e) => {
           if (!expanded) {
-            e.currentTarget.style.backgroundColor = "#a6ba00";
-            e.currentTarget.style.borderColor = "#a6ba00";
+            e.currentTarget.style.backgroundColor = "#198038";
+            e.currentTarget.style.borderColor = "#198038";
           }
         }}
         onMouseLeave={(e) => {
           if (!expanded) {
-            e.currentTarget.style.backgroundColor = "#c1d72e";
-            e.currentTarget.style.borderColor = "#c1d72e";
+            e.currentTarget.style.backgroundColor = "#24a148";
+            e.currentTarget.style.borderColor = "#24a148";
           }
         }}
       >
@@ -1014,22 +1018,22 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
               disabled={loading || !url}
               renderIcon={loading ? Loading : Upload}
               size='sm'
-              style={{ 
+              style={{
                 marginTop: "0.5rem",
-                backgroundColor: loading || !url ? "#525252" : "#c1d72e",
-                borderColor: loading || !url ? "#525252" : "#c1d72e",
-                color: loading || !url ? "#a8a8a8" : "#000000"
+                backgroundColor: loading || !url ? "#525252" : "#24a148",
+                borderColor: loading || !url ? "#525252" : "#24a148",
+                color: loading || !url ? "#a8a8a8" : "#000000",
               }}
               onMouseEnter={(e) => {
                 if (!loading && url) {
-                  e.currentTarget.style.backgroundColor = "#a6ba00";
-                  e.currentTarget.style.borderColor = "#a6ba00";
+                  e.currentTarget.style.backgroundColor = "#198038";
+                  e.currentTarget.style.borderColor = "#198038";
                 }
               }}
               onMouseLeave={(e) => {
                 if (!loading && url) {
-                  e.currentTarget.style.backgroundColor = "#c1d72e";
-                  e.currentTarget.style.borderColor = "#c1d72e";
+                  e.currentTarget.style.backgroundColor = "#24a148";
+                  e.currentTarget.style.borderColor = "#24a148";
                 }
               }}
             >
@@ -1223,7 +1227,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                 padding: "1.5rem",
                 background: "rgba(255,255,255,0.03)",
                 borderRadius: "8px",
-                borderLeft: "3px solid #0f62fe",
+                borderLeft: "3px solid #24a148",
               }}
             >
               <div
@@ -1236,7 +1240,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
               >
                 <span style={{ fontSize: "1.5rem" }}>📖</span>
                 <div>
-                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#0f62fe" }}>
+                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#24a148" }}>
                     {fbPercent}%
                   </div>
                   <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>
@@ -1260,7 +1264,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                   style={{
                     height: "100%",
                     width: `${(parseFloat(fbPercent) / 95) * 100}%`,
-                    background: "#0f62fe",
+                    background: "#24a148",
                   }}
                 />
               </div>
@@ -1272,7 +1276,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                 padding: "1.5rem",
                 background: "rgba(255,255,255,0.03)",
                 borderRadius: "8px",
-                borderLeft: "3px solid #c1d72e",
+                borderLeft: "3px solid #24a148",
               }}
             >
               <div
@@ -1285,7 +1289,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
               >
                 <span style={{ fontSize: "1.5rem" }}>📘</span>
                 <div>
-                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#c1d72e" }}>
+                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#24a148" }}>
                     {ntPercent}%
                   </div>
                   <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>
@@ -1309,7 +1313,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                   style={{
                     height: "100%",
                     width: `${(parseFloat(ntPercent) / 99.96) * 100}%`,
-                    background: "#c1d72e",
+                    background: "#24a148",
                   }}
                 />
               </div>
@@ -1419,7 +1423,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
             </div>
           </div>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "2rem", fontWeight: 700, color: "#c1d72e" }}>
+            <div style={{ fontSize: "2rem", fontWeight: 700, color: "#24a148" }}>
               {goalMet.length.toLocaleString()}
             </div>
             <div style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.6)" }}>
@@ -1427,7 +1431,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
             </div>
           </div>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "2rem", fontWeight: 700, color: "#0f62fe" }}>
+            <div style={{ fontSize: "2rem", fontWeight: 700, color: "#24a148" }}>
               {timeRemaining}
             </div>
             <div style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.6)" }}>
@@ -1923,7 +1927,7 @@ function SecondaryAnalysis({
   data,
   total,
   icon,
-  color = "#0f62fe",
+  color = "#24a148",
   languages = [],
 }: {
   title: string;
@@ -2233,7 +2237,7 @@ export default function App() {
                     title='Active Translation (Pace Unknown)'
                     data={summary.activeTx}
                     total={summary.totals.activeTx}
-                    color='#0f62fe'
+                    color='#24a148'
                     languages={summary.languages.activeTx}
                   />
                 </Column>
@@ -2268,7 +2272,7 @@ export default function App() {
                     <div style={{ fontSize: "0.875rem", color: "#525252" }}>
                       Total Languages Analyzed
                     </div>
-                    <div style={{ fontSize: "0.75rem", color: "#0f62fe", marginTop: "0.25rem" }}>
+                    <div style={{ fontSize: "0.75rem", color: "#24a148", marginTop: "0.25rem" }}>
                       Click to view all languages
                     </div>
                   </div>
@@ -2284,14 +2288,14 @@ export default function App() {
                     onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
                     onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
                   >
-                    <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#c1d72e" }}>
+                    <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#24a148" }}>
                       {summary.totals.goalMet.toLocaleString()}
                     </div>
                     <div style={{ fontSize: "0.875rem", color: "#525252" }}>
                       Languages Completed (
                       {((summary.totals.goalMet / rows.length) * 100).toFixed(1)}%)
                     </div>
-                    <div style={{ fontSize: "0.75rem", color: "#0f62fe", marginTop: "0.25rem" }}>
+                    <div style={{ fontSize: "0.75rem", color: "#24a148", marginTop: "0.25rem" }}>
                       Click to view completed languages
                     </div>
                   </div>
@@ -2308,7 +2312,7 @@ export default function App() {
                 </Column>
                 <Column lg={4} md={6} sm={4}>
                   <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#0f62fe" }}>
+                    <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#24a148" }}>
                       2033
                     </div>
                     <div style={{ fontSize: "0.875rem", color: "#525252" }}>
@@ -2331,7 +2335,7 @@ export default function App() {
         onClose={() => setAllLanguagesModalOpen(false)}
         title='All Languages'
         languages={rows}
-        color='#0f62fe'
+        color='#24a148'
       />
 
       {/* Modal for Completed Languages */}
@@ -2340,7 +2344,7 @@ export default function App() {
         onClose={() => setCompletedLanguagesModalOpen(false)}
         title='Languages with Completed Goals'
         languages={rows}
-        color='#c1d72e'
+        color='#24a148'
         initialFilters={{ completed: true }}
       />
     </div>
