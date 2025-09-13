@@ -404,3 +404,57 @@ td {
 .time-remaining {
   animation: urgency 2s ease-in-out infinite;
 }
+
+/* Override all blue colors to green */
+.cds--file__drop-container {
+  border-color: #24a148 !important;
+  color: #24a148 !important;
+}
+
+.cds--file__drop-container:hover {
+  background-color: rgba(36, 161, 72, 0.1) !important;
+}
+
+.cds--file__drop-container--drag-over {
+  background-color: rgba(36, 161, 72, 0.1) !important;
+  border-color: #24a148 !important;
+}
+
+/* Override blue links */
+.cds--link,
+a {
+  color: #24a148 !important;
+}
+
+.cds--link:hover,
+a:hover {
+  color: #198038 !important;
+}
+
+/* Override focus states */
+.cds--btn:focus,
+.cds--text-input:focus,
+.cds--search-input:focus,
+.cds--dropdown:focus,
+.cds--multi-select:focus,
+.cds--checkbox:focus::after,
+.cds--file__drop-container:focus {
+  outline-color: #24a148 !important;
+  border-color: #24a148 !important;
+}
+
+/* Override selection colors */
+::selection {
+  background-color: rgba(36, 161, 72, 0.3) !important;
+}
+
+/* Override any remaining blue interactive elements */
+.cds--btn--primary {
+  background-color: #24a148 !important;
+  border-color: #24a148 !important;
+}
+
+.cds--btn--primary:hover {
+  background-color: #198038 !important;
+  border-color: #198038 !important;
+}
