@@ -1760,26 +1760,48 @@ function HeroRedTable({ languages = [] }: { languages: any[] }) {
             )}
 
             <div
-              style={{
-                fontSize: isMobile ? "3.5rem" : "5rem",
-                fontWeight: 800,
-                lineHeight: 1,
-                marginBottom: "0.5rem",
-                textShadow: "0 4px 8px rgba(0,0,0,0.2)",
+              onClick={() => {
+                setModalScope(null);
+                setModalOpen(true);
               }}
-            >
-              {stats.total.toLocaleString()}
-            </div>
-
-            <p
               style={{
-                fontSize: "1.5rem",
+                cursor: "pointer",
+                transition: "transform 0.2s, opacity 0.2s",
                 marginBottom: "2rem",
-                fontWeight: 500,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.02)";
+                e.currentTarget.style.opacity = "0.9";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.opacity = "1";
               }}
             >
-              LANGUAGES AT RISK
-            </p>
+              <div
+                style={{
+                  fontSize: isMobile ? "3.5rem" : "5rem",
+                  fontWeight: 800,
+                  lineHeight: 1,
+                  marginBottom: "0.5rem",
+                  textShadow: "0 4px 8px rgba(0,0,0,0.2)",
+                  pointerEvents: "none",
+                }}
+              >
+                {stats.total.toLocaleString()}
+              </div>
+
+              <p
+                style={{
+                  fontSize: "1.5rem",
+                  marginBottom: 0,
+                  fontWeight: 500,
+                  pointerEvents: "none",
+                }}
+              >
+                LANGUAGES AT RISK
+              </p>
+            </div>
 
             <div
               style={{
