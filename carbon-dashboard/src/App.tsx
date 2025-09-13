@@ -896,8 +896,18 @@ function deriveSummary(rows: any[]) {
   );
 
   function groupByScope(set: any[]) {
-    const counts: Record<string, number> = { Portion: 0, "New Testament": 0, "Full Bible": 0, "Two Full Bibles": 0 };
-    const byScope: Record<string, any[]> = { Portion: [], "New Testament": [], "Full Bible": [], "Two Full Bibles": [] };
+    const counts: Record<string, number> = {
+      Portion: 0,
+      "New Testament": 0,
+      "Full Bible": 0,
+      "Two Full Bibles": 0,
+    };
+    const byScope: Record<string, any[]> = {
+      Portion: [],
+      "New Testament": [],
+      "Full Bible": [],
+      "Two Full Bibles": [],
+    };
 
     set.forEach((r) => {
       if (RULES.isPortion(r)) {
@@ -1560,8 +1570,18 @@ function HeroRedTable({ languages = [] }: { languages: any[] }) {
     });
 
     // Group by scope - INCLUDING Portion even though it will be 0
-    const byScope: Record<string, number> = { Portion: 0, "New Testament": 0, "Full Bible": 0, "Two Full Bibles": 0 };
-    const totalsByScope: Record<string, number> = { Portion: 0, "New Testament": 0, "Full Bible": 0, "Two Full Bibles": 0 };
+    const byScope: Record<string, number> = {
+      Portion: 0,
+      "New Testament": 0,
+      "Full Bible": 0,
+      "Two Full Bibles": 0,
+    };
+    const totalsByScope: Record<string, number> = {
+      Portion: 0,
+      "New Testament": 0,
+      "Full Bible": 0,
+      "Two Full Bibles": 0,
+    };
 
     atRisk.forEach((lang) => {
       const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
@@ -2045,16 +2065,14 @@ function HeroRedTable({ languages = [] }: { languages: any[] }) {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         title={
-          modalScope === "Portion"
-            ? "Languages with Portion Goal (25 chapters)"
-            : modalScope
-            ? `At Risk Languages - ${modalScope} Goal`
+          modalScope 
+            ? `At Risk Languages - ${modalScope} Goal` 
             : "All Languages at Critical Risk"
         }
         languages={languages}
-        color={modalScope === "Portion" ? "#24a148" : "#dc2626"}
+        color='#dc2626'
         initialFilters={{
-          atRisk: modalScope !== "Portion", // Don't apply at-risk filter for Portions
+          atRisk: true, // Apply at-risk filter for ALL scopes, including Portion
           goalChapters:
             modalScope === "Portion"
               ? 25
