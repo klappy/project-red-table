@@ -71,6 +71,7 @@ function LanguageListModal({
     completed?: boolean;
     atRisk?: boolean;
     goalType?: string;
+    goalChapters?: number;
   };
 }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -89,6 +90,9 @@ function LanguageListModal({
   const [activeLangDevFilter, setActiveLangDevFilter] = useState<string | null>(null);
   const [accessStatusFilter, setAccessStatusFilter] = useState<string[]>([]);
   const [translationStatusFilter, setTranslationStatusFilter] = useState<string[]>([]);
+  const [chapterGoalFilter, setChapterGoalFilter] = useState<number | null>(
+    initialFilters.goalChapters || null
+  );
 
   // Get unique values for filters from full dataset
   const filterOptions = useMemo(() => {
@@ -148,31 +152,39 @@ function LanguageListModal({
     } else if (initialFilters.atRisk) {
       // For at-risk languages, we need to set multiple filters:
       // 1. Exclude Portion (25 chapters) from goal types
-      const nonPortionGoals = filterOptions.goalTypes.filter((type) => 
-        type !== "Portion" && type !== "25"
+      const nonPortionGoals = filterOptions.goalTypes.filter(
+        (type) => type !== "Portion" && type !== "25"
       );
       setGoalTypeFilter(nonPortionGoals);
-      
+
       // 2. Exclude "Goal Met" statuses
-      const notMetStatuses = filterOptions.accessStatuses.filter((status) =>
-        !status.toLowerCase().includes("goal met")
+      const notMetStatuses = filterOptions.accessStatuses.filter(
+        (status) => !status.toLowerCase().includes("goal met")
       );
       setAccessStatusFilter(notMetStatuses);
-      
+
       // 3. Set translation status to show "Translation Not Started", "Work in Progress", and language dev statuses
       const riskStatuses = filterOptions.translationStatuses.filter((status) => {
         const lower = status.toLowerCase();
-        return lower.includes("translation not started") ||
-               lower.includes("work in progress") ||
-               lower.includes("expressed need") ||
-               lower.includes("potential need") ||
-               lower.includes("limited or old scripture");
+        return (
+          lower.includes("translation not started") ||
+          lower.includes("work in progress") ||
+          lower.includes("expressed need") ||
+          lower.includes("potential need") ||
+          lower.includes("limited or old scripture")
+        );
       });
       if (riskStatuses.length > 0) {
         setTranslationStatusFilter(riskStatuses);
       }
     }
-  }, [initialFilters.completed, initialFilters.atRisk, filterOptions.accessStatuses, filterOptions.goalTypes, filterOptions.translationStatuses]);
+  }, [
+    initialFilters.completed,
+    initialFilters.atRisk,
+    filterOptions.accessStatuses,
+    filterOptions.goalTypes,
+    filterOptions.translationStatuses,
+  ]);
 
   // Filter languages based on search and filters
   const filteredLanguages = useMemo(() => {
@@ -184,6 +196,18 @@ function LanguageListModal({
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter((lang) => {
         return Object.values(lang).some((value) => String(value).toLowerCase().includes(term));
+      });
+    }
+
+    // Apply chapter goal filter (for specific scope filtering)
+    if (chapterGoalFilter !== null) {
+      filtered = filtered.filter((lang) => {
+        const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
+        if (chapterGoalFilter === 2000) {
+          // "Two FB" is 2000+ chapters
+          return goal >= 2000;
+        }
+        return goal === chapterGoalFilter;
       });
     }
 
@@ -244,6 +268,7 @@ function LanguageListModal({
   }, [
     languages,
     searchTerm,
+    chapterGoalFilter,
     goalTypeFilter,
     hasScriptureFilter,
     activeTranslationFilter,
@@ -470,7 +495,8 @@ function LanguageListModal({
                         activeTranslationFilter ||
                         activeLangDevFilter ||
                         accessStatusFilter.length > 0 ||
-                        translationStatusFilter.length > 0) && (
+                        translationStatusFilter.length > 0 ||
+                        chapterGoalFilter !== null) && (
                         <Tag type='green' size='sm' style={{ marginLeft: "0.25rem" }}>
                           {
                             [
@@ -480,6 +506,7 @@ function LanguageListModal({
                               ...translationStatusFilter,
                               activeTranslationFilter ? 1 : 0,
                               activeLangDevFilter ? 1 : 0,
+                              chapterGoalFilter !== null ? 1 : 0,
                             ].filter(Boolean).length
                           }
                         </Tag>
@@ -491,7 +518,8 @@ function LanguageListModal({
                       activeTranslationFilter ||
                       activeLangDevFilter ||
                       accessStatusFilter.length > 0 ||
-                      translationStatusFilter.length > 0) && (
+                      translationStatusFilter.length > 0 ||
+                      chapterGoalFilter !== null) && (
                       <Button
                         kind='ghost'
                         size='sm'
@@ -502,6 +530,7 @@ function LanguageListModal({
                           setActiveLangDevFilter(null);
                           setAccessStatusFilter([]);
                           setTranslationStatusFilter([]);
+                          setChapterGoalFilter(null);
                         }}
                         renderIcon={Reset}
                         hasIconOnly
@@ -1486,23 +1515,59 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
 }
 
 // ---------- The Hero Red Table Component ----------
-function HeroRedTable({
-  data,
-  total,
-  totalsByScope,
-  languages = [],
-  languagesByScope = {},
-}: {
-  data: Record<string, number>;
-  total: number;
-  totalsByScope: Record<string, number>;
-  languages?: any[];
-  languagesByScope?: Record<string, any[]>;
-}) {
+function HeroRedTable({ languages = [] }: { languages: any[] }) {
   const [showDetail, setShowDetail] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalScope, setModalScope] = useState<string | null>(null);
+
+  // Calculate at-risk stats from the full dataset
+  const stats = useMemo(() => {
+    const atRisk = languages.filter((lang) => {
+      const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
+      const isPortion = goal === 25;
+      const goalNotMet = !String(lang["All Access Status"] || "").toLowerCase().includes("goal met");
+      const noActivity = String(lang["All Access Status"] || "").toLowerCase().includes("translation not started");
+      const activeLDSE = ["expressed need", "potential need", "limited or old scripture"].some((k) =>
+        String(lang["Translation Status"] || "").toLowerCase().includes(k)
+      );
+      const activeTranslation = String(lang["Translation Status"] || "").toLowerCase().includes("work in progress");
+      return !isPortion && goalNotMet && (noActivity || activeLDSE || activeTranslation);
+    });
+
+    // Group by scope
+    const byScope: Record<string, number> = { NT: 0, FB: 0, "Two FB": 0 };
+    const totalsByScope: Record<string, number> = { NT: 0, FB: 0, "Two FB": 0 };
+    
+    atRisk.forEach((lang) => {
+      const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
+      if (goal === 260) {
+        byScope.NT++;
+      } else if (goal === 1189) {
+        byScope.FB++;
+      } else if (goal >= 2000) {
+        byScope["Two FB"]++;
+      }
+    });
+
+    // Calculate totals for each scope (all languages with that goal)
+    languages.forEach((lang) => {
+      const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
+      if (goal === 260) {
+        totalsByScope.NT++;
+      } else if (goal === 1189) {
+        totalsByScope.FB++;
+      } else if (goal >= 2000) {
+        totalsByScope["Two FB"]++;
+      }
+    });
+
+    return {
+      total: atRisk.length,
+      byScope,
+      totalsByScope
+    };
+  }, [languages]);
 
   // Check if mobile
   const isMobile = typeof window !== "undefined" && window.innerWidth <= 480;
@@ -1655,7 +1720,7 @@ function HeroRedTable({
                 textShadow: "0 4px 8px rgba(0,0,0,0.2)",
               }}
             >
-              {total.toLocaleString()}
+              {stats.total.toLocaleString()}
             </div>
 
             <p
@@ -1703,7 +1768,7 @@ function HeroRedTable({
               gap: isMobile ? "0.5rem" : "1rem",
             }}
           >
-            {Object.entries(data).map(([scope, count]) => (
+            {Object.entries(stats.byScope).map(([scope, count]) => (
               <div
                 key={scope}
                 onClick={() => {
@@ -1788,7 +1853,7 @@ function HeroRedTable({
                 borderColor: "white",
               }}
             >
-              View All {total.toLocaleString()} Languages
+              View All {stats.total.toLocaleString()} Languages
             </Button>
             <Button
               kind='ghost'
@@ -1866,8 +1931,8 @@ function HeroRedTable({
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(data).map(([scope, count]) => {
-                  const scopeTotal = totalsByScope[scope] || 1;
+                {Object.entries(stats.byScope).map(([scope, count]) => {
+                  const scopeTotal = stats.totalsByScope[scope] || 1;
                   const percentage = ((count / scopeTotal) * 100).toFixed(1);
                   return (
                     <tr key={scope} style={{ borderBottom: "1px solid rgba(255,255,255,0.15)" }}>
@@ -1920,8 +1985,8 @@ function HeroRedTable({
                       color: "white",
                     }}
                   >
-                    {total.toLocaleString()} /{" "}
-                    {Object.values(totalsByScope)
+                    {stats.total.toLocaleString()} /{" "}
+                    {Object.values(stats.totalsByScope)
                       .reduce((a, b) => a + b, 0)
                       .toLocaleString()}
                   </td>
@@ -1934,7 +1999,7 @@ function HeroRedTable({
                     }}
                   >
                     {(
-                      (total / Object.values(totalsByScope).reduce((a, b) => a + b, 0)) *
+                      (stats.total / Object.values(stats.totalsByScope).reduce((a, b) => a + b, 0)) *
                       100
                     ).toFixed(1)}
                     %
@@ -1953,10 +2018,12 @@ function HeroRedTable({
         title={
           modalScope ? `At Risk Languages - ${modalScope} Goal` : "All Languages at Critical Risk"
         }
-        languages={
-          modalScope && languagesByScope[modalScope] ? languagesByScope[modalScope] : languages
-        }
+        languages={languages}
         color='#dc2626'
+        initialFilters={{
+          atRisk: true,
+          goalChapters: modalScope === "NT" ? 260 : modalScope === "FB" ? 1189 : modalScope === "Two FB" ? 2000 : undefined
+        }}
       />
     </div>
   );
@@ -2236,13 +2303,7 @@ export default function App() {
         ) : (
           <>
             {/* THE HERO RED TABLE */}
-            <HeroRedTable
-              data={summary.risk}
-              total={summary.totals.risk}
-              totalsByScope={summary.totals.all}
-              languages={summary.languages.risk}
-              languagesByScope={summary.languages.riskByScope}
-            />
+            <HeroRedTable languages={rows} />
 
             {/* Secondary Analysis Grid */}
             <div style={{ marginTop: "3rem" }}>
@@ -2345,8 +2406,8 @@ export default function App() {
                   </div>
                 </Column>
                 <Column lg={4} md={6} sm={4}>
-                  <div 
-                    style={{ 
+                  <div
+                    style={{
                       textAlign: "center",
                       cursor: "pointer",
                       transition: "transform 0.2s",
@@ -2403,7 +2464,7 @@ export default function App() {
         color='#24a148'
         initialFilters={{ completed: true }}
       />
-      
+
       {/* Modal for At Risk Languages */}
       <LanguageListModal
         isOpen={atRiskModalOpen}
