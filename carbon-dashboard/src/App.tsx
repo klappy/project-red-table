@@ -89,7 +89,7 @@ function LanguageListModal({
     id: `${page}-${index}`,
     language: lang["Language"] || lang["Language Name"] || "Unknown",
     country: lang["Country"] || "—",
-    population: toNumber(lang["Population"]) || toNumber(lang["L1 Users"]) || 0,
+    population: toNumber(lang["First Language Population"]) || 0,
     goal: lang["All Access Chapter Goal"] || "—",
     status: lang["All Access Status"] || "—",
     translationStatus: lang["Translation Status"] || "—",
