@@ -56,9 +56,9 @@ const DEFAULT_DATA_URL =
 // Helper function to convert goal numbers to text
 function getGoalTypeText(goalNumber: number): string {
   if (goalNumber === 25) return "Portion";
-  if (goalNumber === 260) return "NT";
-  if (goalNumber === 1189) return "FB";
-  if (goalNumber >= 2000) return "Two FB";
+  if (goalNumber === 260) return "New Testament";
+  if (goalNumber === 1189) return "Full Bible";
+  if (goalNumber >= 2000) return "Two Full Bibles";
   return String(goalNumber);
 }
 
@@ -111,9 +111,9 @@ function LanguageListModal({
       // Goal Type
       const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
       if (goal === 25) goalTypes.add("Portion");
-      else if (goal === 260) goalTypes.add("NT");
-      else if (goal === 1189) goalTypes.add("FB");
-      else if (goal >= 2000) goalTypes.add("Two FB");
+      else if (goal === 260) goalTypes.add("New Testament");
+      else if (goal === 1189) goalTypes.add("Full Bible");
+      else if (goal >= 2000) goalTypes.add("Two Full Bibles");
 
       // Has Scripture - handle empty/null values
       const scripture = lang["Completed Scripture"];
@@ -165,7 +165,7 @@ function LanguageListModal({
   // Pre-select filters based on initialFilters
   useEffect(() => {
     if (!isOpen) return; // Don't set filters if modal is closed
-    
+
     if (initialFilters.completed && filterOptions.accessStatuses.length > 0) {
       // Find all "Goal Met" statuses in the data
       const goalMetStatuses = filterOptions.accessStatuses.filter((status) =>
@@ -244,9 +244,9 @@ function LanguageListModal({
         const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
         let type = "";
         if (goal === 25) type = "Portion";
-        else if (goal === 260) type = "NT";
-        else if (goal === 1189) type = "FB";
-        else if (goal >= 2000) type = "Two FB";
+        else if (goal === 260) type = "New Testament";
+        else if (goal === 1189) type = "Full Bible";
+        else if (goal >= 2000) type = "Two Full Bibles";
         return goalTypeFilter.includes(type);
       });
     }
@@ -896,22 +896,22 @@ function deriveSummary(rows: any[]) {
   );
 
   function groupByScope(set: any[]) {
-    const counts: Record<string, number> = { Portion: 0, NT: 0, FB: 0, "Two FB": 0 };
-    const byScope: Record<string, any[]> = { Portion: [], NT: [], FB: [], "Two FB": [] };
+    const counts: Record<string, number> = { Portion: 0, "New Testament": 0, "Full Bible": 0, "Two Full Bibles": 0 };
+    const byScope: Record<string, any[]> = { Portion: [], "New Testament": [], "Full Bible": [], "Two Full Bibles": [] };
 
     set.forEach((r) => {
       if (RULES.isPortion(r)) {
         counts.Portion++;
         byScope.Portion.push(r);
       } else if (RULES.isNT(r)) {
-        counts.NT++;
-        byScope.NT.push(r);
+        counts["New Testament"]++;
+        byScope["New Testament"].push(r);
       } else if (RULES.isFB(r)) {
-        counts.FB++;
-        byScope.FB.push(r);
+        counts["Full Bible"]++;
+        byScope["Full Bible"].push(r);
       } else if (RULES.isTwoFB(r)) {
-        counts["Two FB"]++;
-        byScope["Two FB"].push(r);
+        counts["Two Full Bibles"]++;
+        byScope["Two Full Bibles"].push(r);
       }
     });
     return { counts, byScope };
@@ -1560,19 +1560,19 @@ function HeroRedTable({ languages = [] }: { languages: any[] }) {
     });
 
     // Group by scope - INCLUDING Portion even though it will be 0
-    const byScope: Record<string, number> = { Portion: 0, NT: 0, FB: 0, "Two FB": 0 };
-    const totalsByScope: Record<string, number> = { Portion: 0, NT: 0, FB: 0, "Two FB": 0 };
+    const byScope: Record<string, number> = { Portion: 0, "New Testament": 0, "Full Bible": 0, "Two Full Bibles": 0 };
+    const totalsByScope: Record<string, number> = { Portion: 0, "New Testament": 0, "Full Bible": 0, "Two Full Bibles": 0 };
 
     atRisk.forEach((lang) => {
       const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
       if (goal === 25) {
         byScope.Portion++; // This will always be 0 because portions are excluded from at-risk
       } else if (goal === 260) {
-        byScope.NT++;
+        byScope["New Testament"]++;
       } else if (goal === 1189) {
-        byScope.FB++;
+        byScope["Full Bible"]++;
       } else if (goal >= 2000) {
-        byScope["Two FB"]++;
+        byScope["Two Full Bibles"]++;
       }
     });
 
@@ -1582,11 +1582,11 @@ function HeroRedTable({ languages = [] }: { languages: any[] }) {
       if (goal === 25) {
         totalsByScope.Portion++;
       } else if (goal === 260) {
-        totalsByScope.NT++;
+        totalsByScope["New Testament"]++;
       } else if (goal === 1189) {
-        totalsByScope.FB++;
+        totalsByScope["Full Bible"]++;
       } else if (goal >= 2000) {
-        totalsByScope["Two FB"]++;
+        totalsByScope["Two Full Bibles"]++;
       }
     });
 
@@ -2058,11 +2058,11 @@ function HeroRedTable({ languages = [] }: { languages: any[] }) {
           goalChapters:
             modalScope === "Portion"
               ? 25
-              : modalScope === "NT"
+              : modalScope === "New Testament"
               ? 260
-              : modalScope === "FB"
+              : modalScope === "Full Bible"
               ? 1189
-              : modalScope === "Two FB"
+              : modalScope === "Two Full Bibles"
               ? 2000
               : undefined,
         }}
@@ -2216,15 +2216,15 @@ function runSelfTests() {
     ];
     const s = deriveSummary(rows);
 
-    console.assert(s.noActivity.NT === 1, "Expected 1 NT with no activity");
-    console.assert(s.activeLDSE.FB === 1, "Expected 1 FB in LD/SE");
-    console.assert(s.activeTx.NT === 1, "Expected 1 NT active translation");
+    console.assert(s.noActivity["New Testament"] === 1, "Expected 1 NT with no activity");
+    console.assert(s.activeLDSE["Full Bible"] === 1, "Expected 1 FB in LD/SE");
+    console.assert(s.activeTx["New Testament"] === 1, "Expected 1 NT active translation");
     console.assert((s.risk.Portion || 0) === 0, "Portions should not appear in risk set");
     console.assert(
-      s.totals.all.NT === 2 && s.totals.all.FB >= 1,
+      s.totals.all["New Testament"] === 2 && s.totals.all["Full Bible"] >= 1,
       "Totals by scope should be computed"
     );
-    console.assert(s.totals.all["Two FB"] === 1, "Two FB total should be counted");
+    console.assert(s.totals.all["Two Full Bibles"] === 1, "Two FB total should be counted");
   } catch (e) {
     console.error("Self-tests failed:", e);
   }
