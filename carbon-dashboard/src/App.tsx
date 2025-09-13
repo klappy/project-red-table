@@ -89,26 +89,26 @@ function LanguageListModal({
   const [accessStatusFilter, setAccessStatusFilter] = useState<string[]>([]);
   const [translationStatusFilter, setTranslationStatusFilter] = useState<string[]>([]);
 
-  // Calculate base count with only initial filters applied
-  const baseFilteredCount = useMemo(() => {
+  // Apply initial filters to get base dataset
+  const baseLanguages = useMemo(() => {
     if (initialFilters.completed === true) {
       return languages.filter((lang) => {
         const completed = toNumber(lang["Text Chapters Completed"]) || 0;
         const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
         return goal > 0 && completed >= goal;
-      }).length;
+      });
     }
-    return languages.length;
+    return languages;
   }, [languages, initialFilters.completed]);
 
-  // Get unique values for filters
+  // Get unique values for filters from base dataset
   const filterOptions = useMemo(() => {
     const goalTypes = new Set<string>();
     const hasScripture = new Set<string>();
     const accessStatuses = new Set<string>();
     const translationStatuses = new Set<string>();
 
-    languages.forEach((lang) => {
+    baseLanguages.forEach((lang) => {
       // Goal Type
       const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
       if (goal === 25) goalTypes.add("Portion");
@@ -146,20 +146,12 @@ function LanguageListModal({
     };
 
     return result;
-  }, [languages]);
+  }, [baseLanguages]);
 
   // Filter languages based on search and filters
   const filteredLanguages = useMemo(() => {
-    let filtered = [...languages];
-
-    // Apply initial "completed" filter if specified
-    if (initialFilters.completed === true) {
-      filtered = filtered.filter((lang) => {
-        const completed = toNumber(lang["Text Chapters Completed"]) || 0;
-        const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
-        return goal > 0 && completed >= goal;
-      });
-    }
+    // Start with base languages (already has initial filters applied)
+    let filtered = [...baseLanguages];
 
     // Apply search filter
     if (searchTerm) {
@@ -224,7 +216,7 @@ function LanguageListModal({
 
     return filtered;
   }, [
-    languages,
+    baseLanguages,
     searchTerm,
     goalTypeFilter,
     hasScriptureFilter,
@@ -232,7 +224,6 @@ function LanguageListModal({
     activeLangDevFilter,
     accessStatusFilter,
     translationStatusFilter,
-    initialFilters.completed,
   ]);
 
   // Sort the filtered results
@@ -395,7 +386,7 @@ function LanguageListModal({
           />
           <span>{title}</span>
           <Tag type='blue' size='md'>
-            {baseFilteredCount.toLocaleString()} languages
+            {baseLanguages.length.toLocaleString()} languages
           </Tag>
         </div>
       }
@@ -733,7 +724,7 @@ function LanguageListModal({
                     }}
                   >
                     Showing {filteredLanguages.length.toLocaleString()} of{" "}
-                    {languages.length.toLocaleString()} languages
+                    {baseLanguages.length.toLocaleString()} languages
                     {(searchTerm ||
                       goalTypeFilter.length > 0 ||
                       hasScriptureFilter.length > 0 ||
