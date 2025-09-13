@@ -418,7 +418,7 @@ td {
   display: none !important;
 }
 
-/* Hide Carbon CHARTS toolbar buttons (show as table, fullscreen, overflow menu) */
+/* Hide Carbon CHARTS toolbar buttons and collapse the space */
 .cds--cc--toolbar,
 .toolbar-control,
 .cds--cc--toolbar .cds--overflow-menu,
@@ -428,6 +428,29 @@ td {
 .cds--cc--toolbar button[aria-label*="More options"] {
   display: none !important;
   visibility: hidden !important;
+  height: 0 !important;
+  width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Collapse the entire chart header if it only contains the toolbar */
+.cds--cc--layout-row.header:has(.toolbar):not(:has(.title p:not(:empty))) {
+  display: none !important;
+  height: 0 !important;
+}
+
+/* Ensure the chart header takes no space when toolbar is hidden */
+.layout-child.header.cds--cc--layout-row {
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+/* Remove any padding/margin from the parent container */
+.layout-child.header.cds--cc--layout-row:has(.toolbar) {
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 /* Override all blue colors to green */
