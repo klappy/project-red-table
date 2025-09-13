@@ -99,7 +99,6 @@ function LanguageListModal({
   const [activeLangDevFilter, setActiveLangDevFilter] = useState<string | null>(null);
   const [accessStatusFilter, setAccessStatusFilter] = useState<string[]>([]);
   const [translationStatusFilter, setTranslationStatusFilter] = useState<string[]>([]);
-  const [chapterGoalFilter, setChapterGoalFilter] = useState<number | null>(null);
 
   // Get unique values for filters from full dataset
   const filterOptions = useMemo(() => {
@@ -159,7 +158,6 @@ function LanguageListModal({
       setActiveLangDevFilter(null);
       setAccessStatusFilter([]);
       setTranslationStatusFilter([]);
-      setChapterGoalFilter(null);
       setPage(1);
     }
   }, [isOpen]);
@@ -168,34 +166,35 @@ function LanguageListModal({
   useEffect(() => {
     if (!isOpen) return; // Don't set filters if modal is closed
     
-    // Always set the chapter goal filter if provided
-    if (initialFilters.goalChapters !== undefined) {
-      setChapterGoalFilter(initialFilters.goalChapters);
-    } else {
-      setChapterGoalFilter(null);
-    }
-    
     if (initialFilters.completed && filterOptions.accessStatuses.length > 0) {
       // Find all "Goal Met" statuses in the data
       const goalMetStatuses = filterOptions.accessStatuses.filter((status) =>
         status.toLowerCase().includes("goal met")
       );
       setAccessStatusFilter(goalMetStatuses);
-    } else if (initialFilters.atRisk && !initialFilters.goalChapters) {
-      // Only apply broad at-risk filters if no specific goal is selected
-      // 1. Exclude Portion (25 chapters) from goal types
-      const nonPortionGoals = filterOptions.goalTypes.filter(
-        (type) => type !== "Portion" && type !== "25"
-      );
-      setGoalTypeFilter(nonPortionGoals);
+    } else if (initialFilters.atRisk) {
+      // Set the specific goal type filter if a scope is selected
+      if (initialFilters.goalChapters !== undefined) {
+        // Find the matching goal type text for this chapter count
+        const goalTypeText = getGoalTypeText(initialFilters.goalChapters);
+        if (goalTypeText && filterOptions.goalTypes.includes(goalTypeText)) {
+          setGoalTypeFilter([goalTypeText]);
+        }
+      } else {
+        // For "all at risk", exclude Portion from goal types
+        const nonPortionGoals = filterOptions.goalTypes.filter(
+          (type) => type !== "Portion" && type !== "25"
+        );
+        setGoalTypeFilter(nonPortionGoals);
+      }
 
-      // 2. Exclude "Goal Met" statuses
+      // Always exclude "Goal Met" statuses for at-risk
       const notMetStatuses = filterOptions.accessStatuses.filter(
         (status) => !status.toLowerCase().includes("goal met")
       );
       setAccessStatusFilter(notMetStatuses);
 
-      // 3. Set translation status to show "Translation Not Started", "Work in Progress", and language dev statuses
+      // Set translation status to show "Translation Not Started", "Work in Progress", and language dev statuses
       const riskStatuses = filterOptions.translationStatuses.filter((status) => {
         const lower = status.toLowerCase();
         return (
@@ -209,27 +208,11 @@ function LanguageListModal({
       if (riskStatuses.length > 0) {
         setTranslationStatusFilter(riskStatuses);
       }
-    } else if (initialFilters.atRisk && initialFilters.goalChapters) {
-      // For specific scope, only set the at-risk related filters without goal type exclusion
-      // 1. Exclude "Goal Met" statuses
-      const notMetStatuses = filterOptions.accessStatuses.filter(
-        (status) => !status.toLowerCase().includes("goal met")
-      );
-      setAccessStatusFilter(notMetStatuses);
-
-      // 2. Set translation status to show "Translation Not Started", "Work in Progress", and language dev statuses
-      const riskStatuses = filterOptions.translationStatuses.filter((status) => {
-        const lower = status.toLowerCase();
-        return (
-          lower.includes("translation not started") ||
-          lower.includes("work in progress") ||
-          lower.includes("expressed need") ||
-          lower.includes("potential need") ||
-          lower.includes("limited or old scripture")
-        );
-      });
-      if (riskStatuses.length > 0) {
-        setTranslationStatusFilter(riskStatuses);
+    } else if (initialFilters.goalChapters !== undefined) {
+      // For Portion (not at-risk), just set the goal type filter
+      const goalTypeText = getGoalTypeText(initialFilters.goalChapters);
+      if (goalTypeText && filterOptions.goalTypes.includes(goalTypeText)) {
+        setGoalTypeFilter([goalTypeText]);
       }
     }
   }, [
@@ -252,18 +235,6 @@ function LanguageListModal({
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter((lang) => {
         return Object.values(lang).some((value) => String(value).toLowerCase().includes(term));
-      });
-    }
-
-    // Apply chapter goal filter (for specific scope filtering)
-    if (chapterGoalFilter !== null) {
-      filtered = filtered.filter((lang) => {
-        const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
-        if (chapterGoalFilter === 2000) {
-          // "Two FB" is 2000+ chapters
-          return goal >= 2000;
-        }
-        return goal === chapterGoalFilter;
       });
     }
 
@@ -324,7 +295,6 @@ function LanguageListModal({
   }, [
     languages,
     searchTerm,
-    chapterGoalFilter,
     goalTypeFilter,
     hasScriptureFilter,
     activeTranslationFilter,
@@ -544,8 +514,7 @@ function LanguageListModal({
                         activeTranslationFilter ||
                         activeLangDevFilter ||
                         accessStatusFilter.length > 0 ||
-                        translationStatusFilter.length > 0 ||
-                        chapterGoalFilter !== null) && (
+                        translationStatusFilter.length > 0) && (
                         <Tag type='green' size='sm' style={{ marginLeft: "0.25rem" }}>
                           {
                             [
@@ -555,7 +524,6 @@ function LanguageListModal({
                               ...translationStatusFilter,
                               activeTranslationFilter ? 1 : 0,
                               activeLangDevFilter ? 1 : 0,
-                              chapterGoalFilter !== null ? 1 : 0,
                             ].filter(Boolean).length
                           }
                         </Tag>
@@ -567,8 +535,7 @@ function LanguageListModal({
                       activeTranslationFilter ||
                       activeLangDevFilter ||
                       accessStatusFilter.length > 0 ||
-                      translationStatusFilter.length > 0 ||
-                      chapterGoalFilter !== null) && (
+                      translationStatusFilter.length > 0) && (
                       <Button
                         kind='ghost'
                         size='sm'
@@ -579,7 +546,6 @@ function LanguageListModal({
                           setActiveLangDevFilter(null);
                           setAccessStatusFilter([]);
                           setTranslationStatusFilter([]);
-                          setChapterGoalFilter(null);
                         }}
                         renderIcon={Reset}
                         hasIconOnly
