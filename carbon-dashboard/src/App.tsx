@@ -146,32 +146,38 @@ function LanguageListModal({
       );
       setAccessStatusFilter(goalMetStatuses);
     } else if (initialFilters.atRisk) {
-      // For at-risk, we just use the atRisk flag in filtering
-      // No need to pre-select specific filters
+      // For at-risk languages, we need to set multiple filters:
+      // 1. Exclude Portion (25 chapters) from goal types
+      const nonPortionGoals = filterOptions.goalTypes.filter((type) => 
+        type !== "Portion" && type !== "25"
+      );
+      setGoalTypeFilter(nonPortionGoals);
+      
+      // 2. Exclude "Goal Met" statuses
+      const notMetStatuses = filterOptions.accessStatuses.filter((status) =>
+        !status.toLowerCase().includes("goal met")
+      );
+      setAccessStatusFilter(notMetStatuses);
+      
+      // 3. Set translation status to show "Translation Not Started", "Work in Progress", and language dev statuses
+      const riskStatuses = filterOptions.translationStatuses.filter((status) => {
+        const lower = status.toLowerCase();
+        return lower.includes("translation not started") ||
+               lower.includes("work in progress") ||
+               lower.includes("expressed need") ||
+               lower.includes("potential need") ||
+               lower.includes("limited or old scripture");
+      });
+      if (riskStatuses.length > 0) {
+        setTranslationStatusFilter(riskStatuses);
+      }
     }
-  }, [initialFilters.completed, initialFilters.atRisk, filterOptions.accessStatuses]);
+  }, [initialFilters.completed, initialFilters.atRisk, filterOptions.accessStatuses, filterOptions.goalTypes, filterOptions.translationStatuses]);
 
   // Filter languages based on search and filters
   const filteredLanguages = useMemo(() => {
     // Start with all languages - NO PRE-FILTERING!
     let filtered = [...languages];
-    
-    // Apply initial "at-risk" filter if specified
-    if (initialFilters.atRisk === true) {
-      filtered = filtered.filter((lang) => {
-        const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
-        const isPortion = goal === 25;
-        const goalNotMet = !String(lang["All Access Status"] || "").toLowerCase().includes("goal met");
-        const noActivity = String(lang["All Access Status"] || "").toLowerCase().includes("translation not started");
-        const activeLDSE = ["expressed need", "potential need", "limited or old scripture"].some((k) =>
-          String(lang["Translation Status"] || "").toLowerCase().includes(k)
-        );
-        const activeTranslation = String(lang["Translation Status"] || "").toLowerCase().includes("work in progress");
-        
-        // At risk = not portion goal AND goal not met AND (no activity OR language dev OR active translation)
-        return !isPortion && goalNotMet && (noActivity || activeLDSE || activeTranslation);
-      });
-    }
 
     // Apply search filter
     if (searchTerm) {
@@ -237,7 +243,6 @@ function LanguageListModal({
     return filtered;
   }, [
     languages,
-    initialFilters.atRisk,
     searchTerm,
     goalTypeFilter,
     hasScriptureFilter,
@@ -407,29 +412,7 @@ function LanguageListModal({
           />
           <span>{title}</span>
           <Tag type='green' size='md'>
-            {(() => {
-              if (initialFilters.atRisk) {
-                return languages.filter((lang) => {
-                  const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
-                  const isPortion = goal === 25;
-                  const goalNotMet = !String(lang["All Access Status"] || "").toLowerCase().includes("goal met");
-                  const noActivity = String(lang["All Access Status"] || "").toLowerCase().includes("translation not started");
-                  const activeLDSE = ["expressed need", "potential need", "limited or old scripture"].some((k) =>
-                    String(lang["Translation Status"] || "").toLowerCase().includes(k)
-                  );
-                  const activeTranslation = String(lang["Translation Status"] || "").toLowerCase().includes("work in progress");
-                  return !isPortion && goalNotMet && (noActivity || activeLDSE || activeTranslation);
-                }).length;
-              } else if (initialFilters.completed) {
-                return languages.filter((lang) => {
-                  const completed = toNumber(lang["Text Chapters Completed"]) || 0;
-                  const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
-                  return goal > 0 && completed >= goal;
-                }).length;
-              } else {
-                return languages.length;
-              }
-            })().toLocaleString()} languages
+            {filteredLanguages.length.toLocaleString()} languages
           </Tag>
         </div>
       }
