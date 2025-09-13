@@ -353,9 +353,8 @@ function LanguageListModal({
     <Modal
       open={isOpen}
       onRequestClose={onClose}
-      hasScrollingContent={true}
       aria-label="Language list modal"
-      selectorPrimaryFocus='.cds--modal-header__heading'
+      selectorPrimaryFocus='.cds--modal-close'
       modalHeading={
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           <div
@@ -378,6 +377,12 @@ function LanguageListModal({
       passiveModal
       preventCloseOnClickOutside={false}
     >
+      <div style={{ 
+        height: '70vh', 
+        display: 'flex', 
+        flexDirection: 'column',
+        overflow: 'hidden'
+      }}>
       <DataTable
         rows={rows}
         headers={headers}
@@ -392,6 +397,7 @@ function LanguageListModal({
           getTableProps,
           getTableContainerProps,
         }) => (
+          <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
           <TableContainer title='' description='' {...getTableContainerProps()}>
             <TableToolbar>
               <TableToolbarContent>
@@ -737,8 +743,10 @@ function LanguageListModal({
               </div>
             )}
           </TableContainer>
+          </div>
         )}
       </DataTable>
+      </div>
     </Modal>
   );
 }
