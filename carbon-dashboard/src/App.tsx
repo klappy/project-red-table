@@ -99,9 +99,7 @@ function LanguageListModal({
   const [activeLangDevFilter, setActiveLangDevFilter] = useState<string | null>(null);
   const [accessStatusFilter, setAccessStatusFilter] = useState<string[]>([]);
   const [translationStatusFilter, setTranslationStatusFilter] = useState<string[]>([]);
-  const [chapterGoalFilter, setChapterGoalFilter] = useState<number | null>(
-    initialFilters.goalChapters || null
-  );
+  const [chapterGoalFilter, setChapterGoalFilter] = useState<number | null>(null);
 
   // Get unique values for filters from full dataset
   const filterOptions = useMemo(() => {
@@ -150,8 +148,33 @@ function LanguageListModal({
     return result;
   }, [languages]);
 
+  // Reset filters when modal opens/closes
+  useEffect(() => {
+    if (!isOpen) {
+      // Reset all filters when modal closes
+      setSearchTerm("");
+      setGoalTypeFilter([]);
+      setHasScriptureFilter([]);
+      setActiveTranslationFilter(null);
+      setActiveLangDevFilter(null);
+      setAccessStatusFilter([]);
+      setTranslationStatusFilter([]);
+      setChapterGoalFilter(null);
+      setPage(1);
+    }
+  }, [isOpen]);
+
   // Pre-select filters based on initialFilters
   useEffect(() => {
+    if (!isOpen) return; // Don't set filters if modal is closed
+    
+    // Always set the chapter goal filter if provided
+    if (initialFilters.goalChapters !== undefined) {
+      setChapterGoalFilter(initialFilters.goalChapters);
+    } else {
+      setChapterGoalFilter(null);
+    }
+    
     if (initialFilters.completed && filterOptions.accessStatuses.length > 0) {
       // Find all "Goal Met" statuses in the data
       const goalMetStatuses = filterOptions.accessStatuses.filter((status) =>
@@ -210,6 +233,7 @@ function LanguageListModal({
       }
     }
   }, [
+    isOpen,
     initialFilters.completed,
     initialFilters.atRisk,
     initialFilters.goalChapters,
