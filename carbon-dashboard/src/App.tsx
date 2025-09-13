@@ -346,29 +346,54 @@ function LanguageListModal({
   useEffect(() => {
     setPage(1);
   }, [searchTerm, sortKey, sortDirection]);
-  
+
   // Prevent scroll on focus when modal is open
   useEffect(() => {
     if (isOpen) {
+      // Store current scroll position
+      const modalScrollTop = document.querySelector('.bx--modal-container')?.scrollTop || 0;
+      
       const preventScroll = (e: FocusEvent) => {
-        if (e.target && (e.target as any).preventScroll !== undefined) {
-          (e.target as any).preventScroll = true;
+        e.preventDefault();
+        if (e.target && (e.target as any).focus) {
+          (e.target as any).focus({ preventScroll: true });
         }
       };
-      
+
       // Add event listener to prevent scroll on focus
-      document.addEventListener('focusin', preventScroll, true);
-      
-      // Also override scrollIntoView temporarily
+      document.addEventListener("focusin", preventScroll, true);
+      document.addEventListener("focus", preventScroll, true);
+
+      // Override scrollIntoView for all elements
       const originalScrollIntoView = Element.prototype.scrollIntoView;
-      Element.prototype.scrollIntoView = function() {
+      const originalScrollTo = window.scrollTo;
+      const originalScrollBy = window.scrollBy;
+      
+      Element.prototype.scrollIntoView = function () {
         // Do nothing - prevent scrolling
         return;
       };
       
+      window.scrollTo = function() {
+        // Restore modal scroll position if it changed
+        const modalContainer = document.querySelector('.bx--modal-container');
+        if (modalContainer) {
+          modalContainer.scrollTop = modalScrollTop;
+        }
+        return;
+      };
+      
+      window.scrollBy = function() {
+        // Do nothing
+        return;
+      };
+
       return () => {
-        document.removeEventListener('focusin', preventScroll, true);
+        document.removeEventListener("focusin", preventScroll, true);
+        document.removeEventListener("focus", preventScroll, true);
         Element.prototype.scrollIntoView = originalScrollIntoView;
+        window.scrollTo = originalScrollTo;
+        window.scrollBy = originalScrollBy;
       };
     }
   }, [isOpen]);
@@ -419,7 +444,22 @@ function LanguageListModal({
                 <TableToolbarSearch
                   placeholder='Search languages...'
                   persistent
-                  onChange={(e: any) => setSearchTerm(e.target.value)}
+                  onChange={(e: any) => {
+                    // Prevent scroll on search
+                    const currentScrollPos = window.pageYOffset || document.documentElement.scrollTop;
+                    setSearchTerm(e.target.value);
+                    // Restore scroll position after state update
+                    setTimeout(() => {
+                      window.scrollTo(0, currentScrollPos);
+                    }, 0);
+                  }}
+                  onFocus={(e: any) => {
+                    // Prevent scroll on focus
+                    e.preventDefault();
+                    if (e.target && e.target.focus) {
+                      e.target.focus({ preventScroll: true });
+                    }
+                  }}
                 />
                 <Button
                   kind='ghost'
