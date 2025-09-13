@@ -31,6 +31,8 @@ import {
 import {
   Add,
   Upload,
+  DataTable as DataTableIcon,
+  ChartBar,
   WarningFilled,
   Time,
   View,
@@ -199,7 +201,7 @@ function LanguageListModal({
         const specificStatuses = filterOptions.translationStatuses.filter((status) => {
           const lower = status.toLowerCase();
           const filterLower = initialFilters.translationStatus!.toLowerCase();
-          
+
           if (filterLower === "language development") {
             // For language development, include all relevant statuses
             return (
@@ -501,6 +503,8 @@ function LanguageListModal({
           headers={headers}
           isSortable
           sortRow={() => 0} // Return 0 to disable Carbon's sorting logic but keep headers clickable
+          radio={false}
+          useZebraStyles={false}
         >
           {({
             rows,
@@ -511,8 +515,15 @@ function LanguageListModal({
             getTableContainerProps,
           }) => (
             <div style={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column" }}>
-              <TableContainer title='' description='' {...getTableContainerProps()}>
-                <TableToolbar>
+              <TableContainer 
+                title='' 
+                description='' 
+                {...getTableContainerProps()}
+                stickyHeader={false}
+              >
+                <TableToolbar
+                  aria-label='data table toolbar'
+                >
                   <TableToolbarContent>
                     <TableToolbarSearch
                       placeholder='Search languages...'
@@ -2132,6 +2143,7 @@ function SecondaryAnalysis({
   languages?: any[];
   translationStatusFilter?: string;
 }) {
+  const [mode, setMode] = useState<"table" | "chart">("chart");
   const [modalOpen, setModalOpen] = useState(false);
 
   const chartData = Object.entries(data).map(([scope, count]) => ({
@@ -2176,17 +2188,48 @@ function SecondaryAnalysis({
             {total.toLocaleString()}
           </div>
         </div>
-        <Button
-          kind='ghost'
-          size='sm'
-          onClick={() => setModalOpen(true)}
-          renderIcon={List}
-          hasIconOnly
-          iconDescription={`View all ${total} languages`}
-        />
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <Button
+            kind='ghost'
+            size='sm'
+            onClick={() => setModalOpen(true)}
+            renderIcon={List}
+            hasIconOnly
+            iconDescription={`View all ${total} languages`}
+          />
+          <Button
+            kind='ghost'
+            size='sm'
+            onClick={() => setMode(mode === "table" ? "chart" : "table")}
+            renderIcon={mode === "table" ? ChartBar : DataTableIcon}
+            hasIconOnly
+            iconDescription={mode === "table" ? "Show chart" : "Show table"}
+          />
+        </div>
       </div>
 
-      <SimpleBarChart data={chartData} options={chartOptions} />
+      {mode === "chart" ? (
+        <SimpleBarChart data={chartData} options={chartOptions} />
+      ) : (
+        <div style={{ maxHeight: "250px", overflow: "auto" }}>
+          <table style={{ width: "100%", fontSize: "0.875rem" }}>
+            <thead>
+              <tr style={{ borderBottom: "2px solid #e0e0e0" }}>
+                <th style={{ textAlign: "left", padding: "0.5rem" }}>Scope</th>
+                <th style={{ textAlign: "right", padding: "0.5rem" }}>Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(data).map(([scope, count]) => (
+                <tr key={scope} style={{ borderBottom: "1px solid #f0f0f0" }}>
+                  <td style={{ padding: "0.5rem" }}>{scope}</td>
+                  <td style={{ padding: "0.5rem", textAlign: "right" }}>{count.toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* Language List Modal */}
       <LanguageListModal
@@ -2197,7 +2240,7 @@ function SecondaryAnalysis({
         color={color}
         initialFilters={{
           atRisk: true,
-          translationStatus: translationStatusFilter
+          translationStatus: translationStatusFilter,
         }}
       />
     </Tile>
