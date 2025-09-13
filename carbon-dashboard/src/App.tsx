@@ -27,7 +27,6 @@ import {
   TableToolbarSearch,
   Pagination,
   MultiSelect,
-  Checkbox,
 } from "@carbon/react";
 import {
   Add,
@@ -592,72 +591,56 @@ function LanguageListModal({
                     />
                   </Column>
                   <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
-                    <fieldset style={{ border: "none", padding: 0, margin: 0 }}>
-                      <legend
-                        style={{
-                          fontSize: "0.75rem",
-                          fontWeight: 600,
-                          marginBottom: "0.5rem",
-                          color: "#161616",
-                        }}
-                      >
-                        Active Translation
-                      </legend>
-                      <div style={{ display: "flex", gap: "1.5rem" }}>
-                        <Checkbox
-                          id='active-translation-yes'
-                          labelText='Yes'
-                          checked={activeTranslationFilter === "yes"}
-                          onChange={(_, { checked }) => {
-                            setActiveTranslationFilter(checked ? "yes" : null);
-                            setPage(1);
-                          }}
-                        />
-                        <Checkbox
-                          id='active-translation-no'
-                          labelText='No'
-                          checked={activeTranslationFilter === "no"}
-                          onChange={(_, { checked }) => {
-                            setActiveTranslationFilter(checked ? "no" : null);
-                            setPage(1);
-                          }}
-                        />
-                      </div>
-                    </fieldset>
+                    <MultiSelect
+                      id='active-translation-filter'
+                      titleText='Active Translation'
+                      label='Select status...'
+                      items={[
+                        { id: 'yes', text: 'Yes', label: 'Yes' },
+                        { id: 'no', text: 'No', label: 'No' }
+                      ]}
+                      itemToString={(item) => (item ? item.text : "")}
+                      selectedItems={
+                        activeTranslationFilter 
+                          ? [{ id: activeTranslationFilter, text: activeTranslationFilter === 'yes' ? 'Yes' : 'No', label: activeTranslationFilter === 'yes' ? 'Yes' : 'No' }]
+                          : []
+                      }
+                      onChange={({ selectedItems }) => {
+                        setActiveTranslationFilter(
+                          selectedItems && selectedItems.length > 0 
+                            ? selectedItems[0].id 
+                            : null
+                        );
+                        setPage(1);
+                      }}
+                      size='sm'
+                    />
                   </Column>
                   <Column lg={6} md={4} sm={4} style={{ marginBottom: "1rem" }}>
-                    <fieldset style={{ border: "none", padding: 0, margin: 0 }}>
-                      <legend
-                        style={{
-                          fontSize: "0.75rem",
-                          fontWeight: 600,
-                          marginBottom: "0.5rem",
-                          color: "#161616",
-                        }}
-                      >
-                        Active Language Dev
-                      </legend>
-                      <div style={{ display: "flex", gap: "1.5rem" }}>
-                        <Checkbox
-                          id='active-langdev-yes'
-                          labelText='Yes'
-                          checked={activeLangDevFilter === "yes"}
-                          onChange={(_, { checked }) => {
-                            setActiveLangDevFilter(checked ? "yes" : null);
-                            setPage(1);
-                          }}
-                        />
-                        <Checkbox
-                          id='active-langdev-no'
-                          labelText='No'
-                          checked={activeLangDevFilter === "no"}
-                          onChange={(_, { checked }) => {
-                            setActiveLangDevFilter(checked ? "no" : null);
-                            setPage(1);
-                          }}
-                        />
-                      </div>
-                    </fieldset>
+                    <MultiSelect
+                      id='active-langdev-filter'
+                      titleText='Active Language Dev'
+                      label='Select status...'
+                      items={[
+                        { id: 'yes', text: 'Yes', label: 'Yes' },
+                        { id: 'no', text: 'No', label: 'No' }
+                      ]}
+                      itemToString={(item) => (item ? item.text : "")}
+                      selectedItems={
+                        activeLangDevFilter 
+                          ? [{ id: activeLangDevFilter, text: activeLangDevFilter === 'yes' ? 'Yes' : 'No', label: activeLangDevFilter === 'yes' ? 'Yes' : 'No' }]
+                          : []
+                      }
+                      onChange={({ selectedItems }) => {
+                        setActiveLangDevFilter(
+                          selectedItems && selectedItems.length > 0 
+                            ? selectedItems[0].id 
+                            : null
+                        );
+                        setPage(1);
+                      }}
+                      size='sm'
+                    />
                   </Column>
                 </Grid>
               </div>
