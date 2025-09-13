@@ -158,8 +158,8 @@ function LanguageListModal({
         status.toLowerCase().includes("goal met")
       );
       setAccessStatusFilter(goalMetStatuses);
-    } else if (initialFilters.atRisk) {
-      // For at-risk languages, we need to set multiple filters:
+    } else if (initialFilters.atRisk && !initialFilters.goalChapters) {
+      // Only apply broad at-risk filters if no specific goal is selected
       // 1. Exclude Portion (25 chapters) from goal types
       const nonPortionGoals = filterOptions.goalTypes.filter(
         (type) => type !== "Portion" && type !== "25"
@@ -186,10 +186,33 @@ function LanguageListModal({
       if (riskStatuses.length > 0) {
         setTranslationStatusFilter(riskStatuses);
       }
+    } else if (initialFilters.atRisk && initialFilters.goalChapters) {
+      // For specific scope, only set the at-risk related filters without goal type exclusion
+      // 1. Exclude "Goal Met" statuses
+      const notMetStatuses = filterOptions.accessStatuses.filter(
+        (status) => !status.toLowerCase().includes("goal met")
+      );
+      setAccessStatusFilter(notMetStatuses);
+
+      // 2. Set translation status to show "Translation Not Started", "Work in Progress", and language dev statuses
+      const riskStatuses = filterOptions.translationStatuses.filter((status) => {
+        const lower = status.toLowerCase();
+        return (
+          lower.includes("translation not started") ||
+          lower.includes("work in progress") ||
+          lower.includes("expressed need") ||
+          lower.includes("potential need") ||
+          lower.includes("limited or old scripture")
+        );
+      });
+      if (riskStatuses.length > 0) {
+        setTranslationStatusFilter(riskStatuses);
+      }
     }
   }, [
     initialFilters.completed,
     initialFilters.atRisk,
+    initialFilters.goalChapters,
     filterOptions.accessStatuses,
     filterOptions.goalTypes,
     filterOptions.translationStatuses,
@@ -1528,19 +1551,28 @@ function HeroRedTable({ languages = [] }: { languages: any[] }) {
     const atRisk = languages.filter((lang) => {
       const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
       const isPortion = goal === 25;
-      const goalNotMet = !String(lang["All Access Status"] || "").toLowerCase().includes("goal met");
-      const noActivity = String(lang["All Access Status"] || "").toLowerCase().includes("translation not started");
-      const activeLDSE = ["expressed need", "potential need", "limited or old scripture"].some((k) =>
-        String(lang["Translation Status"] || "").toLowerCase().includes(k)
+      const goalNotMet = !String(lang["All Access Status"] || "")
+        .toLowerCase()
+        .includes("goal met");
+      const noActivity = String(lang["All Access Status"] || "")
+        .toLowerCase()
+        .includes("translation not started");
+      const activeLDSE = ["expressed need", "potential need", "limited or old scripture"].some(
+        (k) =>
+          String(lang["Translation Status"] || "")
+            .toLowerCase()
+            .includes(k)
       );
-      const activeTranslation = String(lang["Translation Status"] || "").toLowerCase().includes("work in progress");
+      const activeTranslation = String(lang["Translation Status"] || "")
+        .toLowerCase()
+        .includes("work in progress");
       return !isPortion && goalNotMet && (noActivity || activeLDSE || activeTranslation);
     });
 
     // Group by scope - INCLUDING Portion even though it will be 0
     const byScope: Record<string, number> = { Portion: 0, NT: 0, FB: 0, "Two FB": 0 };
     const totalsByScope: Record<string, number> = { Portion: 0, NT: 0, FB: 0, "Two FB": 0 };
-    
+
     atRisk.forEach((lang) => {
       const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
       if (goal === 25) {
@@ -1571,7 +1603,7 @@ function HeroRedTable({ languages = [] }: { languages: any[] }) {
     return {
       total: atRisk.length,
       byScope,
-      totalsByScope
+      totalsByScope,
     };
   }, [languages]);
 
@@ -2005,7 +2037,8 @@ function HeroRedTable({ languages = [] }: { languages: any[] }) {
                     }}
                   >
                     {(
-                      (stats.total / Object.values(stats.totalsByScope).reduce((a, b) => a + b, 0)) *
+                      (stats.total /
+                        Object.values(stats.totalsByScope).reduce((a, b) => a + b, 0)) *
                       100
                     ).toFixed(1)}
                     %
@@ -2022,17 +2055,26 @@ function HeroRedTable({ languages = [] }: { languages: any[] }) {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         title={
-          modalScope === "Portion" 
+          modalScope === "Portion"
             ? "Languages with Portion Goal (25 chapters)"
-            : modalScope 
-              ? `At Risk Languages - ${modalScope} Goal` 
-              : "All Languages at Critical Risk"
+            : modalScope
+            ? `At Risk Languages - ${modalScope} Goal`
+            : "All Languages at Critical Risk"
         }
         languages={languages}
-        color={modalScope === "Portion" ? '#24a148' : '#dc2626'}
+        color={modalScope === "Portion" ? "#24a148" : "#dc2626"}
         initialFilters={{
           atRisk: modalScope !== "Portion", // Don't apply at-risk filter for Portions
-          goalChapters: modalScope === "Portion" ? 25 : modalScope === "NT" ? 260 : modalScope === "FB" ? 1189 : modalScope === "Two FB" ? 2000 : undefined
+          goalChapters:
+            modalScope === "Portion"
+              ? 25
+              : modalScope === "NT"
+              ? 260
+              : modalScope === "FB"
+              ? 1189
+              : modalScope === "Two FB"
+              ? 2000
+              : undefined,
         }}
       />
     </div>
