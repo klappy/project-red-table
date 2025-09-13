@@ -13,6 +13,19 @@ import {
   Loading,
   Tile,
   Tag,
+  Modal,
+  DataTable,
+  Table,
+  TableHead,
+  TableRow,
+  TableHeader,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableToolbar,
+  TableToolbarContent,
+  TableToolbarSearch,
+  Pagination,
 } from "@carbon/react";
 import {
   Add,
@@ -24,6 +37,7 @@ import {
   View,
   ViewOff,
   Information,
+  List,
 } from "@carbon/icons-react";
 
 // Carbon Charts imports
@@ -33,6 +47,170 @@ import "@carbon/charts/styles.css";
 // ---------- Configuration ----------
 const DEFAULT_DATA_URL =
   "https://raw.githubusercontent.com/klappy/project-red-table/refs/heads/main/AAG_Languages_extracted.csv";
+
+// ---------- Language List Modal Component ----------
+function LanguageListModal({
+  isOpen,
+  onClose,
+  title,
+  languages,
+  color = "#0f62fe",
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  languages: any[];
+  color?: string;
+}) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
+
+  // Filter languages based on search
+  const filteredLanguages = useMemo(() => {
+    if (!searchTerm) return languages;
+
+    const term = searchTerm.toLowerCase();
+    return languages.filter((lang) => {
+      // Search across multiple fields
+      return Object.values(lang).some((value) => String(value).toLowerCase().includes(term));
+    });
+  }, [languages, searchTerm]);
+
+  // Paginate the filtered results
+  const paginatedLanguages = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    return filteredLanguages.slice(start, end);
+  }, [filteredLanguages, page, pageSize]);
+
+  // Prepare data for Carbon DataTable
+  const rows = paginatedLanguages.map((lang, index) => ({
+    id: `${page}-${index}`,
+    language: lang["Language"] || lang["Language Name"] || "Unknown",
+    country: lang["Country"] || "—",
+    population: toNumber(lang["Population"]) || toNumber(lang["L1 Users"]) || 0,
+    goal: lang["All Access Chapter Goal"] || "—",
+    status: lang["All Access Status"] || "—",
+    translationStatus: lang["Translation Status"] || "—",
+    raw: lang, // Keep raw data for potential expansion
+  }));
+
+  const headers = [
+    { key: "language", header: "Language" },
+    { key: "country", header: "Country" },
+    { key: "population", header: "Population" },
+    { key: "goal", header: "Goal (Chapters)" },
+    { key: "status", header: "Access Status" },
+    { key: "translationStatus", header: "Translation Status" },
+  ];
+
+  // Reset page when search changes
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm]);
+
+  return (
+    <Modal
+      open={isOpen}
+      onRequestClose={onClose}
+      modalHeading={
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          <div
+            style={{
+              width: "4px",
+              height: "24px",
+              background: color,
+              borderRadius: "2px",
+            }}
+          />
+          <span>{title}</span>
+          <Tag type='blue' size='md'>
+            {languages.length.toLocaleString()} languages
+          </Tag>
+        </div>
+      }
+      primaryButtonText='Close'
+      onRequestSubmit={onClose}
+      size='lg'
+      hasScrollingContent
+    >
+      <DataTable rows={rows} headers={headers} isSortable>
+        {({
+          rows,
+          headers,
+          getHeaderProps,
+          getRowProps,
+          getTableProps,
+          getTableContainerProps,
+        }) => (
+          <TableContainer title='' description='' {...getTableContainerProps()}>
+            <TableToolbar>
+              <TableToolbarContent>
+                <TableToolbarSearch
+                  placeholder='Search languages...'
+                  persistent
+                  onChange={(e: any) => setSearchTerm(e.target.value)}
+                />
+              </TableToolbarContent>
+            </TableToolbar>
+            <Table {...getTableProps()} aria-label='Language list'>
+              <TableHead>
+                <TableRow>
+                  {headers.map((header) => (
+                    <TableHeader {...getHeaderProps({ header })} key={header.key}>
+                      {header.header}
+                    </TableHeader>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows.map((row) => (
+                  <TableRow {...getRowProps({ row })} key={row.id}>
+                    {row.cells.map((cell: any) => (
+                      <TableCell key={cell.id}>
+                        {cell.info.header === "population"
+                          ? cell.value.toLocaleString()
+                          : cell.value}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            {filteredLanguages.length > pageSize && (
+              <Pagination
+                backwardText='Previous page'
+                forwardText='Next page'
+                itemsPerPageText='Items per page:'
+                page={page}
+                pageNumberText='Page Number'
+                pageSize={pageSize}
+                pageSizes={[10, 25, 50, 100]}
+                totalItems={filteredLanguages.length}
+                onChange={({ page, pageSize }) => {
+                  setPage(page);
+                  setPageSize(pageSize);
+                }}
+              />
+            )}
+            {filteredLanguages.length === 0 && (
+              <div
+                style={{
+                  padding: "2rem",
+                  textAlign: "center",
+                  color: "#525252",
+                }}
+              >
+                No languages found matching "{searchTerm}"
+              </div>
+            )}
+          </TableContainer>
+        )}
+      </DataTable>
+    </Modal>
+  );
+}
 
 // ---------- Utilities ----------
 const normalizeHeader = (h: unknown) => String(h).trim();
@@ -88,31 +266,60 @@ function deriveSummary(rows: any[]) {
 
   function groupByScope(set: any[]) {
     const counts: Record<string, number> = { Portion: 0, NT: 0, FB: 0, "Two FB": 0 };
+    const byScope: Record<string, any[]> = { Portion: [], NT: [], FB: [], "Two FB": [] };
+
     set.forEach((r) => {
-      if (RULES.isPortion(r)) counts.Portion++;
-      else if (RULES.isNT(r)) counts.NT++;
-      else if (RULES.isFB(r)) counts.FB++;
-      else if (RULES.isTwoFB(r)) counts["Two FB"]++;
+      if (RULES.isPortion(r)) {
+        counts.Portion++;
+        byScope.Portion.push(r);
+      } else if (RULES.isNT(r)) {
+        counts.NT++;
+        byScope.NT.push(r);
+      } else if (RULES.isFB(r)) {
+        counts.FB++;
+        byScope.FB.push(r);
+      } else if (RULES.isTwoFB(r)) {
+        counts["Two FB"]++;
+        byScope["Two FB"].push(r);
+      }
     });
-    return counts;
+    return { counts, byScope };
   }
 
-  const allCounts = groupByScope(rows);
-  const goalNotMetCounts = groupByScope(goalNotMet);
+  const allGrouped = groupByScope(rows);
+  const goalNotMetGrouped = groupByScope(goalNotMet);
+  const riskGrouped = groupByScope(risk);
+  const noActivityGrouped = groupByScope(noActivity);
+  const activeLDSEGrouped = groupByScope(activeLDSE);
+  const activeTxGrouped = groupByScope(activeTx);
 
   return {
-    noActivity: groupByScope(noActivity),
-    activeLDSE: groupByScope(activeLDSE),
-    activeTx: groupByScope(activeTx),
-    risk: groupByScope(risk),
+    noActivity: noActivityGrouped.counts,
+    activeLDSE: activeLDSEGrouped.counts,
+    activeTx: activeTxGrouped.counts,
+    risk: riskGrouped.counts,
+    // Store the actual language lists
+    languages: {
+      noActivity: noActivity,
+      activeLDSE: activeLDSE,
+      activeTx: activeTx,
+      risk: risk,
+      goalMet: goalMet,
+      goalNotMet: goalNotMet,
+      // By scope
+      riskByScope: riskGrouped.byScope,
+      noActivityByScope: noActivityGrouped.byScope,
+      activeLDSEByScope: activeLDSEGrouped.byScope,
+      activeTxByScope: activeTxGrouped.byScope,
+    },
     totals: {
       noActivity: noActivity.length,
       activeLDSE: activeLDSE.length,
       activeTx: activeTx.length,
       risk: risk.length,
       goalMet: goalMet.length,
-      all: allCounts,
-      goalNotMet: goalNotMetCounts,
+      all: allGrouped.counts,
+      goalNotMet: goalNotMetGrouped.counts,
     },
   };
 }
@@ -217,40 +424,40 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
           }}
         >
           <div style={{ marginBottom: "1rem" }}>
-                <TextInput
-                  id='url-input'
+            <TextInput
+              id='url-input'
               labelText='Load from URL'
               placeholder='CSV or Excel URL'
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
               size='sm'
-                />
-                  <Button
-                    onClick={loadFromUrl}
-                    disabled={loading || !url}
-                    renderIcon={loading ? Loading : Upload}
-                    size='sm'
+            />
+            <Button
+              onClick={loadFromUrl}
+              disabled={loading || !url}
+              renderIcon={loading ? Loading : Upload}
+              size='sm'
               style={{ marginTop: "0.5rem" }}
-                  >
-                    {loading ? "Loading..." : "Load"}
-                  </Button>
-              </div>
+            >
+              {loading ? "Loading..." : "Load"}
+            </Button>
+          </div>
 
-                <div {...getRootProps()}>
-                  <FileUploaderDropContainer
-                    accept={[".csv", ".xlsx", ".xls"]}
+          <div {...getRootProps()}>
+            <FileUploaderDropContainer
+              accept={[".csv", ".xlsx", ".xls"]}
               labelText={isDragActive ? "Drop it here…" : "Drop file or click to browse"}
-                    multiple={false}
+              multiple={false}
               onClick={() => {}}
-                  />
-              </div>
+            />
+          </div>
 
-              {error && (
+          {error && (
             <Tag type='red' size='sm' style={{ marginTop: "0.5rem" }}>
-                    {error}
-                  </Tag>
+              {error}
+            </Tag>
           )}
-                </div>
+        </div>
       )}
     </div>
   );
@@ -406,7 +613,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
             }}
           >
             The All Access Goals by 2033
-        </h3>
+          </h3>
 
           <div
             className='footer-goals-grid'
@@ -463,7 +670,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                   }}
                 />
               </div>
-      </div>
+            </div>
 
             {/* New Testament Goal */}
             <div
@@ -644,13 +851,19 @@ function HeroRedTable({
   data,
   total,
   totalsByScope,
+  languages = [],
+  languagesByScope = {},
 }: {
   data: Record<string, number>;
   total: number;
   totalsByScope: Record<string, number>;
+  languages?: any[];
+  languagesByScope?: Record<string, any[]>;
 }) {
   const [showDetail, setShowDetail] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalScope, setModalScope] = useState<string | null>(null);
 
   // Check if mobile
   const isMobile = typeof window !== "undefined" && window.innerWidth <= 480;
@@ -769,7 +982,7 @@ function HeroRedTable({
               >
                 <Information size={16} />
               </button>
-      </div>
+            </div>
 
             {showInfo && (
               <div
@@ -791,7 +1004,7 @@ function HeroRedTable({
                 <br />
                 <br />
                 This ensures we focus on the 1,788 languages that truly lack any Scripture access.
-      </div>
+              </div>
             )}
 
             <div
@@ -833,7 +1046,7 @@ function HeroRedTable({
                   <span className='countdown-long'>{timeRemaining}</span>
                   <span className='countdown-short' style={{ display: "none" }}>
                     {`${years}Y ${months}M ${days}D`}
-            </span>
+                  </span>
                 </div>
                 <div style={{ fontSize: "0.875rem", opacity: 0.9 }}>Until Pentecost 2033</div>
               </div>
@@ -854,12 +1067,26 @@ function HeroRedTable({
             {Object.entries(data).map(([scope, count]) => (
               <div
                 key={scope}
+                onClick={() => {
+                  setModalScope(scope);
+                  setModalOpen(true);
+                }}
                 style={{
                   background: "rgba(255,255,255,0.15)",
                   backdropFilter: "blur(10px)",
                   borderRadius: "12px",
                   padding: isMobile ? "0.75rem" : "1.5rem",
                   border: "1px solid rgba(255,255,255,0.2)",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.25)";
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.15)";
+                  e.currentTarget.style.transform = "translateY(0)";
                 }}
               >
                 <div
@@ -868,6 +1095,7 @@ function HeroRedTable({
                     fontWeight: 700,
                     color: "white",
                     marginBottom: "0.25rem",
+                    pointerEvents: "none",
                   }}
                 >
                   {count.toLocaleString()}
@@ -878,19 +1106,51 @@ function HeroRedTable({
                     color: "rgba(255,255,255,0.9)",
                     fontWeight: 500,
                     textTransform: "uppercase",
+                    pointerEvents: "none",
                   }}
                 >
                   {scope}
                 </div>
+                <div
+                  style={{
+                    fontSize: "0.65rem",
+                    color: "rgba(255,255,255,0.7)",
+                    marginTop: "0.5rem",
+                    pointerEvents: "none",
+                  }}
+                >
+                  Click to view languages
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-          {/* Button below the stats - always render, let CSS handle responsive */}
+          {/* Buttons below the stats - always render, let CSS handle responsive */}
           <div
             className='show-breakdown-button'
-            style={{ marginTop: "1.5rem", textAlign: "right" }}
+            style={{
+              marginTop: "1.5rem",
+              display: "flex",
+              gap: "1rem",
+              justifyContent: "flex-end",
+              flexWrap: "wrap",
+            }}
           >
+            <Button
+              kind='ghost'
+              size='lg'
+              onClick={() => {
+                setModalScope(null);
+                setModalOpen(true);
+              }}
+              renderIcon={List}
+              style={{
+                color: "white",
+                borderColor: "white",
+              }}
+            >
+              View All {total.toLocaleString()} Languages
+            </Button>
             <Button
               kind='ghost'
               size='lg'
@@ -1046,6 +1306,19 @@ function HeroRedTable({
           </div>
         </div>
       )}
+
+      {/* Language List Modal */}
+      <LanguageListModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={
+          modalScope ? `At Risk Languages - ${modalScope} Goal` : "All Languages at Critical Risk"
+        }
+        languages={
+          modalScope && languagesByScope[modalScope] ? languagesByScope[modalScope] : languages
+        }
+        color='#dc2626'
+      />
     </div>
   );
 }
@@ -1057,14 +1330,17 @@ function SecondaryAnalysis({
   total,
   icon,
   color = "#0f62fe",
+  languages = [],
 }: {
   title: string;
   data: Record<string, number>;
   total: number;
   icon?: React.ReactNode;
   color?: string;
+  languages?: any[];
 }) {
   const [mode, setMode] = useState<"table" | "chart">("chart");
+  const [modalOpen, setModalOpen] = useState(false);
 
   const chartData = Object.entries(data).map(([scope, count]) => ({
     group: scope,
@@ -1106,14 +1382,24 @@ function SecondaryAnalysis({
             {total.toLocaleString()}
           </div>
         </div>
-        <Button
-          kind='ghost'
-          size='sm'
-          onClick={() => setMode(mode === "table" ? "chart" : "table")}
-          renderIcon={mode === "table" ? ChartBar : DataTableIcon}
-          hasIconOnly
-          iconDescription={mode === "table" ? "Show chart" : "Show table"}
-        />
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <Button
+            kind='ghost'
+            size='sm'
+            onClick={() => setModalOpen(true)}
+            renderIcon={List}
+            hasIconOnly
+            iconDescription={`View all ${total} languages`}
+          />
+          <Button
+            kind='ghost'
+            size='sm'
+            onClick={() => setMode(mode === "table" ? "chart" : "table")}
+            renderIcon={mode === "table" ? ChartBar : DataTableIcon}
+            hasIconOnly
+            iconDescription={mode === "table" ? "Show chart" : "Show table"}
+          />
+        </div>
       </div>
 
       {mode === "chart" ? (
@@ -1136,8 +1422,17 @@ function SecondaryAnalysis({
               ))}
             </tbody>
           </table>
-    </div>
+        </div>
       )}
+
+      {/* Language List Modal */}
+      <LanguageListModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={title}
+        languages={languages}
+        color={color}
+      />
     </Tile>
   );
 }
@@ -1241,7 +1536,7 @@ export default function App() {
         position: "relative",
       }}
     >
-              <CollapsedImporter onRows={setRows} />
+      <CollapsedImporter onRows={setRows} />
 
       <div
         className='main-container'
@@ -1272,7 +1567,7 @@ export default function App() {
           >
             All Access Goals Critical Risk Assessment Dashboard
           </p>
-              </div>
+        </div>
 
         {isEmpty ? (
           <div
@@ -1291,14 +1586,16 @@ export default function App() {
               <br />
               Click "Import Data" in the top right to get started.
             </p>
-                  </div>
+          </div>
         ) : (
           <>
             {/* THE HERO RED TABLE */}
             <HeroRedTable
-                  data={summary.risk}
+              data={summary.risk}
               total={summary.totals.risk}
               totalsByScope={summary.totals.all}
+              languages={summary.languages.risk}
+              languagesByScope={summary.languages.riskByScope}
             />
 
             {/* Secondary Analysis Grid */}
@@ -1321,6 +1618,7 @@ export default function App() {
                     data={summary.noActivity}
                     total={summary.totals.noActivity}
                     color='#fa4d56'
+                    languages={summary.languages.noActivity}
                   />
                 </Column>
                 <Column lg={5} md={8} sm={4} style={{ marginBottom: "1.5rem" }}>
@@ -1329,6 +1627,7 @@ export default function App() {
                     data={summary.activeLDSE}
                     total={summary.totals.activeLDSE}
                     color='#ff832b'
+                    languages={summary.languages.activeLDSE}
                   />
                 </Column>
                 <Column lg={6} md={8} sm={4} style={{ marginBottom: "1.5rem" }}>
@@ -1337,10 +1636,11 @@ export default function App() {
                     data={summary.activeTx}
                     total={summary.totals.activeTx}
                     color='#0f62fe'
+                    languages={summary.languages.activeTx}
                   />
                 </Column>
               </Grid>
-                </div>
+            </div>
 
             {/* Summary Statistics */}
             <div
@@ -1357,10 +1657,10 @@ export default function App() {
                   <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#161616" }}>
                       {rows.length.toLocaleString()}
-              </div>
+                    </div>
                     <div style={{ fontSize: "0.875rem", color: "#525252" }}>
                       Total Languages Analyzed
-            </div>
+                    </div>
                   </div>
                 </Column>
                 <Column lg={4} md={6} sm={4}>
@@ -1401,7 +1701,7 @@ export default function App() {
 
         {/* Footer with All Access Goals */}
         {!isEmpty && <AllAccessGoalsFooter rows={rows} />}
-        </div>
       </div>
+    </div>
   );
 }
