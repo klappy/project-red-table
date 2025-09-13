@@ -82,13 +82,13 @@ function LanguageListModal({
   // Sort the filtered results
   const sortedLanguages = useMemo(() => {
     if (!sortKey) return filteredLanguages;
-    
+
     const sorted = [...filteredLanguages].sort((a, b) => {
       let aVal: any;
       let bVal: any;
-      
+
       // Map sort keys to data fields
-      switch(sortKey) {
+      switch (sortKey) {
         case "language":
           aVal = a["Language Name"] || a["Language"] || "";
           bVal = b["Language Name"] || b["Language"] || "";
@@ -113,7 +113,7 @@ function LanguageListModal({
           const aCompleted = toNumber(a["Text Chapters Completed"]) || 0;
           const aGoal = toNumber(a["All Access Chapter Goal"]) || 1;
           aVal = (aCompleted / aGoal) * 100;
-          
+
           const bCompleted = toNumber(b["Text Chapters Completed"]) || 0;
           const bGoal = toNumber(b["All Access Chapter Goal"]) || 1;
           bVal = (bCompleted / bGoal) * 100;
@@ -126,22 +126,38 @@ function LanguageListModal({
           aVal = a["Translation Status"] || "";
           bVal = b["Translation Status"] || "";
           break;
+        case "goalType":
+          const aGoalNum = toNumber(a["All Access Chapter Goal"]) || 0;
+          const bGoalNum = toNumber(b["All Access Chapter Goal"]) || 0;
+          aVal = aGoalNum;
+          bVal = bGoalNum;
+          break;
+        case "existingScripture":
+          aVal = a["Completed Scripture"] || "";
+          bVal = b["Completed Scripture"] || "";
+          break;
+        case "activeTranslation":
+          aVal = a["Active Translation"] === "Yes" ? 1 : 0;
+          bVal = b["Active Translation"] === "Yes" ? 1 : 0;
+          break;
+        case "activeLangDev":
+          aVal = a["Active Language Development"] === "Yes" ? 1 : 0;
+          bVal = b["Active Language Development"] === "Yes" ? 1 : 0;
+          break;
         default:
           return 0;
       }
-      
+
       // Compare values
       if (typeof aVal === "string" && typeof bVal === "string") {
-        return sortDirection === "ASC" 
-          ? aVal.localeCompare(bVal)
-          : bVal.localeCompare(aVal);
+        return sortDirection === "ASC" ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
       }
-      
+
       if (aVal < bVal) return sortDirection === "ASC" ? -1 : 1;
       if (aVal > bVal) return sortDirection === "ASC" ? 1 : -1;
       return 0;
     });
-    
+
     return sorted;
   }, [filteredLanguages, sortKey, sortDirection]);
 
@@ -158,6 +174,15 @@ function LanguageListModal({
     language: lang["Language"] || lang["Language Name"] || "Unknown",
     country: lang["Country"] || "—",
     population: toNumber(lang["First Language Population"]) || 0,
+    goalType: (() => {
+      const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
+      if (goal === 25) return "Portion";
+      if (goal === 260) return "NT";
+      if (goal === 1189) return "FB";
+      if (goal >= 2000) return "Two FB";
+      return "—";
+    })(),
+    existingScripture: lang["Completed Scripture"] || "None",
     completed: toNumber(lang["Text Chapters Completed"]) || 0,
     goal: lang["All Access Chapter Goal"] || "—",
     progress: (() => {
@@ -169,6 +194,8 @@ function LanguageListModal({
       }
       return "—";
     })(),
+    activeTranslation: lang["Active Translation"] === "Yes" ? "✓" : "—",
+    activeLangDev: lang["Active Language Development"] === "Yes" ? "✓" : "—",
     status: lang["All Access Status"] || "—",
     translationStatus: lang["Translation Status"] || "—",
     raw: lang, // Keep raw data for potential expansion
@@ -178,9 +205,13 @@ function LanguageListModal({
     { key: "language", header: "Language" },
     { key: "country", header: "Country" },
     { key: "population", header: "Population" },
-    { key: "completed", header: "Chapters Done" },
-    { key: "goal", header: "Chapter Goal" },
-    { key: "progress", header: "Progress" },
+    { key: "goalType", header: "Goal Type" },
+    { key: "existingScripture", header: "Has Scripture" },
+    { key: "completed", header: "Chapters" },
+    { key: "goal", header: "Goal" },
+    { key: "progress", header: "%" },
+    { key: "activeTranslation", header: "Active Tx" },
+    { key: "activeLangDev", header: "Lang Dev" },
     { key: "status", header: "Access Status" },
     { key: "translationStatus", header: "Translation Status" },
   ];
@@ -215,9 +246,9 @@ function LanguageListModal({
       size='lg'
       hasScrollingContent
     >
-      <DataTable 
-        rows={rows} 
-        headers={headers} 
+      <DataTable
+        rows={rows}
+        headers={headers}
         isSortable
         sortRow={(_rowA: any, _rowB: any, _info: any) => {
           // We handle sorting ourselves, just return 0
@@ -247,8 +278,8 @@ function LanguageListModal({
               <TableHead>
                 <TableRow>
                   {headers.map((header) => (
-                    <TableHeader 
-                      {...getHeaderProps({ 
+                    <TableHeader
+                      {...getHeaderProps({
                         header,
                         onClick: () => {
                           // Handle our custom sorting
@@ -261,8 +292,8 @@ function LanguageListModal({
                             setSortDirection("ASC");
                           }
                           setPage(1); // Reset to first page when sorting
-                        }
-                      })} 
+                        },
+                      })}
                       key={header.key}
                       isSortHeader={sortKey === header.key}
                       sortDirection={sortKey === header.key ? sortDirection : "NONE"}
@@ -277,8 +308,8 @@ function LanguageListModal({
                   <TableRow {...getRowProps({ row })} key={row.id}>
                     {row.cells.map((cell: any) => (
                       <TableCell key={cell.id}>
-                        {cell.info.header === "population" || cell.info.header === "completed"
-                          ? cell.value.toLocaleString()
+                        {cell.info.header === "population" || cell.info.header === "completed" || cell.info.header === "goal"
+                          ? typeof cell.value === 'number' ? cell.value.toLocaleString() : cell.value
                           : cell.value}
                       </TableCell>
                     ))}
