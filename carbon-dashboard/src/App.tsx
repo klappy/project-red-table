@@ -136,21 +136,21 @@ function LanguageListModal({
     return result;
   }, [languages]);
   
-  // Don't pre-select filters - the completed filter is handled separately
+  // Pre-select filters based on initialFilters
+  useEffect(() => {
+    if (initialFilters.completed && filterOptions.accessStatuses.length > 0) {
+      // Find all "Goal Met" statuses in the data
+      const goalMetStatuses = filterOptions.accessStatuses.filter(status => 
+        status.toLowerCase().includes('goal met')
+      );
+      setAccessStatusFilter(goalMetStatuses);
+    }
+  }, [initialFilters.completed, filterOptions.accessStatuses]);
 
   // Filter languages based on search and filters
   const filteredLanguages = useMemo(() => {
-    // Start with all languages
+    // Start with all languages - NO PRE-FILTERING!
     let filtered = [...languages];
-    
-    // Apply initial "completed" filter if specified
-    if (initialFilters.completed === true) {
-      filtered = filtered.filter((lang) => {
-        const completed = toNumber(lang["Text Chapters Completed"]) || 0;
-        const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
-        return goal > 0 && completed >= goal;
-      });
-    }
 
     // Apply search filter
     if (searchTerm) {
@@ -216,7 +216,6 @@ function LanguageListModal({
     return filtered;
   }, [
     languages,
-    initialFilters.completed,
     searchTerm,
     goalTypeFilter,
     hasScriptureFilter,
@@ -724,7 +723,8 @@ function LanguageListModal({
                     }}
                   >
                     Showing {paginatedLanguages.length.toLocaleString()} of{" "}
-                    {filteredLanguages.length.toLocaleString()} filtered ({languages.length.toLocaleString()} total)
+                    {filteredLanguages.length.toLocaleString()} filtered (
+                    {languages.length.toLocaleString()} total)
                     {(searchTerm ||
                       goalTypeFilter.length > 0 ||
                       hasScriptureFilter.length > 0 ||
