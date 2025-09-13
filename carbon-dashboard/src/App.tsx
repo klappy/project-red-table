@@ -31,8 +31,6 @@ import {
 import {
   Add,
   Upload,
-  DataTable as DataTableIcon,
-  ChartBar,
   WarningFilled,
   Time,
   View,
@@ -81,6 +79,7 @@ function LanguageListModal({
     atRisk?: boolean;
     goalType?: string;
     goalChapters?: number;
+    translationStatus?: string;
   };
 }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -194,19 +193,41 @@ function LanguageListModal({
       );
       setAccessStatusFilter(notMetStatuses);
 
-      // Set translation status to show "Translation Not Started", "Work in Progress", and language dev statuses
-      const riskStatuses = filterOptions.translationStatuses.filter((status) => {
-        const lower = status.toLowerCase();
-        return (
-          lower.includes("translation not started") ||
-          lower.includes("work in progress") ||
-          lower.includes("expressed need") ||
-          lower.includes("potential need") ||
-          lower.includes("limited or old scripture")
-        );
-      });
-      if (riskStatuses.length > 0) {
-        setTranslationStatusFilter(riskStatuses);
+      // Set translation status filter
+      if (initialFilters.translationStatus) {
+        // If a specific status is provided, filter for that
+        const specificStatuses = filterOptions.translationStatuses.filter((status) => {
+          const lower = status.toLowerCase();
+          const filterLower = initialFilters.translationStatus!.toLowerCase();
+          
+          if (filterLower === "language development") {
+            // For language development, include all relevant statuses
+            return (
+              lower.includes("expressed need") ||
+              lower.includes("potential need") ||
+              lower.includes("limited or old scripture")
+            );
+          }
+          return lower.includes(filterLower);
+        });
+        if (specificStatuses.length > 0) {
+          setTranslationStatusFilter(specificStatuses);
+        }
+      } else {
+        // Default at-risk statuses
+        const riskStatuses = filterOptions.translationStatuses.filter((status) => {
+          const lower = status.toLowerCase();
+          return (
+            lower.includes("translation not started") ||
+            lower.includes("work in progress") ||
+            lower.includes("expressed need") ||
+            lower.includes("potential need") ||
+            lower.includes("limited or old scripture")
+          );
+        });
+        if (riskStatuses.length > 0) {
+          setTranslationStatusFilter(riskStatuses);
+        }
       }
     } else if (initialFilters.goalChapters !== undefined) {
       // For Portion (not at-risk), just set the goal type filter
@@ -220,6 +241,7 @@ function LanguageListModal({
     initialFilters.completed,
     initialFilters.atRisk,
     initialFilters.goalChapters,
+    initialFilters.translationStatus,
     filterOptions.accessStatuses,
     filterOptions.goalTypes,
     filterOptions.translationStatuses,
@@ -2100,6 +2122,7 @@ function SecondaryAnalysis({
   icon,
   color = "#24a148",
   languages = [],
+  translationStatusFilter,
 }: {
   title: string;
   data: Record<string, number>;
@@ -2107,8 +2130,8 @@ function SecondaryAnalysis({
   icon?: React.ReactNode;
   color?: string;
   languages?: any[];
+  translationStatusFilter?: string;
 }) {
-  const [mode, setMode] = useState<"table" | "chart">("chart");
   const [modalOpen, setModalOpen] = useState(false);
 
   const chartData = Object.entries(data).map(([scope, count]) => ({
@@ -2153,48 +2176,17 @@ function SecondaryAnalysis({
             {total.toLocaleString()}
           </div>
         </div>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          <Button
-            kind='ghost'
-            size='sm'
-            onClick={() => setModalOpen(true)}
-            renderIcon={List}
-            hasIconOnly
-            iconDescription={`View all ${total} languages`}
-          />
-          <Button
-            kind='ghost'
-            size='sm'
-            onClick={() => setMode(mode === "table" ? "chart" : "table")}
-            renderIcon={mode === "table" ? ChartBar : DataTableIcon}
-            hasIconOnly
-            iconDescription={mode === "table" ? "Show chart" : "Show table"}
-          />
-        </div>
+        <Button
+          kind='ghost'
+          size='sm'
+          onClick={() => setModalOpen(true)}
+          renderIcon={List}
+          hasIconOnly
+          iconDescription={`View all ${total} languages`}
+        />
       </div>
 
-      {mode === "chart" ? (
-        <SimpleBarChart data={chartData} options={chartOptions} />
-      ) : (
-        <div style={{ maxHeight: "250px", overflow: "auto" }}>
-          <table style={{ width: "100%", fontSize: "0.875rem" }}>
-            <thead>
-              <tr style={{ borderBottom: "2px solid #e0e0e0" }}>
-                <th style={{ textAlign: "left", padding: "0.5rem" }}>Scope</th>
-                <th style={{ textAlign: "right", padding: "0.5rem" }}>Count</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(data).map(([scope, count]) => (
-                <tr key={scope} style={{ borderBottom: "1px solid #f0f0f0" }}>
-                  <td style={{ padding: "0.5rem" }}>{scope}</td>
-                  <td style={{ padding: "0.5rem", textAlign: "right" }}>{count}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <SimpleBarChart data={chartData} options={chartOptions} />
 
       {/* Language List Modal */}
       <LanguageListModal
@@ -2203,6 +2195,10 @@ function SecondaryAnalysis({
         title={title}
         languages={languages}
         color={color}
+        initialFilters={{
+          atRisk: true,
+          translationStatus: translationStatusFilter
+        }}
       />
     </Tile>
   );
@@ -2382,31 +2378,34 @@ export default function App() {
               </h2>
 
               <Grid>
-                <Column lg={5} md={8} sm={4} style={{ marginBottom: "1.5rem" }}>
+                <Column lg={4} md={8} sm={4} style={{ marginBottom: "1.5rem" }}>
                   <SecondaryAnalysis
                     title='No Translation Activity'
                     data={summary.noActivity}
                     total={summary.totals.noActivity}
                     color='#da1e28'
-                    languages={summary.languages.noActivity}
+                    languages={rows}
+                    translationStatusFilter='translation not started'
                   />
                 </Column>
-                <Column lg={5} md={8} sm={4} style={{ marginBottom: "1.5rem" }}>
+                <Column lg={4} md={8} sm={4} style={{ marginBottom: "1.5rem" }}>
                   <SecondaryAnalysis
                     title='Language Development Only'
                     data={summary.activeLDSE}
                     total={summary.totals.activeLDSE}
                     color='#161616'
-                    languages={summary.languages.activeLDSE}
+                    languages={rows}
+                    translationStatusFilter='language development'
                   />
                 </Column>
-                <Column lg={6} md={8} sm={4} style={{ marginBottom: "1.5rem" }}>
+                <Column lg={4} md={8} sm={4} style={{ marginBottom: "1.5rem" }}>
                   <SecondaryAnalysis
                     title='Active Translation (Pace Unknown)'
                     data={summary.activeTx}
                     total={summary.totals.activeTx}
                     color='#24a148'
-                    languages={summary.languages.activeTx}
+                    languages={rows}
+                    translationStatusFilter='work in progress'
                   />
                 </Column>
               </Grid>
