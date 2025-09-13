@@ -1016,12 +1016,12 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
               disabled={loading || !url}
               renderIcon={loading ? Loading : Upload}
               size='sm'
-                style={{
-                  marginTop: "0.5rem",
-                  backgroundColor: loading || !url ? "#525252" : "#24a148",
-                  borderColor: loading || !url ? "#525252" : "#24a148",
-                  color: "#ffffff",
-                }}
+              style={{
+                marginTop: "0.5rem",
+                backgroundColor: loading || !url ? "#525252" : "#24a148",
+                borderColor: loading || !url ? "#525252" : "#24a148",
+                color: "#ffffff",
+              }}
               onMouseEnter={(e) => {
                 if (!loading && url) {
                   e.currentTarget.style.backgroundColor = "#198038";
@@ -1950,7 +1950,11 @@ function SecondaryAnalysis({
       bottom: { mapsTo: "group", scaleType: "labels" },
     },
     height: "250px",
-    color: { scale: { [title]: color } },
+    color: { 
+      scale: Object.fromEntries(
+        Object.keys(data).map(key => [key, color])
+      )
+    },
     legend: { enabled: false },
   };
 
@@ -2217,7 +2221,7 @@ export default function App() {
                     title='No Translation Activity'
                     data={summary.noActivity}
                     total={summary.totals.noActivity}
-                    color='#fa4d56'
+                    color='#da1e28'
                     languages={summary.languages.noActivity}
                   />
                 </Column>
