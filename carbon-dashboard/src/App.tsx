@@ -65,6 +65,8 @@ function LanguageListModal({
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
+  const [sortKey, setSortKey] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<"ASC" | "DESC">("ASC");
 
   // Filter languages based on search
   const filteredLanguages = useMemo(() => {
@@ -77,12 +79,78 @@ function LanguageListModal({
     });
   }, [languages, searchTerm]);
 
-  // Paginate the filtered results
+  // Sort the filtered results
+  const sortedLanguages = useMemo(() => {
+    if (!sortKey) return filteredLanguages;
+    
+    const sorted = [...filteredLanguages].sort((a, b) => {
+      let aVal: any;
+      let bVal: any;
+      
+      // Map sort keys to data fields
+      switch(sortKey) {
+        case "language":
+          aVal = a["Language Name"] || a["Language"] || "";
+          bVal = b["Language Name"] || b["Language"] || "";
+          break;
+        case "country":
+          aVal = a["Country"] || "";
+          bVal = b["Country"] || "";
+          break;
+        case "population":
+          aVal = toNumber(a["First Language Population"]) || 0;
+          bVal = toNumber(b["First Language Population"]) || 0;
+          break;
+        case "completed":
+          aVal = toNumber(a["Text Chapters Completed"]) || 0;
+          bVal = toNumber(b["Text Chapters Completed"]) || 0;
+          break;
+        case "goal":
+          aVal = toNumber(a["All Access Chapter Goal"]) || 0;
+          bVal = toNumber(b["All Access Chapter Goal"]) || 0;
+          break;
+        case "progress":
+          const aCompleted = toNumber(a["Text Chapters Completed"]) || 0;
+          const aGoal = toNumber(a["All Access Chapter Goal"]) || 1;
+          aVal = (aCompleted / aGoal) * 100;
+          
+          const bCompleted = toNumber(b["Text Chapters Completed"]) || 0;
+          const bGoal = toNumber(b["All Access Chapter Goal"]) || 1;
+          bVal = (bCompleted / bGoal) * 100;
+          break;
+        case "status":
+          aVal = a["All Access Status"] || "";
+          bVal = b["All Access Status"] || "";
+          break;
+        case "translationStatus":
+          aVal = a["Translation Status"] || "";
+          bVal = b["Translation Status"] || "";
+          break;
+        default:
+          return 0;
+      }
+      
+      // Compare values
+      if (typeof aVal === "string" && typeof bVal === "string") {
+        return sortDirection === "ASC" 
+          ? aVal.localeCompare(bVal)
+          : bVal.localeCompare(aVal);
+      }
+      
+      if (aVal < bVal) return sortDirection === "ASC" ? -1 : 1;
+      if (aVal > bVal) return sortDirection === "ASC" ? 1 : -1;
+      return 0;
+    });
+    
+    return sorted;
+  }, [filteredLanguages, sortKey, sortDirection]);
+
+  // Paginate the sorted results
   const paginatedLanguages = useMemo(() => {
     const start = (page - 1) * pageSize;
     const end = start + pageSize;
-    return filteredLanguages.slice(start, end);
-  }, [filteredLanguages, page, pageSize]);
+    return sortedLanguages.slice(start, end);
+  }, [sortedLanguages, page, pageSize]);
 
   // Prepare data for Carbon DataTable
   const rows = paginatedLanguages.map((lang, index) => ({
@@ -117,10 +185,10 @@ function LanguageListModal({
     { key: "translationStatus", header: "Translation Status" },
   ];
 
-  // Reset page when search changes
+  // Reset page when search or sort changes
   useEffect(() => {
     setPage(1);
-  }, [searchTerm]);
+  }, [searchTerm, sortKey, sortDirection]);
 
   return (
     <Modal
@@ -147,7 +215,16 @@ function LanguageListModal({
       size='lg'
       hasScrollingContent
     >
-      <DataTable rows={rows} headers={headers} isSortable>
+      <DataTable 
+        rows={rows} 
+        headers={headers} 
+        isSortable
+        sortRow={(_rowA: any, _rowB: any, _info: any) => {
+          // We handle sorting ourselves, just return 0
+          // The actual sorting happens in sortedLanguages
+          return 0;
+        }}
+      >
         {({
           rows,
           headers,
@@ -170,7 +247,26 @@ function LanguageListModal({
               <TableHead>
                 <TableRow>
                   {headers.map((header) => (
-                    <TableHeader {...getHeaderProps({ header })} key={header.key}>
+                    <TableHeader 
+                      {...getHeaderProps({ 
+                        header,
+                        onClick: () => {
+                          // Handle our custom sorting
+                          if (sortKey === header.key) {
+                            // Toggle direction if same column
+                            setSortDirection(sortDirection === "ASC" ? "DESC" : "ASC");
+                          } else {
+                            // New column, default to ASC
+                            setSortKey(header.key);
+                            setSortDirection("ASC");
+                          }
+                          setPage(1); // Reset to first page when sorting
+                        }
+                      })} 
+                      key={header.key}
+                      isSortHeader={sortKey === header.key}
+                      sortDirection={sortKey === header.key ? sortDirection : "NONE"}
+                    >
                       {header.header}
                     </TableHeader>
                   ))}
