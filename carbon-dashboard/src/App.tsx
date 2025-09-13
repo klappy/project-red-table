@@ -960,35 +960,33 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
 
   return (
     <div style={{ position: "absolute", top: "1rem", right: "1rem", zIndex: 1000 }}>
-      <Button
-        kind={expanded ? "secondary" : "primary"}
-        size='sm'
+      <button
         onClick={() => setExpanded((v) => !v)}
-        renderIcon={expanded ? ViewOff : Add}
-        style={
-          !expanded
-            ? {
-                backgroundColor: "#24a148",
-                borderColor: "#24a148",
-                color: "#ffffff",
-              }
-            : {}
-        }
+        style={{
+          background: "transparent",
+          border: "none",
+          cursor: "pointer",
+          padding: "0.5rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: expanded ? "#525252" : "#525252",
+          fontSize: "1.5rem",
+          transition: "all 0.2s ease",
+          borderRadius: "50%",
+        }}
         onMouseEnter={(e) => {
-          if (!expanded) {
-            e.currentTarget.style.backgroundColor = "#198038";
-            e.currentTarget.style.borderColor = "#198038";
-          }
+          e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+          e.currentTarget.style.color = expanded ? "#161616" : "#24a148";
         }}
         onMouseLeave={(e) => {
-          if (!expanded) {
-            e.currentTarget.style.backgroundColor = "#24a148";
-            e.currentTarget.style.borderColor = "#24a148";
-          }
+          e.currentTarget.style.backgroundColor = "transparent";
+          e.currentTarget.style.color = "#525252";
         }}
+        title={expanded ? "Hide import options" : "Import data"}
       >
-        {expanded ? "Hide" : "Import Data"}
-      </Button>
+        {expanded ? <ViewOff size={24} /> : <Add size={24} />}
+      </button>
 
       {expanded && (
         <div
@@ -1018,12 +1016,12 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
               disabled={loading || !url}
               renderIcon={loading ? Loading : Upload}
               size='sm'
-                style={{
-                  marginTop: "0.5rem",
-                  backgroundColor: loading || !url ? "#525252" : "#24a148",
-                  borderColor: loading || !url ? "#525252" : "#24a148",
-                  color: loading || !url ? "#a8a8a8" : "#ffffff",
-                }}
+              style={{
+                marginTop: "0.5rem",
+                backgroundColor: loading || !url ? "#525252" : "#24a148",
+                borderColor: loading || !url ? "#525252" : "#24a148",
+                color: loading || !url ? "#a8a8a8" : "#ffffff",
+              }}
               onMouseEnter={(e) => {
                 if (!loading && url) {
                   e.currentTarget.style.backgroundColor = "#198038";
