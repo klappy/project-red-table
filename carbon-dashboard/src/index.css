@@ -418,6 +418,18 @@ td {
   display: none !important;
 }
 
+/* Hide Carbon CHARTS toolbar buttons (show as table, fullscreen, overflow menu) */
+.cds--cc--toolbar,
+.toolbar-control,
+.cds--cc--toolbar .cds--overflow-menu,
+.layout-child.toolbar,
+.cds--cc--toolbar button[aria-label*="Show as table"],
+.cds--cc--toolbar button[aria-label*="Make fullscreen"],
+.cds--cc--toolbar button[aria-label*="More options"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
 /* Override all blue colors to green */
 .cds--file__drop-container {
   border-color: #24a148 !important;
