@@ -413,11 +413,32 @@ td {
 
 .cds--file__drop-container:hover {
   background-color: rgba(36, 161, 72, 0.1) !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: #24a148 !important;
 }
 
 .cds--file__drop-container--drag-over {
   background-color: rgba(36, 161, 72, 0.1) !important;
   border-color: #24a148 !important;
+  outline: none !important;
+}
+
+/* Kill ALL blue outlines on file uploader */
+.cds--file-browse-btn:focus,
+.cds--file__drop-container:focus-within,
+.cds--file__drop-container:active,
+.cds--file__drop-container:focus {
+  outline: 2px solid #24a148 !important;
+  outline-offset: -2px !important;
+  box-shadow: none !important;
+}
+
+/* Override the nested button inside drop container */
+.cds--file__drop-container button:focus,
+.cds--file__drop-container button:hover {
+  outline-color: #24a148 !important;
+  box-shadow: none !important;
 }
 
 /* Override blue links */
