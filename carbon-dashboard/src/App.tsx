@@ -515,15 +515,13 @@ function LanguageListModal({
             getTableContainerProps,
           }) => (
             <div style={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column" }}>
-              <TableContainer 
-                title='' 
-                description='' 
+              <TableContainer
+                title=''
+                description=''
                 {...getTableContainerProps()}
                 stickyHeader={false}
               >
-                <TableToolbar
-                  aria-label='data table toolbar'
-                >
+                <TableToolbar aria-label='data table toolbar'>
                   <TableToolbarContent>
                     <TableToolbarSearch
                       placeholder='Search languages...'
@@ -2223,7 +2221,9 @@ function SecondaryAnalysis({
               {Object.entries(data).map(([scope, count]) => (
                 <tr key={scope} style={{ borderBottom: "1px solid #f0f0f0" }}>
                   <td style={{ padding: "0.5rem" }}>{scope}</td>
-                  <td style={{ padding: "0.5rem", textAlign: "right" }}>{count.toLocaleString()}</td>
+                  <td style={{ padding: "0.5rem", textAlign: "right" }}>
+                    {count.toLocaleString()}
+                  </td>
                 </tr>
               ))}
             </tbody>
