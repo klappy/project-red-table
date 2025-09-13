@@ -1406,12 +1406,28 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
           style={{
             display: "flex",
             justifyContent: "center",
+            alignItems: "center",
             gap: "3rem",
             paddingTop: "2rem",
             borderTop: "1px solid rgba(255,255,255,0.1)",
             flexWrap: "wrap",
           }}
         >
+          {/* ETEN Logo */}
+          <img
+            src="/eten-logo-on-dark.png"
+            alt="ETEN Logo"
+            style={{
+              height: "50px",
+              opacity: 0.8,
+              cursor: "pointer",
+              transition: "opacity 0.2s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.8")}
+            onClick={() => window.open("https://eten.org", "_blank")}
+          />
+          
           <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: "2rem", fontWeight: 700, color: "#da1e28" }}>
               {(total - goalMet.length).toLocaleString()}
@@ -2327,39 +2343,6 @@ export default function App() {
 
         {/* Footer with All Access Goals */}
         {!isEmpty && <AllAccessGoalsFooter rows={rows} />}
-        
-        {/* ETEN Logo Footer */}
-        <div
-          style={{
-            padding: "2rem 1rem",
-            textAlign: "center",
-            borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-            marginTop: "3rem",
-          }}
-        >
-          <img
-            src="/eten-logo-on-dark.png"
-            alt="ETEN Logo"
-            style={{
-              height: "40px",
-              opacity: 0.7,
-              transition: "opacity 0.2s",
-              cursor: "pointer",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
-            onClick={() => window.open("https://eten.org", "_blank")}
-          />
-          <div
-            style={{
-              marginTop: "0.5rem",
-              fontSize: "0.75rem",
-              color: "rgba(255, 255, 255, 0.4)",
-            }}
-          >
-            Powered by Every Tribe Every Nation
-          </div>
-        </div>
       </div>
 
       {/* Modal for All Languages */}
