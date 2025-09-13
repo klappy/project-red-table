@@ -348,24 +348,46 @@ function LanguageListModal({
     setPage(1);
   }, [searchTerm, sortKey, sortDirection]);
 
-  // Prevent scroll jumping on focus events within the modal
+  // Prevent ALL scroll jumping in the modal
   useEffect(() => {
     if (isOpen) {
-      // Override scrollIntoView for elements in the modal
+      // Store original methods
       const originalScrollIntoView = Element.prototype.scrollIntoView;
+      const originalScrollTo = window.scrollTo;
+      const originalScroll = window.scroll;
+      const originalScrollBy = window.scrollBy;
+      
+      // Block scrollIntoView for modal elements
       Element.prototype.scrollIntoView = function (arg?: boolean | ScrollIntoViewOptions) {
-        // Check if this element is inside the modal
         if ((this as HTMLElement).closest(".cds--modal")) {
-          // Just don't scroll for elements inside the modal
           return;
         }
-        // For everything else, use the original behavior
         return originalScrollIntoView.call(this, arg);
       };
-
+      
+      // Block all window scroll methods
+      window.scrollTo = () => {};
+      window.scroll = () => {};
+      window.scrollBy = () => {};
+      
+      // Also prevent scrolling on the modal container itself
+      const preventModalScroll = (e: Event) => {
+        const target = e.target as HTMLElement;
+        if (target.closest('.cds--modal-container')) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      };
+      
+      document.addEventListener('scroll', preventModalScroll, true);
+      
       return () => {
-        // Restore original scrollIntoView
+        // Restore everything
         Element.prototype.scrollIntoView = originalScrollIntoView;
+        window.scrollTo = originalScrollTo;
+        window.scroll = originalScroll;
+        window.scrollBy = originalScrollBy;
+        document.removeEventListener('scroll', preventModalScroll, true);
       };
     }
   }, [isOpen]);
@@ -596,20 +618,24 @@ function LanguageListModal({
                       titleText='Active Translation'
                       label='Select status...'
                       items={[
-                        { id: 'yes', text: 'Yes', label: 'Yes' },
-                        { id: 'no', text: 'No', label: 'No' }
+                        { id: "yes", text: "Yes", label: "Yes" },
+                        { id: "no", text: "No", label: "No" },
                       ]}
                       itemToString={(item) => (item ? item.text : "")}
                       selectedItems={
-                        activeTranslationFilter 
-                          ? [{ id: activeTranslationFilter, text: activeTranslationFilter === 'yes' ? 'Yes' : 'No', label: activeTranslationFilter === 'yes' ? 'Yes' : 'No' }]
+                        activeTranslationFilter
+                          ? [
+                              {
+                                id: activeTranslationFilter,
+                                text: activeTranslationFilter === "yes" ? "Yes" : "No",
+                                label: activeTranslationFilter === "yes" ? "Yes" : "No",
+                              },
+                            ]
                           : []
                       }
                       onChange={({ selectedItems }) => {
                         setActiveTranslationFilter(
-                          selectedItems && selectedItems.length > 0 
-                            ? selectedItems[0].id 
-                            : null
+                          selectedItems && selectedItems.length > 0 ? selectedItems[0].id : null
                         );
                         setPage(1);
                       }}
@@ -622,20 +648,24 @@ function LanguageListModal({
                       titleText='Active Language Dev'
                       label='Select status...'
                       items={[
-                        { id: 'yes', text: 'Yes', label: 'Yes' },
-                        { id: 'no', text: 'No', label: 'No' }
+                        { id: "yes", text: "Yes", label: "Yes" },
+                        { id: "no", text: "No", label: "No" },
                       ]}
                       itemToString={(item) => (item ? item.text : "")}
                       selectedItems={
-                        activeLangDevFilter 
-                          ? [{ id: activeLangDevFilter, text: activeLangDevFilter === 'yes' ? 'Yes' : 'No', label: activeLangDevFilter === 'yes' ? 'Yes' : 'No' }]
+                        activeLangDevFilter
+                          ? [
+                              {
+                                id: activeLangDevFilter,
+                                text: activeLangDevFilter === "yes" ? "Yes" : "No",
+                                label: activeLangDevFilter === "yes" ? "Yes" : "No",
+                              },
+                            ]
                           : []
                       }
                       onChange={({ selectedItems }) => {
                         setActiveLangDevFilter(
-                          selectedItems && selectedItems.length > 0 
-                            ? selectedItems[0].id 
-                            : null
+                          selectedItems && selectedItems.length > 0 ? selectedItems[0].id : null
                         );
                         setPage(1);
                       }}
