@@ -53,6 +53,15 @@ import "@carbon/charts/styles.css";
 const DEFAULT_DATA_URL =
   "https://raw.githubusercontent.com/klappy/project-red-table/refs/heads/main/AAG_Languages_extracted.csv";
 
+// Helper function to convert goal numbers to text
+function getGoalTypeText(goalNumber: number): string {
+  if (goalNumber === 25) return "Portion";
+  if (goalNumber === 260) return "NT";
+  if (goalNumber === 1189) return "FB";
+  if (goalNumber >= 2000) return "Two FB";
+  return String(goalNumber);
+}
+
 // ---------- Language List Modal Component ----------
 function LanguageListModal({
   isOpen,
@@ -372,17 +381,10 @@ function LanguageListModal({
     language: lang["Language"] || lang["Language Name"] || "Unknown",
     country: lang["Country"] || "—",
     population: toNumber(lang["First Language Population"]) || 0,
-    goalType: (() => {
-      const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
-      if (goal === 25) return "Portion";
-      if (goal === 260) return "NT";
-      if (goal === 1189) return "FB";
-      if (goal >= 2000) return "Two FB";
-      return "—";
-    })(),
+    goalType: getGoalTypeText(toNumber(lang["All Access Chapter Goal"]) || 0) || "—",
     existingScripture: lang["Completed Scripture"] || "None",
     completed: toNumber(lang["Text Chapters Completed"]) || 0,
-    goal: lang["All Access Chapter Goal"] || "—",
+    goal: getGoalTypeText(toNumber(lang["All Access Chapter Goal"]) || 0) || "—",
     progress: (() => {
       const completed = toNumber(lang["Text Chapters Completed"]) || 0;
       const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
@@ -1535,13 +1537,15 @@ function HeroRedTable({ languages = [] }: { languages: any[] }) {
       return !isPortion && goalNotMet && (noActivity || activeLDSE || activeTranslation);
     });
 
-    // Group by scope
-    const byScope: Record<string, number> = { NT: 0, FB: 0, "Two FB": 0 };
-    const totalsByScope: Record<string, number> = { NT: 0, FB: 0, "Two FB": 0 };
+    // Group by scope - INCLUDING Portion even though it will be 0
+    const byScope: Record<string, number> = { Portion: 0, NT: 0, FB: 0, "Two FB": 0 };
+    const totalsByScope: Record<string, number> = { Portion: 0, NT: 0, FB: 0, "Two FB": 0 };
     
     atRisk.forEach((lang) => {
       const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
-      if (goal === 260) {
+      if (goal === 25) {
+        byScope.Portion++; // This will always be 0 because portions are excluded from at-risk
+      } else if (goal === 260) {
         byScope.NT++;
       } else if (goal === 1189) {
         byScope.FB++;
@@ -1553,7 +1557,9 @@ function HeroRedTable({ languages = [] }: { languages: any[] }) {
     // Calculate totals for each scope (all languages with that goal)
     languages.forEach((lang) => {
       const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
-      if (goal === 260) {
+      if (goal === 25) {
+        totalsByScope.Portion++;
+      } else if (goal === 260) {
         totalsByScope.NT++;
       } else if (goal === 1189) {
         totalsByScope.FB++;
@@ -2016,13 +2022,17 @@ function HeroRedTable({ languages = [] }: { languages: any[] }) {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         title={
-          modalScope ? `At Risk Languages - ${modalScope} Goal` : "All Languages at Critical Risk"
+          modalScope === "Portion" 
+            ? "Languages with Portion Goal (25 chapters)"
+            : modalScope 
+              ? `At Risk Languages - ${modalScope} Goal` 
+              : "All Languages at Critical Risk"
         }
         languages={languages}
-        color='#dc2626'
+        color={modalScope === "Portion" ? '#24a148' : '#dc2626'}
         initialFilters={{
-          atRisk: true,
-          goalChapters: modalScope === "NT" ? 260 : modalScope === "FB" ? 1189 : modalScope === "Two FB" ? 2000 : undefined
+          atRisk: modalScope !== "Portion", // Don't apply at-risk filter for Portions
+          goalChapters: modalScope === "Portion" ? 25 : modalScope === "NT" ? 260 : modalScope === "FB" ? 1189 : modalScope === "Two FB" ? 2000 : undefined
         }}
       />
     </div>
