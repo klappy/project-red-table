@@ -89,6 +89,18 @@ function LanguageListModal({
   const [accessStatusFilter, setAccessStatusFilter] = useState<string[]>([]);
   const [translationStatusFilter, setTranslationStatusFilter] = useState<string[]>([]);
 
+  // Calculate base count with only initial filters applied
+  const baseFilteredCount = useMemo(() => {
+    if (initialFilters.completed === true) {
+      return languages.filter((lang) => {
+        const completed = toNumber(lang["Text Chapters Completed"]) || 0;
+        const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
+        return goal > 0 && completed >= goal;
+      }).length;
+    }
+    return languages.length;
+  }, [languages, initialFilters.completed]);
+
   // Get unique values for filters
   const filterOptions = useMemo(() => {
     const goalTypes = new Set<string>();
@@ -383,7 +395,7 @@ function LanguageListModal({
           />
           <span>{title}</span>
           <Tag type='blue' size='md'>
-            {languages.length.toLocaleString()} languages
+            {baseFilteredCount.toLocaleString()} languages
           </Tag>
         </div>
       }
