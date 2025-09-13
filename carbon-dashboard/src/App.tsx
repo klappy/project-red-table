@@ -42,6 +42,8 @@ import {
   List,
   Filter,
   Reset,
+  ChevronUp,
+  ChevronDown,
 } from "@carbon/icons-react";
 
 // Carbon Charts imports
@@ -422,19 +424,38 @@ function LanguageListModal({
                   kind='ghost'
                   size='sm'
                   onClick={() => setShowFilters(!showFilters)}
-                  renderIcon={Filter}
-                  hasIconOnly={false}
-                  style={{ marginLeft: "1rem" }}
+                  renderIcon={showFilters ? ChevronUp : ChevronDown}
+                  style={{ 
+                    marginLeft: "1rem",
+                    display: "flex",
+                    alignItems: "center"
+                  }}
                 >
-                  Filters{" "}
-                  {goalTypeFilter.length > 0 ||
+                  <span style={{ marginRight: "0.25rem" }}>
+                    <Filter size={16} />
+                  </span>
+                  Filters
+                  {(goalTypeFilter.length > 0 ||
                   hasScriptureFilter.length > 0 ||
                   activeTranslationFilter ||
                   activeLangDevFilter ||
                   accessStatusFilter.length > 0 ||
-                  translationStatusFilter.length > 0
-                    ? `(Active)`
-                    : ""}
+                  translationStatusFilter.length > 0) && (
+                    <Tag 
+                      type="blue" 
+                      size="sm" 
+                      style={{ marginLeft: "0.5rem" }}
+                    >
+                      {[
+                        ...goalTypeFilter,
+                        ...hasScriptureFilter,
+                        ...accessStatusFilter,
+                        ...translationStatusFilter,
+                        activeTranslationFilter ? 1 : 0,
+                        activeLangDevFilter ? 1 : 0
+                      ].filter(Boolean).length}
+                    </Tag>
+                  )}
                 </Button>
                 {(goalTypeFilter.length > 0 ||
                   hasScriptureFilter.length > 0 ||
