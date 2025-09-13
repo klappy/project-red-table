@@ -2420,36 +2420,40 @@ export default function App() {
                 Detailed Activity Analysis
               </h2>
 
-              <Grid>
-                <Column lg={5} md={8} sm={4} style={{ marginBottom: "1.5rem" }}>
-                  <SecondaryAnalysis
-                    title='No Translation Activity'
-                    data={summary.noActivity}
-                    total={summary.totals.noActivity}
-                    color='#da1e28'
-                    languages={rows}
-                    translationStatusFilter='translation not started'
-                  />
-                </Column>
-                <Column lg={6} md={8} sm={4} style={{ marginBottom: "1.5rem" }}>
-                  <SecondaryAnalysis
-                    title='Language Development Only'
-                    data={summary.activeLDSE}
-                    total={summary.totals.activeLDSE}
-                    color='#161616'
-                    languages={rows}
-                    translationStatusFilter='language development'
-                  />
-                </Column>
-                <Column lg={5} md={8} sm={4} style={{ marginBottom: "1.5rem" }}>
-                  <SecondaryAnalysis
-                    title='Active Translation (Pace Unknown)'
-                    data={summary.activeTx}
-                    total={summary.totals.activeTx}
-                    color='#24a148'
-                    languages={rows}
-                    translationStatusFilter='work in progress'
-                  />
+              <Grid fullWidth>
+                <Column lg={16} md={8} sm={4}>
+                  <div style={{ display: "flex", gap: "1.5rem", justifyContent: "space-between" }}>
+                    <div style={{ flex: 1 }}>
+                      <SecondaryAnalysis
+                        title='No Translation Activity'
+                        data={summary.noActivity}
+                        total={summary.totals.noActivity}
+                        color='#da1e28'
+                        languages={rows}
+                        translationStatusFilter='translation not started'
+                      />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <SecondaryAnalysis
+                        title='Language Development Only'
+                        data={summary.activeLDSE}
+                        total={summary.totals.activeLDSE}
+                        color='#161616'
+                        languages={rows}
+                        translationStatusFilter='language development'
+                      />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <SecondaryAnalysis
+                        title='Active Translation (Pace Unknown)'
+                        data={summary.activeTx}
+                        total={summary.totals.activeTx}
+                        color='#24a148'
+                        languages={rows}
+                        translationStatusFilter='work in progress'
+                      />
+                    </div>
+                  </div>
                 </Column>
               </Grid>
             </div>
