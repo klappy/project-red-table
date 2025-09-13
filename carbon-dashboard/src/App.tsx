@@ -346,28 +346,12 @@ function LanguageListModal({
     setPage(1);
   }, [searchTerm, sortKey, sortDirection]);
 
-  // Prevent automatic scrolling on focus
-  useEffect(() => {
-    if (isOpen) {
-      // Store original focus method
-      const originalFocus = HTMLElement.prototype.focus;
-      
-      // Override focus to prevent scrolling
-      HTMLElement.prototype.focus = function(options?: FocusOptions) {
-        originalFocus.call(this, { ...options, preventScroll: true });
-      };
-      
-      return () => {
-        // Restore original focus
-        HTMLElement.prototype.focus = originalFocus;
-      };
-    }
-  }, [isOpen]);
 
   return (
     <Modal
       open={isOpen}
       onRequestClose={onClose}
+      selectorPrimaryFocus='.cds--modal-header__heading'
       modalHeading={
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           <div
