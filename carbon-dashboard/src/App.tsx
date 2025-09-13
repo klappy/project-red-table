@@ -72,7 +72,7 @@ function LanguageListModal({
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"ASC" | "DESC">("ASC");
   const [showFilters, setShowFilters] = useState(false);
-  
+
   // Filter states
   const [goalTypeFilter, setGoalTypeFilter] = useState<string[]>([]);
   const [hasScriptureFilter, setHasScriptureFilter] = useState<string[]>([]);
@@ -87,40 +87,59 @@ function LanguageListModal({
     const hasScripture = new Set<string>();
     const accessStatuses = new Set<string>();
     const translationStatuses = new Set<string>();
-    
-    languages.forEach(lang => {
+
+    // Debug: Check if we have languages
+    console.log("Filter Options - Languages count:", languages.length);
+    if (languages.length > 0) {
+      console.log("Sample language data:", languages[0]);
+    }
+
+    languages.forEach((lang) => {
       // Goal Type
       const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
       if (goal === 25) goalTypes.add("Portion");
       else if (goal === 260) goalTypes.add("NT");
       else if (goal === 1189) goalTypes.add("FB");
       else if (goal >= 2000) goalTypes.add("Two FB");
-      
-      // Has Scripture
-      const scripture = lang["Completed Scripture"] || "None";
-      hasScripture.add(scripture);
-      
+
+      // Has Scripture - handle empty/null values
+      const scripture = lang["Completed Scripture"];
+      if (scripture && scripture !== "") {
+        hasScripture.add(scripture);
+      } else {
+        hasScripture.add("None");
+      }
+
       // Access Status
       const access = lang["All Access Status"];
-      if (access) accessStatuses.add(access);
-      
-      // Translation Status
+      if (access && access !== "") accessStatuses.add(access);
+
+      // Translation Status  
       const translation = lang["Translation Status"];
-      if (translation) translationStatuses.add(translation);
+      if (translation && translation !== "") translationStatuses.add(translation);
     });
-    
-    return {
+
+    // If no scripture types found, add "None" as default
+    if (hasScripture.size === 0) {
+      hasScripture.add("None");
+    }
+
+    const result = {
       goalTypes: Array.from(goalTypes).sort(),
       hasScripture: Array.from(hasScripture).sort(),
       accessStatuses: Array.from(accessStatuses).sort(),
       translationStatuses: Array.from(translationStatuses).sort(),
     };
+    
+    console.log("Filter options generated:", result);
+    
+    return result;
   }, [languages]);
 
   // Filter languages based on search and filters
   const filteredLanguages = useMemo(() => {
     let filtered = [...languages];
-    
+
     // Apply search filter
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
@@ -128,10 +147,10 @@ function LanguageListModal({
         return Object.values(lang).some((value) => String(value).toLowerCase().includes(term));
       });
     }
-    
+
     // Apply Goal Type filter
     if (goalTypeFilter.length > 0) {
-      filtered = filtered.filter(lang => {
+      filtered = filtered.filter((lang) => {
         const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
         let type = "";
         if (goal === 25) type = "Portion";
@@ -141,50 +160,58 @@ function LanguageListModal({
         return goalTypeFilter.includes(type);
       });
     }
-    
+
     // Apply Has Scripture filter
     if (hasScriptureFilter.length > 0) {
-      filtered = filtered.filter(lang => {
+      filtered = filtered.filter((lang) => {
         const scripture = lang["Completed Scripture"] || "None";
         return hasScriptureFilter.includes(scripture);
       });
     }
-    
+
     // Apply Active Translation filter
     if (activeTranslationFilter !== null) {
-      filtered = filtered.filter(lang => {
+      filtered = filtered.filter((lang) => {
         const isActive = lang["Active Translation"] === "Yes";
         return activeTranslationFilter === "yes" ? isActive : !isActive;
       });
     }
-    
+
     // Apply Active Language Development filter
     if (activeLangDevFilter !== null) {
-      filtered = filtered.filter(lang => {
+      filtered = filtered.filter((lang) => {
         const isActive = lang["Active Language Development"] === "Yes";
         return activeLangDevFilter === "yes" ? isActive : !isActive;
       });
     }
-    
+
     // Apply Access Status filter
     if (accessStatusFilter.length > 0) {
-      filtered = filtered.filter(lang => {
+      filtered = filtered.filter((lang) => {
         const status = lang["All Access Status"];
         return status && accessStatusFilter.includes(status);
       });
     }
-    
+
     // Apply Translation Status filter
     if (translationStatusFilter.length > 0) {
-      filtered = filtered.filter(lang => {
+      filtered = filtered.filter((lang) => {
         const status = lang["Translation Status"];
         return status && translationStatusFilter.includes(status);
       });
     }
-    
+
     return filtered;
-  }, [languages, searchTerm, goalTypeFilter, hasScriptureFilter, activeTranslationFilter, 
-      activeLangDevFilter, accessStatusFilter, translationStatusFilter]);
+  }, [
+    languages,
+    searchTerm,
+    goalTypeFilter,
+    hasScriptureFilter,
+    activeTranslationFilter,
+    activeLangDevFilter,
+    accessStatusFilter,
+    translationStatusFilter,
+  ]);
 
   // Sort the filtered results
   const sortedLanguages = useMemo(() => {
@@ -380,24 +407,32 @@ function LanguageListModal({
                   onChange={(e: any) => setSearchTerm(e.target.value)}
                 />
                 <Button
-                  kind="ghost"
-                  size="sm"
+                  kind='ghost'
+                  size='sm'
                   onClick={() => setShowFilters(!showFilters)}
                   renderIcon={Filter}
                   hasIconOnly={false}
-                  style={{ marginLeft: '1rem' }}
+                  style={{ marginLeft: "1rem" }}
                 >
-                  Filters {(goalTypeFilter.length > 0 || hasScriptureFilter.length > 0 || 
-                           activeTranslationFilter || activeLangDevFilter || 
-                           accessStatusFilter.length > 0 || translationStatusFilter.length > 0) 
-                           ? `(Active)` : ''}
+                  Filters{" "}
+                  {goalTypeFilter.length > 0 ||
+                  hasScriptureFilter.length > 0 ||
+                  activeTranslationFilter ||
+                  activeLangDevFilter ||
+                  accessStatusFilter.length > 0 ||
+                  translationStatusFilter.length > 0
+                    ? `(Active)`
+                    : ""}
                 </Button>
-                {(goalTypeFilter.length > 0 || hasScriptureFilter.length > 0 || 
-                  activeTranslationFilter || activeLangDevFilter || 
-                  accessStatusFilter.length > 0 || translationStatusFilter.length > 0) && (
+                {(goalTypeFilter.length > 0 ||
+                  hasScriptureFilter.length > 0 ||
+                  activeTranslationFilter ||
+                  activeLangDevFilter ||
+                  accessStatusFilter.length > 0 ||
+                  translationStatusFilter.length > 0) && (
                   <Button
-                    kind="ghost"
-                    size="sm"
+                    kind='ghost'
+                    size='sm'
                     onClick={() => {
                       setGoalTypeFilter([]);
                       setHasScriptureFilter([]);
@@ -408,84 +443,108 @@ function LanguageListModal({
                     }}
                     renderIcon={Reset}
                     hasIconOnly
-                    iconDescription="Clear all filters"
+                    iconDescription='Clear all filters'
                   />
                 )}
               </TableToolbarContent>
             </TableToolbar>
-            
+
             {/* Filter Panel */}
             {showFilters && (
-              <div style={{
-                padding: '1rem',
-                borderBottom: '1px solid #e0e0e0',
-                background: '#f4f4f4'
-              }}>
+              <div
+                style={{
+                  padding: "1rem",
+                  borderBottom: "1px solid #e0e0e0",
+                  background: "#f4f4f4",
+                }}
+              >
                 <Grid>
                   <Column lg={4} md={4} sm={4}>
                     <MultiSelect
-                      id="goal-type-filter"
-                      titleText="Goal Type"
-                      label="Select goal types..."
-                      items={filterOptions.goalTypes.map(type => ({ id: type, text: type }))}
-                      selectedItems={goalTypeFilter.map(type => ({ id: type, text: type }))}
+                      id='goal-type-filter'
+                      titleText='Goal Type'
+                      label='Select goal types...'
+                      items={filterOptions.goalTypes.map((type) => ({ id: type, text: type }))}
+                      selectedItems={goalTypeFilter.map((type) => ({ id: type, text: type }))}
                       onChange={({ selectedItems }) => {
-                        setGoalTypeFilter(selectedItems ? selectedItems.map((item: any) => item.id) : []);
+                        setGoalTypeFilter(
+                          selectedItems ? selectedItems.map((item: any) => item.id) : []
+                        );
                         setPage(1);
                       }}
-                      size="sm"
+                      size='sm'
                     />
                   </Column>
                   <Column lg={4} md={4} sm={4}>
                     <MultiSelect
-                      id="has-scripture-filter"
-                      titleText="Has Scripture"
-                      label="Select scripture types..."
-                      items={filterOptions.hasScripture.map(type => ({ id: type, text: type }))}
-                      selectedItems={hasScriptureFilter.map(type => ({ id: type, text: type }))}
+                      id='has-scripture-filter'
+                      titleText='Has Scripture'
+                      label='Select scripture types...'
+                      items={filterOptions.hasScripture.map((type) => ({ id: type, text: type }))}
+                      selectedItems={hasScriptureFilter.map((type) => ({ id: type, text: type }))}
                       onChange={({ selectedItems }) => {
-                        setHasScriptureFilter(selectedItems ? selectedItems.map((item: any) => item.id) : []);
+                        setHasScriptureFilter(
+                          selectedItems ? selectedItems.map((item: any) => item.id) : []
+                        );
                         setPage(1);
                       }}
-                      size="sm"
+                      size='sm'
                     />
                   </Column>
                   <Column lg={4} md={4} sm={4}>
                     <MultiSelect
-                      id="access-status-filter"
-                      titleText="Access Status"
-                      label="Select access statuses..."
-                      items={filterOptions.accessStatuses.map(status => ({ id: status, text: status }))}
-                      selectedItems={accessStatusFilter.map(status => ({ id: status, text: status }))}
+                      id='access-status-filter'
+                      titleText='Access Status'
+                      label='Select access statuses...'
+                      items={filterOptions.accessStatuses.map((status) => ({
+                        id: status,
+                        text: status,
+                      }))}
+                      selectedItems={accessStatusFilter.map((status) => ({
+                        id: status,
+                        text: status,
+                      }))}
                       onChange={({ selectedItems }) => {
-                        setAccessStatusFilter(selectedItems ? selectedItems.map((item: any) => item.id) : []);
+                        setAccessStatusFilter(
+                          selectedItems ? selectedItems.map((item: any) => item.id) : []
+                        );
                         setPage(1);
                       }}
-                      size="sm"
+                      size='sm'
                     />
                   </Column>
-                  <Column lg={4} md={4} sm={4} style={{ marginTop: '1rem' }}>
+                  <Column lg={4} md={4} sm={4} style={{ marginTop: "1rem" }}>
                     <MultiSelect
-                      id="translation-status-filter"
-                      titleText="Translation Status"
-                      label="Select translation statuses..."
-                      items={filterOptions.translationStatuses.map(status => ({ id: status, text: status }))}
-                      selectedItems={translationStatusFilter.map(status => ({ id: status, text: status }))}
+                      id='translation-status-filter'
+                      titleText='Translation Status'
+                      label='Select translation statuses...'
+                      items={filterOptions.translationStatuses.map((status) => ({
+                        id: status,
+                        text: status,
+                      }))}
+                      selectedItems={translationStatusFilter.map((status) => ({
+                        id: status,
+                        text: status,
+                      }))}
                       onChange={({ selectedItems }) => {
-                        setTranslationStatusFilter(selectedItems ? selectedItems.map((item: any) => item.id) : []);
+                        setTranslationStatusFilter(
+                          selectedItems ? selectedItems.map((item: any) => item.id) : []
+                        );
                         setPage(1);
                       }}
-                      size="sm"
+                      size='sm'
                     />
                   </Column>
-                  <Column lg={4} md={4} sm={4} style={{ marginTop: '1rem' }}>
-                    <div style={{ marginBottom: '0.5rem' }}>
-                      <label style={{ fontSize: '0.75rem', fontWeight: 600 }}>Active Translation</label>
+                  <Column lg={4} md={4} sm={4} style={{ marginTop: "1rem" }}>
+                    <div style={{ marginBottom: "0.5rem" }}>
+                      <label style={{ fontSize: "0.75rem", fontWeight: 600 }}>
+                        Active Translation
+                      </label>
                     </div>
-                    <div style={{ display: 'flex', gap: '1rem' }}>
+                    <div style={{ display: "flex", gap: "1rem" }}>
                       <Checkbox
-                        id="active-translation-yes"
-                        labelText="Yes"
+                        id='active-translation-yes'
+                        labelText='Yes'
                         checked={activeTranslationFilter === "yes"}
                         onChange={(_, { checked }) => {
                           setActiveTranslationFilter(checked ? "yes" : null);
@@ -493,8 +552,8 @@ function LanguageListModal({
                         }}
                       />
                       <Checkbox
-                        id="active-translation-no"
-                        labelText="No"
+                        id='active-translation-no'
+                        labelText='No'
                         checked={activeTranslationFilter === "no"}
                         onChange={(_, { checked }) => {
                           setActiveTranslationFilter(checked ? "no" : null);
@@ -503,14 +562,16 @@ function LanguageListModal({
                       />
                     </div>
                   </Column>
-                  <Column lg={4} md={4} sm={4} style={{ marginTop: '1rem' }}>
-                    <div style={{ marginBottom: '0.5rem' }}>
-                      <label style={{ fontSize: '0.75rem', fontWeight: 600 }}>Active Language Dev</label>
+                  <Column lg={4} md={4} sm={4} style={{ marginTop: "1rem" }}>
+                    <div style={{ marginBottom: "0.5rem" }}>
+                      <label style={{ fontSize: "0.75rem", fontWeight: 600 }}>
+                        Active Language Dev
+                      </label>
                     </div>
-                    <div style={{ display: 'flex', gap: '1rem' }}>
+                    <div style={{ display: "flex", gap: "1rem" }}>
                       <Checkbox
-                        id="active-langdev-yes"
-                        labelText="Yes"
+                        id='active-langdev-yes'
+                        labelText='Yes'
                         checked={activeLangDevFilter === "yes"}
                         onChange={(_, { checked }) => {
                           setActiveLangDevFilter(checked ? "yes" : null);
@@ -518,8 +579,8 @@ function LanguageListModal({
                         }}
                       />
                       <Checkbox
-                        id="active-langdev-no"
-                        labelText="No"
+                        id='active-langdev-no'
+                        labelText='No'
                         checked={activeLangDevFilter === "no"}
                         onChange={(_, { checked }) => {
                           setActiveLangDevFilter(checked ? "no" : null);
@@ -579,17 +640,25 @@ function LanguageListModal({
               </TableBody>
             </Table>
             {filteredLanguages.length > 0 && (
-              <div style={{ 
-                padding: '0.5rem 1rem', 
-                background: '#f4f4f4',
-                borderTop: '1px solid #e0e0e0',
-                fontSize: '0.875rem',
-                color: '#525252'
-              }}>
-                Showing {filteredLanguages.length.toLocaleString()} of {languages.length.toLocaleString()} languages
-                {(searchTerm || goalTypeFilter.length > 0 || hasScriptureFilter.length > 0 || 
-                  activeTranslationFilter || activeLangDevFilter || 
-                  accessStatusFilter.length > 0 || translationStatusFilter.length > 0) && ' (filtered)'}
+              <div
+                style={{
+                  padding: "0.5rem 1rem",
+                  background: "#f4f4f4",
+                  borderTop: "1px solid #e0e0e0",
+                  fontSize: "0.875rem",
+                  color: "#525252",
+                }}
+              >
+                Showing {filteredLanguages.length.toLocaleString()} of{" "}
+                {languages.length.toLocaleString()} languages
+                {(searchTerm ||
+                  goalTypeFilter.length > 0 ||
+                  hasScriptureFilter.length > 0 ||
+                  activeTranslationFilter ||
+                  activeLangDevFilter ||
+                  accessStatusFilter.length > 0 ||
+                  translationStatusFilter.length > 0) &&
+                  " (filtered)"}
               </div>
             )}
             {filteredLanguages.length > pageSize && (
