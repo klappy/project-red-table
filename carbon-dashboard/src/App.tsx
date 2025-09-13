@@ -88,11 +88,6 @@ function LanguageListModal({
     const accessStatuses = new Set<string>();
     const translationStatuses = new Set<string>();
 
-    // Debug: Check if we have languages
-    console.log("Filter Options - Languages count:", languages.length);
-    if (languages.length > 0) {
-      console.log("Sample language data:", languages[0]);
-    }
 
     languages.forEach((lang) => {
       // Goal Type
@@ -114,7 +109,7 @@ function LanguageListModal({
       const access = lang["All Access Status"];
       if (access && access !== "") accessStatuses.add(access);
 
-      // Translation Status  
+      // Translation Status
       const translation = lang["Translation Status"];
       if (translation && translation !== "") translationStatuses.add(translation);
     });
@@ -130,8 +125,6 @@ function LanguageListModal({
       accessStatuses: Array.from(accessStatuses).sort(),
       translationStatuses: Array.from(translationStatuses).sort(),
     };
-    
-    console.log("Filter options generated:", result);
     
     return result;
   }, [languages]);
@@ -383,12 +376,7 @@ function LanguageListModal({
       <DataTable
         rows={rows}
         headers={headers}
-        isSortable
-        sortRow={(_rowA: any, _rowB: any, _info: any) => {
-          // We handle sorting ourselves, just return 0
-          // The actual sorting happens in sortedLanguages
-          return 0;
-        }}
+        isSortable={false}  // Disable Carbon's built-in sorting to prevent conflicts
       >
         {({
           rows,
@@ -464,8 +452,17 @@ function LanguageListModal({
                       id='goal-type-filter'
                       titleText='Goal Type'
                       label='Select goal types...'
-                      items={filterOptions.goalTypes.map((type) => ({ id: type, text: type }))}
-                      selectedItems={goalTypeFilter.map((type) => ({ id: type, text: type }))}
+                      items={filterOptions.goalTypes.map((type) => ({ 
+                        id: type, 
+                        text: type,
+                        label: type 
+                      }))}
+                      itemToString={(item) => (item ? item.text : '')}
+                      selectedItems={goalTypeFilter.map((type) => ({ 
+                        id: type, 
+                        text: type,
+                        label: type 
+                      }))}
                       onChange={({ selectedItems }) => {
                         setGoalTypeFilter(
                           selectedItems ? selectedItems.map((item: any) => item.id) : []
@@ -480,8 +477,17 @@ function LanguageListModal({
                       id='has-scripture-filter'
                       titleText='Has Scripture'
                       label='Select scripture types...'
-                      items={filterOptions.hasScripture.map((type) => ({ id: type, text: type }))}
-                      selectedItems={hasScriptureFilter.map((type) => ({ id: type, text: type }))}
+                      items={filterOptions.hasScripture.map((type) => ({ 
+                        id: type, 
+                        text: type,
+                        label: type 
+                      }))}
+                      itemToString={(item) => (item ? item.text : '')}
+                      selectedItems={hasScriptureFilter.map((type) => ({ 
+                        id: type, 
+                        text: type,
+                        label: type 
+                      }))}
                       onChange={({ selectedItems }) => {
                         setHasScriptureFilter(
                           selectedItems ? selectedItems.map((item: any) => item.id) : []
@@ -499,10 +505,13 @@ function LanguageListModal({
                       items={filterOptions.accessStatuses.map((status) => ({
                         id: status,
                         text: status,
+                        label: status
                       }))}
+                      itemToString={(item) => (item ? item.text : '')}
                       selectedItems={accessStatusFilter.map((status) => ({
                         id: status,
                         text: status,
+                        label: status
                       }))}
                       onChange={({ selectedItems }) => {
                         setAccessStatusFilter(
@@ -521,10 +530,13 @@ function LanguageListModal({
                       items={filterOptions.translationStatuses.map((status) => ({
                         id: status,
                         text: status,
+                        label: status
                       }))}
+                      itemToString={(item) => (item ? item.text : '')}
                       selectedItems={translationStatusFilter.map((status) => ({
                         id: status,
                         text: status,
+                        label: status
                       }))}
                       onChange={({ selectedItems }) => {
                         setTranslationStatusFilter(
@@ -599,7 +611,11 @@ function LanguageListModal({
                     <TableHeader
                       {...getHeaderProps({
                         header,
-                        onClick: () => {
+                        onClick: (e: any) => {
+                          // Prevent default to avoid scrolling
+                          e.preventDefault();
+                          e.stopPropagation();
+                          
                           // Handle our custom sorting
                           if (sortKey === header.key) {
                             // Toggle direction if same column
@@ -615,6 +631,7 @@ function LanguageListModal({
                       key={header.key}
                       isSortHeader={sortKey === header.key}
                       sortDirection={sortKey === header.key ? sortDirection : "NONE"}
+                      style={{ cursor: 'pointer' }}
                     >
                       {header.header}
                     </TableHeader>
