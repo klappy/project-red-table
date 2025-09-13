@@ -839,24 +839,6 @@ function HeroRedTable({
               </div>
             </div>
 
-            {isMobile && (
-              <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-                <Button
-                  kind='ghost'
-                  size='lg'
-                  onClick={() => setShowDetail(!showDetail)}
-                  renderIcon={showDetail ? ViewOff : View}
-                  style={{
-                    color: "white",
-                    borderColor: "white",
-                    width: "100%",
-                    maxWidth: "300px",
-                  }}
-                >
-                  {showDetail ? "Hide Details" : "Show Breakdown"}
-                </Button>
-              </div>
-            )}
           </div>
         </Column>
 
@@ -904,24 +886,22 @@ function HeroRedTable({
           </div>
         ))}
       </div>
-          
-          {/* Button below the stats */}
-          {!isMobile && (
-            <div style={{ marginTop: "1.5rem", textAlign: "right" }}>
-              <Button
-                kind='ghost'
-                size='lg'
-                onClick={() => setShowDetail(!showDetail)}
-                renderIcon={showDetail ? ViewOff : View}
-                style={{
-                  color: "white",
-                  borderColor: "white",
-                }}
-              >
-                {showDetail ? "Hide Details" : "Show Breakdown"}
-              </Button>
-            </div>
-          )}
+
+          {/* Button below the stats - always render, let CSS handle responsive */}
+          <div className="show-breakdown-button" style={{ marginTop: "1.5rem", textAlign: "right" }}>
+            <Button
+              kind='ghost'
+              size='lg'
+              onClick={() => setShowDetail(!showDetail)}
+              renderIcon={showDetail ? ViewOff : View}
+              style={{
+                color: "white",
+                borderColor: "white",
+              }}
+            >
+              {showDetail ? "Hide Details" : "Show Breakdown"}
+            </Button>
+          </div>
         </Column>
       </Grid>
 

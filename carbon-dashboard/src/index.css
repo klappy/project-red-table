@@ -146,17 +146,16 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
   }
 
-  /* Stack summary stats vertically on very small screens */
-  @media (max-width: 480px) {
-    .summary-stats > div {
-      margin-bottom: 1rem;
-    }
-  }
 }
 
-/* Ultra-mobile improvements (phones) */
+/* Ultra-mobile improvements (phones) - SINGLE CONSOLIDATED MEDIA QUERY */
 /* WARNING: DO NOT let formatters lowercase CSS property names like gridTemplateColumns */
 @media (max-width: 480px) {
+  /* Summary stats from above */
+  .summary-stats > div {
+    margin-bottom: 1rem;
+  }
+  
   /* Global padding reduction for mobile - AGGRESSIVE */
   body {
     overflow-x: hidden !important;
@@ -321,6 +320,19 @@ body {
 @media (min-width: 769px) {
   .countdown-short {
     display: none;
+  }
+}
+
+/* Button responsive positioning */
+@media (max-width: 480px) {
+  .show-breakdown-button {
+    text-align: center !important;
+    margin-top: 1rem !important;
+  }
+  
+  .show-breakdown-button button {
+    width: 100%;
+    max-width: 300px;
   }
 }
 
