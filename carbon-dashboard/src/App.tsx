@@ -997,9 +997,26 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
               disabled={loading || !url}
               renderIcon={loading ? Loading : Upload}
               size='sm'
-              style={{ marginTop: "0.5rem" }}
+              style={{ 
+                marginTop: "0.5rem",
+                backgroundColor: loading || !url ? "#525252" : "#c1d72e",
+                borderColor: loading || !url ? "#525252" : "#c1d72e",
+                color: loading || !url ? "#a8a8a8" : "#000000"
+              }}
+              onMouseEnter={(e) => {
+                if (!loading && url) {
+                  e.currentTarget.style.backgroundColor = "#a6ba00";
+                  e.currentTarget.style.borderColor = "#a6ba00";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!loading && url) {
+                  e.currentTarget.style.backgroundColor = "#c1d72e";
+                  e.currentTarget.style.borderColor = "#c1d72e";
+                }
+              }}
             >
-              {loading ? "Loading..." : "Load"}
+              {loading ? "Importing..." : "Import"}
             </Button>
           </div>
 
