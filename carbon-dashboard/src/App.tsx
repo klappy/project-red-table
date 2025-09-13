@@ -88,7 +88,6 @@ function LanguageListModal({
     const accessStatuses = new Set<string>();
     const translationStatuses = new Set<string>();
 
-
     languages.forEach((lang) => {
       // Goal Type
       const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
@@ -125,7 +124,7 @@ function LanguageListModal({
       accessStatuses: Array.from(accessStatuses).sort(),
       translationStatuses: Array.from(translationStatuses).sort(),
     };
-    
+
     return result;
   }, [languages]);
 
@@ -347,6 +346,32 @@ function LanguageListModal({
   useEffect(() => {
     setPage(1);
   }, [searchTerm, sortKey, sortDirection]);
+  
+  // Prevent scroll on focus when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      const preventScroll = (e: FocusEvent) => {
+        if (e.target && (e.target as any).preventScroll !== undefined) {
+          (e.target as any).preventScroll = true;
+        }
+      };
+      
+      // Add event listener to prevent scroll on focus
+      document.addEventListener('focusin', preventScroll, true);
+      
+      // Also override scrollIntoView temporarily
+      const originalScrollIntoView = Element.prototype.scrollIntoView;
+      Element.prototype.scrollIntoView = function() {
+        // Do nothing - prevent scrolling
+        return;
+      };
+      
+      return () => {
+        document.removeEventListener('focusin', preventScroll, true);
+        Element.prototype.scrollIntoView = originalScrollIntoView;
+      };
+    }
+  }, [isOpen]);
 
   return (
     <Modal
@@ -372,11 +397,13 @@ function LanguageListModal({
       onRequestSubmit={onClose}
       size='lg'
       hasScrollingContent
+      passiveModal
     >
       <DataTable
         rows={rows}
         headers={headers}
-        isSortable={false}  // Disable Carbon's built-in sorting to prevent conflicts
+        isSortable
+        sortRow={() => 0} // Return 0 to disable Carbon's sorting logic but keep headers clickable
       >
         {({
           rows,
@@ -452,16 +479,16 @@ function LanguageListModal({
                       id='goal-type-filter'
                       titleText='Goal Type'
                       label='Select goal types...'
-                      items={filterOptions.goalTypes.map((type) => ({ 
-                        id: type, 
+                      items={filterOptions.goalTypes.map((type) => ({
+                        id: type,
                         text: type,
-                        label: type 
+                        label: type,
                       }))}
-                      itemToString={(item) => (item ? item.text : '')}
-                      selectedItems={goalTypeFilter.map((type) => ({ 
-                        id: type, 
+                      itemToString={(item) => (item ? item.text : "")}
+                      selectedItems={goalTypeFilter.map((type) => ({
+                        id: type,
                         text: type,
-                        label: type 
+                        label: type,
                       }))}
                       onChange={({ selectedItems }) => {
                         setGoalTypeFilter(
@@ -477,16 +504,16 @@ function LanguageListModal({
                       id='has-scripture-filter'
                       titleText='Has Scripture'
                       label='Select scripture types...'
-                      items={filterOptions.hasScripture.map((type) => ({ 
-                        id: type, 
+                      items={filterOptions.hasScripture.map((type) => ({
+                        id: type,
                         text: type,
-                        label: type 
+                        label: type,
                       }))}
-                      itemToString={(item) => (item ? item.text : '')}
-                      selectedItems={hasScriptureFilter.map((type) => ({ 
-                        id: type, 
+                      itemToString={(item) => (item ? item.text : "")}
+                      selectedItems={hasScriptureFilter.map((type) => ({
+                        id: type,
                         text: type,
-                        label: type 
+                        label: type,
                       }))}
                       onChange={({ selectedItems }) => {
                         setHasScriptureFilter(
@@ -505,13 +532,13 @@ function LanguageListModal({
                       items={filterOptions.accessStatuses.map((status) => ({
                         id: status,
                         text: status,
-                        label: status
+                        label: status,
                       }))}
-                      itemToString={(item) => (item ? item.text : '')}
+                      itemToString={(item) => (item ? item.text : "")}
                       selectedItems={accessStatusFilter.map((status) => ({
                         id: status,
                         text: status,
-                        label: status
+                        label: status,
                       }))}
                       onChange={({ selectedItems }) => {
                         setAccessStatusFilter(
@@ -530,13 +557,13 @@ function LanguageListModal({
                       items={filterOptions.translationStatuses.map((status) => ({
                         id: status,
                         text: status,
-                        label: status
+                        label: status,
                       }))}
-                      itemToString={(item) => (item ? item.text : '')}
+                      itemToString={(item) => (item ? item.text : "")}
                       selectedItems={translationStatusFilter.map((status) => ({
                         id: status,
                         text: status,
-                        label: status
+                        label: status,
                       }))}
                       onChange={({ selectedItems }) => {
                         setTranslationStatusFilter(
@@ -615,7 +642,7 @@ function LanguageListModal({
                           // Prevent default to avoid scrolling
                           e.preventDefault();
                           e.stopPropagation();
-                          
+
                           // Handle our custom sorting
                           if (sortKey === header.key) {
                             // Toggle direction if same column
@@ -631,7 +658,7 @@ function LanguageListModal({
                       key={header.key}
                       isSortHeader={sortKey === header.key}
                       sortDirection={sortKey === header.key ? sortDirection : "NONE"}
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: "pointer" }}
                     >
                       {header.header}
                     </TableHeader>
