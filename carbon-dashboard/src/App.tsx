@@ -420,28 +420,25 @@ function LanguageListModal({
                   persistent
                   onChange={(e: any) => setSearchTerm(e.target.value)}
                 />
-                <Button
-                  kind='ghost'
-                  size='sm'
+                <button
+                  className='cds--btn cds--btn--ghost cds--btn--sm'
                   onClick={() => setShowFilters(!showFilters)}
-                  renderIcon={showFilters ? ChevronUp : ChevronDown}
                   style={{
                     marginLeft: "1rem",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.25rem",
                   }}
                 >
-                  <Filter size={16} style={{ 
-                    verticalAlign: "middle",
-                    marginRight: "0.375rem",
-                    marginTop: "-2px"
-                  }} />
-                  Filters
+                  <Filter size={16} />
+                  <span>Filters</span>
                   {(goalTypeFilter.length > 0 ||
                     hasScriptureFilter.length > 0 ||
                     activeTranslationFilter ||
                     activeLangDevFilter ||
                     accessStatusFilter.length > 0 ||
                     translationStatusFilter.length > 0) && (
-                    <Tag type='blue' size='sm' style={{ marginLeft: "0.5rem" }}>
+                    <Tag type='blue' size='sm' style={{ marginLeft: "0.25rem" }}>
                       {
                         [
                           ...goalTypeFilter,
@@ -454,7 +451,8 @@ function LanguageListModal({
                       }
                     </Tag>
                   )}
-                </Button>
+                  {showFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                </button>
                 {(goalTypeFilter.length > 0 ||
                   hasScriptureFilter.length > 0 ||
                   activeTranslationFilter ||
