@@ -352,16 +352,16 @@ function LanguageListModal({
     if (isOpen) {
       // Override scrollIntoView for elements in the modal
       const originalScrollIntoView = Element.prototype.scrollIntoView;
-      Element.prototype.scrollIntoView = function(arg?: boolean | ScrollIntoViewOptions) {
+      Element.prototype.scrollIntoView = function (arg?: boolean | ScrollIntoViewOptions) {
         // Check if this element is inside the modal
-        if ((this as HTMLElement).closest('.cds--modal')) {
+        if ((this as HTMLElement).closest(".cds--modal")) {
           // Just don't scroll for elements inside the modal
           return;
         }
         // For everything else, use the original behavior
         return originalScrollIntoView.call(this, arg);
       };
-      
+
       return () => {
         // Restore original scrollIntoView
         Element.prototype.scrollIntoView = originalScrollIntoView;
@@ -465,13 +465,14 @@ function LanguageListModal({
             {showFilters && (
               <div
                 style={{
-                  padding: "1rem",
+                  padding: "1.5rem",
                   borderBottom: "1px solid #e0e0e0",
                   background: "#f4f4f4",
                 }}
               >
-                <Grid>
-                  <Column lg={4} md={4} sm={4}>
+                <Grid narrow fullWidth>
+                  {/* First row: 3 columns of dropdowns */}
+                  <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
                     <MultiSelect
                       id='goal-type-filter'
                       titleText='Goal Type'
@@ -496,7 +497,7 @@ function LanguageListModal({
                       size='sm'
                     />
                   </Column>
-                  <Column lg={4} md={4} sm={4}>
+                  <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
                     <MultiSelect
                       id='has-scripture-filter'
                       titleText='Has Scripture'
@@ -521,7 +522,7 @@ function LanguageListModal({
                       size='sm'
                     />
                   </Column>
-                  <Column lg={4} md={4} sm={4}>
+                  <Column lg={6} md={4} sm={4} style={{ marginBottom: "1rem" }}>
                     <MultiSelect
                       id='access-status-filter'
                       titleText='Access Status'
@@ -546,7 +547,9 @@ function LanguageListModal({
                       size='sm'
                     />
                   </Column>
-                  <Column lg={4} md={4} sm={4} style={{ marginTop: "1rem" }}>
+                  
+                  {/* Second row: 1 dropdown and 2 checkbox groups */}
+                  <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
                     <MultiSelect
                       id='translation-status-filter'
                       titleText='Translation Status'
@@ -571,59 +574,69 @@ function LanguageListModal({
                       size='sm'
                     />
                   </Column>
-                  <Column lg={4} md={4} sm={4} style={{ marginTop: "1rem" }}>
-                    <div style={{ marginBottom: "0.5rem" }}>
-                      <label style={{ fontSize: "0.75rem", fontWeight: 600 }}>
+                  <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
+                    <fieldset style={{ border: "none", padding: 0, margin: 0 }}>
+                      <legend style={{ 
+                        fontSize: "0.75rem", 
+                        fontWeight: 600,
+                        marginBottom: "0.5rem",
+                        color: "#161616"
+                      }}>
                         Active Translation
-                      </label>
-                    </div>
-                    <div style={{ display: "flex", gap: "1rem" }}>
-                      <Checkbox
-                        id='active-translation-yes'
-                        labelText='Yes'
-                        checked={activeTranslationFilter === "yes"}
-                        onChange={(_, { checked }) => {
-                          setActiveTranslationFilter(checked ? "yes" : null);
-                          setPage(1);
-                        }}
-                      />
-                      <Checkbox
-                        id='active-translation-no'
-                        labelText='No'
-                        checked={activeTranslationFilter === "no"}
-                        onChange={(_, { checked }) => {
-                          setActiveTranslationFilter(checked ? "no" : null);
-                          setPage(1);
-                        }}
-                      />
-                    </div>
+                      </legend>
+                      <div style={{ display: "flex", gap: "1.5rem" }}>
+                        <Checkbox
+                          id='active-translation-yes'
+                          labelText='Yes'
+                          checked={activeTranslationFilter === "yes"}
+                          onChange={(_, { checked }) => {
+                            setActiveTranslationFilter(checked ? "yes" : null);
+                            setPage(1);
+                          }}
+                        />
+                        <Checkbox
+                          id='active-translation-no'
+                          labelText='No'
+                          checked={activeTranslationFilter === "no"}
+                          onChange={(_, { checked }) => {
+                            setActiveTranslationFilter(checked ? "no" : null);
+                            setPage(1);
+                          }}
+                        />
+                      </div>
+                    </fieldset>
                   </Column>
-                  <Column lg={4} md={4} sm={4} style={{ marginTop: "1rem" }}>
-                    <div style={{ marginBottom: "0.5rem" }}>
-                      <label style={{ fontSize: "0.75rem", fontWeight: 600 }}>
+                  <Column lg={6} md={4} sm={4} style={{ marginBottom: "1rem" }}>
+                    <fieldset style={{ border: "none", padding: 0, margin: 0 }}>
+                      <legend style={{ 
+                        fontSize: "0.75rem", 
+                        fontWeight: 600,
+                        marginBottom: "0.5rem",
+                        color: "#161616"
+                      }}>
                         Active Language Dev
-                      </label>
-                    </div>
-                    <div style={{ display: "flex", gap: "1rem" }}>
-                      <Checkbox
-                        id='active-langdev-yes'
-                        labelText='Yes'
-                        checked={activeLangDevFilter === "yes"}
-                        onChange={(_, { checked }) => {
-                          setActiveLangDevFilter(checked ? "yes" : null);
-                          setPage(1);
-                        }}
-                      />
-                      <Checkbox
-                        id='active-langdev-no'
-                        labelText='No'
-                        checked={activeLangDevFilter === "no"}
-                        onChange={(_, { checked }) => {
-                          setActiveLangDevFilter(checked ? "no" : null);
-                          setPage(1);
-                        }}
-                      />
-                    </div>
+                      </legend>
+                      <div style={{ display: "flex", gap: "1.5rem" }}>
+                        <Checkbox
+                          id='active-langdev-yes'
+                          labelText='Yes'
+                          checked={activeLangDevFilter === "yes"}
+                          onChange={(_, { checked }) => {
+                            setActiveLangDevFilter(checked ? "yes" : null);
+                            setPage(1);
+                          }}
+                        />
+                        <Checkbox
+                          id='active-langdev-no'
+                          labelText='No'
+                          checked={activeLangDevFilter === "no"}
+                          onChange={(_, { checked }) => {
+                            setActiveLangDevFilter(checked ? "no" : null);
+                            setPage(1);
+                          }}
+                        />
+                      </div>
+                    </fieldset>
                   </Column>
                 </Grid>
               </div>
