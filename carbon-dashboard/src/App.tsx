@@ -347,6 +347,28 @@ function LanguageListModal({
     setPage(1);
   }, [searchTerm, sortKey, sortDirection]);
 
+  // Prevent scroll jumping on focus events within the modal
+  useEffect(() => {
+    if (isOpen) {
+      // Override scrollIntoView for elements in the modal
+      const originalScrollIntoView = Element.prototype.scrollIntoView;
+      Element.prototype.scrollIntoView = function(arg?: boolean | ScrollIntoViewOptions) {
+        // Check if this element is inside the modal
+        if ((this as HTMLElement).closest('.cds--modal')) {
+          // Just don't scroll for elements inside the modal
+          return;
+        }
+        // For everything else, use the original behavior
+        return originalScrollIntoView.call(this, arg);
+      };
+      
+      return () => {
+        // Restore original scrollIntoView
+        Element.prototype.scrollIntoView = originalScrollIntoView;
+      };
+    }
+  }, [isOpen]);
+
   return (
     <Modal
       open={isOpen}
