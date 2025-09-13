@@ -351,8 +351,8 @@ function LanguageListModal({
   useEffect(() => {
     if (isOpen) {
       // Store current scroll position
-      const modalScrollTop = document.querySelector('.bx--modal-container')?.scrollTop || 0;
-      
+      const modalScrollTop = document.querySelector(".bx--modal-container")?.scrollTop || 0;
+
       const preventScroll = (e: FocusEvent) => {
         e.preventDefault();
         if (e.target && (e.target as any).focus) {
@@ -368,22 +368,22 @@ function LanguageListModal({
       const originalScrollIntoView = Element.prototype.scrollIntoView;
       const originalScrollTo = window.scrollTo;
       const originalScrollBy = window.scrollBy;
-      
+
       Element.prototype.scrollIntoView = function () {
         // Do nothing - prevent scrolling
         return;
       };
-      
-      window.scrollTo = function() {
+
+      window.scrollTo = function () {
         // Restore modal scroll position if it changed
-        const modalContainer = document.querySelector('.bx--modal-container');
+        const modalContainer = document.querySelector(".bx--modal-container");
         if (modalContainer) {
           modalContainer.scrollTop = modalScrollTop;
         }
         return;
       };
-      
-      window.scrollBy = function() {
+
+      window.scrollBy = function () {
         // Do nothing
         return;
       };
@@ -446,19 +446,53 @@ function LanguageListModal({
                   persistent
                   onChange={(e: any) => {
                     // Prevent scroll on search
-                    const currentScrollPos = window.pageYOffset || document.documentElement.scrollTop;
+                    const modalContainer = document.querySelector(".bx--modal-container");
+                    const currentScrollPos = modalContainer?.scrollTop || 0;
                     setSearchTerm(e.target.value);
                     // Restore scroll position after state update
                     setTimeout(() => {
-                      window.scrollTo(0, currentScrollPos);
+                      if (modalContainer) {
+                        modalContainer.scrollTop = currentScrollPos;
+                      }
                     }, 0);
                   }}
                   onFocus={(e: any) => {
-                    // Prevent scroll on focus
+                    // Aggressively prevent scroll on focus
                     e.preventDefault();
-                    if (e.target && e.target.focus) {
-                      e.target.focus({ preventScroll: true });
-                    }
+                    e.stopPropagation();
+                    
+                    const modalContainer = document.querySelector(".bx--modal-container");
+                    const currentScrollPos = modalContainer?.scrollTop || 0;
+                    
+                    // Use RAF to ensure we catch any async scrolling
+                    requestAnimationFrame(() => {
+                      if (modalContainer) {
+                        modalContainer.scrollTop = currentScrollPos;
+                      }
+                    });
+                    
+                    // And again after a timeout to catch delayed scrolling
+                    setTimeout(() => {
+                      if (modalContainer) {
+                        modalContainer.scrollTop = currentScrollPos;
+                      }
+                    }, 0);
+                    
+                    setTimeout(() => {
+                      if (modalContainer) {
+                        modalContainer.scrollTop = currentScrollPos;
+                      }
+                    }, 100);
+                  }}
+                  onClick={() => {
+                    // Also prevent scroll on click
+                    const modalContainer = document.querySelector(".bx--modal-container");
+                    const currentScrollPos = modalContainer?.scrollTop || 0;
+                    setTimeout(() => {
+                      if (modalContainer) {
+                        modalContainer.scrollTop = currentScrollPos;
+                      }
+                    }, 0);
                   }}
                 />
                 <Button
