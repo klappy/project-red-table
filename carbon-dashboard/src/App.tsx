@@ -1899,32 +1899,15 @@ function HeroRedTable({ languages = [] }: { languages: any[] }) {
             ))}
           </div>
 
-          {/* Buttons below the stats - always render, let CSS handle responsive */}
+          {/* Show/Hide breakdown button */}
           <div
             className='show-breakdown-button'
             style={{
               marginTop: "1.5rem",
               display: "flex",
-              gap: "1rem",
               justifyContent: "flex-end",
-              flexWrap: "wrap",
             }}
           >
-            <Button
-              kind='ghost'
-              size='lg'
-              onClick={() => {
-                setModalScope(null);
-                setModalOpen(true);
-              }}
-              renderIcon={List}
-              style={{
-                color: "white",
-                borderColor: "white",
-              }}
-            >
-              View All {stats.total.toLocaleString()} At Risk
-            </Button>
             <Button
               kind='ghost'
               size='lg'
