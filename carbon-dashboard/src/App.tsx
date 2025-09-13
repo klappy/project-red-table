@@ -970,7 +970,7 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
             ? {
                 backgroundColor: "#24a148",
                 borderColor: "#24a148",
-                color: "#000000",
+                color: "#ffffff",
               }
             : {}
         }
@@ -1018,12 +1018,12 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
               disabled={loading || !url}
               renderIcon={loading ? Loading : Upload}
               size='sm'
-              style={{
-                marginTop: "0.5rem",
-                backgroundColor: loading || !url ? "#525252" : "#24a148",
-                borderColor: loading || !url ? "#525252" : "#24a148",
-                color: loading || !url ? "#a8a8a8" : "#000000",
-              }}
+                style={{
+                  marginTop: "0.5rem",
+                  backgroundColor: loading || !url ? "#525252" : "#24a148",
+                  borderColor: loading || !url ? "#525252" : "#24a148",
+                  color: loading || !url ? "#a8a8a8" : "#ffffff",
+                }}
               onMouseEnter={(e) => {
                 if (!loading && url) {
                   e.currentTarget.style.backgroundColor = "#198038";
