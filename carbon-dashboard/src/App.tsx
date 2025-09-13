@@ -90,7 +90,17 @@ function LanguageListModal({
     language: lang["Language"] || lang["Language Name"] || "Unknown",
     country: lang["Country"] || "—",
     population: toNumber(lang["First Language Population"]) || 0,
+    completed: toNumber(lang["Text Chapters Completed"]) || 0,
     goal: lang["All Access Chapter Goal"] || "—",
+    progress: (() => {
+      const completed = toNumber(lang["Text Chapters Completed"]) || 0;
+      const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
+      if (goal > 0) {
+        const percent = ((completed / goal) * 100).toFixed(1);
+        return `${percent}%`;
+      }
+      return "—";
+    })(),
     status: lang["All Access Status"] || "—",
     translationStatus: lang["Translation Status"] || "—",
     raw: lang, // Keep raw data for potential expansion
@@ -100,7 +110,9 @@ function LanguageListModal({
     { key: "language", header: "Language" },
     { key: "country", header: "Country" },
     { key: "population", header: "Population" },
-    { key: "goal", header: "Goal (Chapters)" },
+    { key: "completed", header: "Chapters Done" },
+    { key: "goal", header: "Chapter Goal" },
+    { key: "progress", header: "Progress" },
     { key: "status", header: "Access Status" },
     { key: "translationStatus", header: "Translation Status" },
   ];
@@ -169,7 +181,7 @@ function LanguageListModal({
                   <TableRow {...getRowProps({ row })} key={row.id}>
                     {row.cells.map((cell: any) => (
                       <TableCell key={cell.id}>
-                        {cell.info.header === "population"
+                        {cell.info.header === "population" || cell.info.header === "completed"
                           ? cell.value.toLocaleString()
                           : cell.value}
                       </TableCell>
