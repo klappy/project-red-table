@@ -2421,7 +2421,7 @@ export default function App() {
               </h2>
 
               <Grid>
-                <Column lg={4} md={8} sm={4} style={{ marginBottom: "1.5rem" }}>
+                <Column lg={5} md={8} sm={4} style={{ marginBottom: "1.5rem" }}>
                   <SecondaryAnalysis
                     title='No Translation Activity'
                     data={summary.noActivity}
@@ -2431,7 +2431,7 @@ export default function App() {
                     translationStatusFilter='translation not started'
                   />
                 </Column>
-                <Column lg={4} md={8} sm={4} style={{ marginBottom: "1.5rem" }}>
+                <Column lg={6} md={8} sm={4} style={{ marginBottom: "1.5rem" }}>
                   <SecondaryAnalysis
                     title='Language Development Only'
                     data={summary.activeLDSE}
@@ -2441,7 +2441,7 @@ export default function App() {
                     translationStatusFilter='language development'
                   />
                 </Column>
-                <Column lg={4} md={8} sm={4} style={{ marginBottom: "1.5rem" }}>
+                <Column lg={5} md={8} sm={4} style={{ marginBottom: "1.5rem" }}>
                   <SecondaryAnalysis
                     title='Active Translation (Pace Unknown)'
                     data={summary.activeTx}

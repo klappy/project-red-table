@@ -412,24 +412,35 @@ td {
   }
 }
 
-/* Hide useless Carbon DataTable toolbar action buttons */
+/* NUCLEAR OPTION: Hide ALL Carbon DataTable toolbar action buttons */
+/* Hide the entire action list section on the right side of toolbar */
+.cds--table-toolbar .cds--toolbar-content > div:last-child,
+.cds--table-toolbar .cds--toolbar-content > .cds--action-list,
+.cds--toolbar-content > *:last-child:not(.cds--toolbar-search-container),
+.cds--toolbar-content > section,
+/* Also hide any individual action buttons that might appear */
 .cds--table-toolbar .cds--toolbar-action,
-.cds--table-toolbar .cds--btn--icon-only:not(:has(.cds--search-magnifier-icon)),
+.cds--table-toolbar .cds--btn--icon-only:not(:has(.cds--search-magnifier-icon)):not(:has(svg[name="Filter"])):not(:has(svg[name="Reset"])),
 .cds--table-toolbar .cds--overflow-menu,
-.cds--table-toolbar .cds--action-list,
-.cds--data-table-container .cds--action-list,
+.cds--table-toolbar button[title*="density"],
+.cds--table-toolbar button[title*="export"],
+.cds--table-toolbar button[title*="settings"],
 .cds--batch-actions,
-.cds--toolbar-action,
-.cds--toolbar-content .cds--overflow-menu,
-.cds--table-toolbar button[aria-label*="density"],
-.cds--table-toolbar button[aria-label*="export"],
-.cds--table-toolbar button[aria-label*="settings"],
-.cds--table-toolbar > div:last-child:has(.cds--overflow-menu),
-.cds--action-list,
-.cds--toolbar-content > .cds--action-list,
-.cds--table-toolbar-action,
-.cds--toolbar-content--end {
+/* Hide action list and its container */
+[class*="action-list"],
+[class*="toolbar-action"]:not(button),
+/* Target the actual buttons by their position */
+.cds--toolbar-content > :nth-child(n+3):not(button:has(svg)),
+/* More specific targeting */
+.cds--btn--ghost.cds--btn--icon-only:has(.cds--overflow-menu__icon),
+/* SUPER NUCLEAR: Target ANY icon button that's not search/filter/reset */
+.cds--btn--icon-only:not([aria-label*="Search"]):not([aria-label*="Filter"]):not([aria-label*="Clear"]):not([aria-label*="Reset"]):not(:has(path[d*="M21.87"])):not(:has(path[d*="M13.74"])):not(:has(path[d*="M24 4H6a2"])) {
   display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 /* Override all blue colors to green */
