@@ -86,29 +86,22 @@ function LanguageListModal({
   const [hasScriptureFilter, setHasScriptureFilter] = useState<string[]>([]);
   const [activeTranslationFilter, setActiveTranslationFilter] = useState<string | null>(null);
   const [activeLangDevFilter, setActiveLangDevFilter] = useState<string | null>(null);
-  const [accessStatusFilter, setAccessStatusFilter] = useState<string[]>([]);
+  const [accessStatusFilter, setAccessStatusFilter] = useState<string[]>(
+    initialFilters.completed ? ["Goal met in language", "Goal met via second language"] : []
+  );
   const [translationStatusFilter, setTranslationStatusFilter] = useState<string[]>([]);
 
-  // Apply initial filters to get base dataset
-  const baseLanguages = useMemo(() => {
-    if (initialFilters.completed === true) {
-      return languages.filter((lang) => {
-        const completed = toNumber(lang["Text Chapters Completed"]) || 0;
-        const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
-        return goal > 0 && completed >= goal;
-      });
-    }
-    return languages;
-  }, [languages, initialFilters.completed]);
+  // Don't apply initial filters - let the regular filter system handle it
+  const baseLanguages = languages;
 
-  // Get unique values for filters from base dataset
+  // Get unique values for filters from full dataset
   const filterOptions = useMemo(() => {
     const goalTypes = new Set<string>();
     const hasScripture = new Set<string>();
     const accessStatuses = new Set<string>();
     const translationStatuses = new Set<string>();
 
-    baseLanguages.forEach((lang) => {
+    languages.forEach((lang) => {
       // Goal Type
       const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
       if (goal === 25) goalTypes.add("Portion");
@@ -146,7 +139,7 @@ function LanguageListModal({
     };
 
     return result;
-  }, [baseLanguages]);
+  }, [languages]);
 
   // Filter languages based on search and filters
   const filteredLanguages = useMemo(() => {
@@ -386,7 +379,14 @@ function LanguageListModal({
           />
           <span>{title}</span>
           <Tag type='blue' size='md'>
-            {baseLanguages.length.toLocaleString()} languages
+            {(initialFilters.completed
+              ? languages.filter((lang) => {
+                  const completed = toNumber(lang["Text Chapters Completed"]) || 0;
+                  const goal = toNumber(lang["All Access Chapter Goal"]) || 0;
+                  return goal > 0 && completed >= goal;
+                }).length
+              : languages.length
+            ).toLocaleString()} languages
           </Tag>
         </div>
       }
@@ -724,7 +724,7 @@ function LanguageListModal({
                     }}
                   >
                     Showing {filteredLanguages.length.toLocaleString()} of{" "}
-                    {baseLanguages.length.toLocaleString()} languages
+                    {languages.length.toLocaleString()} languages
                     {(searchTerm ||
                       goalTypeFilter.length > 0 ||
                       hasScriptureFilter.length > 0 ||
@@ -2044,7 +2044,7 @@ function runSelfTests() {
 export default function App() {
   const [rows, setRows] = useState<any[]>([]);
   const summary = useMemo(() => deriveSummary(rows), [rows]);
-  
+
   // Modal states for all languages view
   const [allLanguagesModalOpen, setAllLanguagesModalOpen] = useState(false);
   const [completedLanguagesModalOpen, setCompletedLanguagesModalOpen] = useState(false);
@@ -2218,15 +2218,15 @@ export default function App() {
             >
               <Grid style={{ display: "flex", justifyContent: "center" }}>
                 <Column lg={4} md={6} sm={4}>
-                  <div 
-                    style={{ 
+                  <div
+                    style={{
                       textAlign: "center",
                       cursor: "pointer",
                       transition: "transform 0.2s",
                     }}
                     onClick={() => setAllLanguagesModalOpen(true)}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                    onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
                   >
                     <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#161616" }}>
                       {rows.length.toLocaleString()}
@@ -2240,15 +2240,15 @@ export default function App() {
                   </div>
                 </Column>
                 <Column lg={4} md={6} sm={4}>
-                  <div 
-                    style={{ 
+                  <div
+                    style={{
                       textAlign: "center",
                       cursor: "pointer",
                       transition: "transform 0.2s",
                     }}
                     onClick={() => setCompletedLanguagesModalOpen(true)}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                    onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
                   >
                     <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#c1d72e" }}>
                       {summary.totals.goalMet.toLocaleString()}
@@ -2290,23 +2290,23 @@ export default function App() {
         {/* Footer with All Access Goals */}
         {!isEmpty && <AllAccessGoalsFooter rows={rows} />}
       </div>
-      
+
       {/* Modal for All Languages */}
       <LanguageListModal
         isOpen={allLanguagesModalOpen}
         onClose={() => setAllLanguagesModalOpen(false)}
-        title="All Languages"
+        title='All Languages'
         languages={rows}
-        color="#0f62fe"
+        color='#0f62fe'
       />
-      
+
       {/* Modal for Completed Languages */}
       <LanguageListModal
         isOpen={completedLanguagesModalOpen}
         onClose={() => setCompletedLanguagesModalOpen(false)}
-        title="Languages with Completed Goals"
+        title='Languages with Completed Goals'
         languages={rows}
-        color="#c1d72e"
+        color='#c1d72e'
         initialFilters={{ completed: true }}
       />
     </div>
