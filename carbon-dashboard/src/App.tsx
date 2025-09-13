@@ -47,7 +47,6 @@ import {
 
 // Carbon Charts imports
 import { SimpleBarChart } from "@carbon/charts-react";
-import "./App.css";
 import "@carbon/charts/styles.css";
 
 // ---------- Configuration ----------
