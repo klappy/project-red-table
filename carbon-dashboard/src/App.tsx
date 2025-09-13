@@ -47,6 +47,7 @@ import {
 
 // Carbon Charts imports
 import { SimpleBarChart } from "@carbon/charts-react";
+import "./App.css";
 import "@carbon/charts/styles.css";
 
 // ---------- Configuration ----------
@@ -135,13 +136,13 @@ function LanguageListModal({
 
     return result;
   }, [languages]);
-  
+
   // Pre-select filters based on initialFilters
   useEffect(() => {
     if (initialFilters.completed && filterOptions.accessStatuses.length > 0) {
       // Find all "Goal Met" statuses in the data
-      const goalMetStatuses = filterOptions.accessStatuses.filter(status => 
-        status.toLowerCase().includes('goal met')
+      const goalMetStatuses = filterOptions.accessStatuses.filter((status) =>
+        status.toLowerCase().includes("goal met")
       );
       setAccessStatusFilter(goalMetStatuses);
     }
