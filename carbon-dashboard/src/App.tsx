@@ -1972,9 +1972,10 @@ function HeroRedTable({ languages = [] }: { languages: any[] }) {
             }}
           >
             <table
+              className="red-table-breakdown"
               style={{
                 width: "100%",
-                minWidth: "400px",
+                minWidth: "320px",
                 borderCollapse: "collapse",
                 color: "white",
                 fontSize: "1rem",
