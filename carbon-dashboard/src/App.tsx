@@ -68,7 +68,7 @@ function LanguageListModal({
   onClose,
   title,
   languages,
-  color = "#24a148",
+  color = "#c1d72e",
   initialFilters = {},
 }: {
   isOpen: boolean;
@@ -1089,7 +1089,7 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
-          e.currentTarget.style.color = expanded ? "#161616" : "#24a148";
+          e.currentTarget.style.color = expanded ? "#161616" : "#c1d72e";
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.backgroundColor = "transparent";
@@ -1130,20 +1130,20 @@ function CollapsedImporter({ onRows }: { onRows: (rows: any[]) => void }) {
               size='sm'
               style={{
                 marginTop: "0.5rem",
-                backgroundColor: loading || !url ? "#525252" : "#24a148",
-                borderColor: loading || !url ? "#525252" : "#24a148",
+                backgroundColor: loading || !url ? "#525252" : "#c1d72e",
+                borderColor: loading || !url ? "#525252" : "#c1d72e",
                 color: "#ffffff",
               }}
               onMouseEnter={(e) => {
                 if (!loading && url) {
-                  e.currentTarget.style.backgroundColor = "#198038";
-                  e.currentTarget.style.borderColor = "#198038";
+                  e.currentTarget.style.backgroundColor = "#b4c927";
+                  e.currentTarget.style.borderColor = "#b4c927";
                 }
               }}
               onMouseLeave={(e) => {
                 if (!loading && url) {
-                  e.currentTarget.style.backgroundColor = "#24a148";
-                  e.currentTarget.style.borderColor = "#24a148";
+                  e.currentTarget.style.backgroundColor = "#c1d72e";
+                  e.currentTarget.style.borderColor = "#c1d72e";
                 }
               }}
             >
@@ -1337,7 +1337,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                 padding: "1.5rem",
                 background: "rgba(255,255,255,0.03)",
                 borderRadius: "8px",
-                borderLeft: "3px solid #24a148",
+                borderLeft: "3px solid #c1d72e",
               }}
             >
               <div
@@ -1350,7 +1350,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
               >
                 <span style={{ fontSize: "1.5rem" }}>📖</span>
                 <div>
-                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#24a148" }}>
+                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#c1d72e" }}>
                     {fbPercent}%
                   </div>
                   <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>
@@ -1374,7 +1374,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                   style={{
                     height: "100%",
                     width: `${(parseFloat(fbPercent) / 95) * 100}%`,
-                    background: "#24a148",
+                    background: "#c1d72e",
                   }}
                 />
               </div>
@@ -1386,7 +1386,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                 padding: "1.5rem",
                 background: "rgba(255,255,255,0.03)",
                 borderRadius: "8px",
-                borderLeft: "3px solid #24a148",
+                borderLeft: "3px solid #c1d72e",
               }}
             >
               <div
@@ -1399,7 +1399,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
               >
                 <span style={{ fontSize: "1.5rem" }}>📘</span>
                 <div>
-                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#24a148" }}>
+                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#c1d72e" }}>
                     {ntPercent}%
                   </div>
                   <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>
@@ -1423,7 +1423,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                   style={{
                     height: "100%",
                     width: `${(parseFloat(ntPercent) / 99.96) * 100}%`,
-                    background: "#24a148",
+                    background: "#c1d72e",
                   }}
                 />
               </div>
@@ -1435,7 +1435,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                 padding: "1.5rem",
                 background: "rgba(255,255,255,0.03)",
                 borderRadius: "8px",
-                borderLeft: "3px solid #24a148",
+                borderLeft: "3px solid #c1d72e",
               }}
             >
               <div
@@ -1448,7 +1448,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
               >
                 <span style={{ fontSize: "1.5rem" }}>✨</span>
                 <div>
-                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#24a148" }}>
+                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#c1d72e" }}>
                     {portionPercent}%
                   </div>
                   <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>
@@ -1473,7 +1473,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                   style={{
                     height: "100%",
                     width: `${parseFloat(portionPercent)}%`,
-                    background: "#24a148",
+                    background: "#c1d72e",
                   }}
                 />
               </div>
@@ -1485,7 +1485,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
                 padding: "1.5rem",
                 background: "rgba(255,255,255,0.03)",
                 borderRadius: "8px",
-                borderLeft: "3px solid #24a148",
+                borderLeft: "3px solid #c1d72e",
                 gridColumn: "span 1",
               }}
             >
@@ -1499,7 +1499,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
               >
                 <span style={{ fontSize: "1.5rem" }}>🌍</span>
                 <div>
-                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#24a148" }}>100</div>
+                  <div style={{ fontSize: "2rem", fontWeight: 700, color: "#c1d72e" }}>100</div>
                   <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>
                     Strategic Languages
                   </div>
@@ -1549,7 +1549,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
             </div>
           </div>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "2rem", fontWeight: 700, color: "#24a148" }}>
+            <div style={{ fontSize: "2rem", fontWeight: 700, color: "#c1d72e" }}>
               {goalMet.length.toLocaleString()}
             </div>
             <div style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.6)" }}>
@@ -1557,7 +1557,7 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
             </div>
           </div>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "2rem", fontWeight: 700, color: "#24a148" }}>
+            <div style={{ fontSize: "2rem", fontWeight: 700, color: "#c1d72e" }}>
               {timeRemaining}
             </div>
             <div style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.6)" }}>
@@ -2129,7 +2129,7 @@ function SecondaryAnalysis({
   data,
   total,
   icon,
-  color = "#24a148",
+  color = "#c1d72e",
   languages = [],
   translationStatusFilter,
 }: {
@@ -2448,7 +2448,7 @@ export default function App() {
                         title='Active Translation (Pace Unknown)'
                         data={summary.activeTx}
                         total={summary.totals.activeTx}
-                        color='#24a148'
+                        color='#c1d72e'
                         languages={rows}
                         translationStatusFilter='work in progress'
                       />
@@ -2486,7 +2486,7 @@ export default function App() {
                     <div style={{ fontSize: "0.875rem", color: "#525252" }}>
                       Total Languages Analyzed
                     </div>
-                    <div style={{ fontSize: "0.75rem", color: "#24a148", marginTop: "0.25rem" }}>
+                    <div style={{ fontSize: "0.75rem", color: "#c1d72e", marginTop: "0.25rem" }}>
                       Click to view all languages
                     </div>
                   </div>
@@ -2509,7 +2509,7 @@ export default function App() {
                       Languages Completed (
                       {((summary.totals.goalMet / rows.length) * 100).toFixed(1)}%)
                     </div>
-                    <div style={{ fontSize: "0.75rem", color: "#24a148", marginTop: "0.25rem" }}>
+                    <div style={{ fontSize: "0.75rem", color: "#c1d72e", marginTop: "0.25rem" }}>
                       Click to view completed languages
                     </div>
                   </div>
@@ -2561,7 +2561,7 @@ export default function App() {
         onClose={() => setAllLanguagesModalOpen(false)}
         title='All Languages'
         languages={rows}
-        color='#24a148'
+        color='#c1d72e'
       />
 
       {/* Modal for Completed Languages */}
@@ -2570,7 +2570,7 @@ export default function App() {
         onClose={() => setCompletedLanguagesModalOpen(false)}
         title='Languages with Completed Goals'
         languages={rows}
-        color='#24a148'
+        color='#c1d72e'
         initialFilters={{ completed: true }}
       />
 

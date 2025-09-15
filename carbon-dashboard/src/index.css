@@ -150,14 +150,60 @@ body {
 /* Ultra-mobile improvements (phones) - SINGLE CONSOLIDATED MEDIA QUERY */
 /* WARNING: DO NOT let formatters lowercase CSS property names like gridTemplateColumns */
 @media (max-width: 480px) {
+  /* Fix Detailed Activity Analysis tables wrapping */
+  div[style*="display: flex"][style*="gap: 1.5rem"] {
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+
+  /* Each analysis card takes full width on mobile */
+  div[style*="flex: 1"] {
+    flex: none !important;
+    width: 100% !important;
+    margin-bottom: 1rem;
+  }
+
+  /* Fix middle Summary Statistics wrapping - the ones with click handlers */
+  div[style*="marginTop: '3rem'"] .cds--grid,
+  div[style*="marginTop: \"3rem\""] .cds--grid {
+    display: block !important;
+  }
+  
+  div[style*="marginTop: '3rem'"] .cds--col-sm-4,
+  div[style*="marginTop: \"3rem\""] .cds--col-sm-4 {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 1.5rem !important;
+    padding: 0 !important;
+  }
+  
+  /* Also target the row that contains these stats */
+  div[style*="display: 'flex'"][style*="justifyContent: 'center'"],
+  div[style*="display: flex"][style*="justifyContent: center"] {
+    flex-wrap: wrap !important;
+  }
+
+  /* Fix import button dropdown position */
+  div[style*="position: 'absolute'"][style*="right: 0"][style*="top: '3rem'"],
+  div[style*="position: absolute"][style*="right: 0"][style*="top: 3rem"] {
+    position: fixed !important;
+    left: 1rem !important;
+    right: 1rem !important;
+    top: auto !important;
+    bottom: 4rem !important;
+    width: calc(100vw - 2rem) !important;
+    max-width: none !important;
+    z-index: 9999 !important;
+  }
   /* Summary stats from above */
   .summary-stats > div {
     margin-bottom: 1rem;
   }
 
-  /* Global padding reduction for mobile - AGGRESSIVE */
+  /* Global padding reduction for mobile - but keep scroll working */
   body {
     overflow-x: hidden !important;
+    overflow-y: auto !important;
     margin: 0 !important;
     padding: 0 !important;
   }
@@ -251,9 +297,9 @@ body {
     margin-bottom: 1rem;
   }
 
-  /* Reduce padding in footer cards on mobile - AGGRESSIVE */
+  /* Reduce padding in footer cards on mobile - moderate */
   .footer-goals-grid > div {
-    padding: 0.5rem !important;
+    padding: 1rem !important;
   }
 
   /* Make progress bars more visible on mobile */
@@ -271,9 +317,10 @@ body {
     padding: 0 !important;
   }
 
-  /* Footer specific mobile fixes - MINIMAL */
-  footer div[style*='background: "#141414"'] {
-    padding: 0.5rem !important;
+  /* Footer specific mobile fixes - reasonable padding */
+  footer div[style*='background: "#141414"'],
+  div[style*='background: "linear-gradient'] {
+    padding: 1.5rem 1rem !important;
   }
 
   /* Reduce all tile padding on mobile - MINIMAL */
@@ -286,10 +333,8 @@ body {
     padding: 0.5rem !important;
   }
 
-  /* Additional aggressive overrides */
-  * {
-    max-width: 100% !important;
-  }
+  /* Remove overly aggressive max-width that breaks layout */
+  /* Deleted to prevent layout issues */
 
   /* Summary stats - tighter */
   div[style*='padding: "1.5rem"'] {
@@ -453,22 +498,58 @@ td {
   margin: 0 !important;
 }
 
-/* Override all blue colors to green */
+/* Fix Modal on mobile - full screen approach WITHOUT breaking page scroll */
+@media (max-width: 480px) {
+  .cds--modal-container {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    margin: 0 !important;
+    padding: 1rem !important;
+  }
+  
+  .cds--modal-content {
+    padding: 1rem !important;
+    height: calc(100vh - 8rem) !important;
+    overflow-y: auto !important;
+  }
+  
+  /* Hide the "Close" helper text on mobile */
+  .cds--modal-close__icon {
+    display: block !important;
+  }
+  
+  .cds--modal-close:after {
+    content: "" !important;
+    display: none !important;
+  }
+  
+  /* Fix modal close button position */
+  .cds--modal-close {
+    position: absolute !important;
+    top: 1rem !important;
+    right: 1rem !important;
+    z-index: 10000 !important;
+  }
+}
+
+/* Override all blue colors to ETEN green */
 .cds--file__drop-container {
-  border-color: #24a148 !important;
-  color: #24a148 !important;
+  border-color: #c1d72e !important;
+  color: #c1d72e !important;
 }
 
 .cds--file__drop-container:hover {
-  background-color: rgba(36, 161, 72, 0.1) !important;
+  background-color: rgba(193, 215, 46, 0.1) !important;
   outline: none !important;
   box-shadow: none !important;
-  border-color: #24a148 !important;
+  border-color: #b4c927 !important;
 }
 
 .cds--file__drop-container--drag-over {
-  background-color: rgba(36, 161, 72, 0.1) !important;
-  border-color: #24a148 !important;
+  background-color: rgba(193, 215, 46, 0.1) !important;
+  border-color: #b4c927 !important;
   outline: none !important;
 }
 
@@ -477,7 +558,7 @@ td {
 .cds--file__drop-container:focus-within,
 .cds--file__drop-container:active,
 .cds--file__drop-container:focus {
-  outline: 2px solid #24a148 !important;
+  outline: 2px solid #c1d72e !important;
   outline-offset: -2px !important;
   box-shadow: none !important;
 }
@@ -485,19 +566,19 @@ td {
 /* Override the nested button inside drop container */
 .cds--file__drop-container button:focus,
 .cds--file__drop-container button:hover {
-  outline-color: #24a148 !important;
+  outline-color: #c1d72e !important;
   box-shadow: none !important;
 }
 
 /* Override blue links */
 .cds--link,
 a {
-  color: #24a148 !important;
+  color: #c1d72e !important;
 }
 
 .cds--link:hover,
 a:hover {
-  color: #198038 !important;
+  color: #b4c927 !important;
 }
 
 /* Override focus states */
@@ -508,22 +589,41 @@ a:hover {
 .cds--multi-select:focus,
 .cds--checkbox:focus::after,
 .cds--file__drop-container:focus {
-  outline-color: #24a148 !important;
-  border-color: #24a148 !important;
+  outline-color: #c1d72e !important;
+  border-color: #c1d72e !important;
 }
 
 /* Override selection colors */
 ::selection {
-  background-color: rgba(36, 161, 72, 0.3) !important;
+  background-color: rgba(193, 215, 46, 0.3) !important;
 }
 
 /* Override any remaining blue interactive elements */
 .cds--btn--primary {
-  background-color: #24a148 !important;
-  border-color: #24a148 !important;
+  background-color: #c1d72e !important;
+  border-color: #c1d72e !important;
+  color: #161616 !important;
 }
 
 .cds--btn--primary:hover {
-  background-color: #198038 !important;
-  border-color: #198038 !important;
+  background-color: #b4c927 !important;
+  border-color: #b4c927 !important;
+  color: #161616 !important;
+}
+
+/* Override Carbon Tag green colors to ETEN green */
+.cds--tag--green,
+.cds--tag--green:hover {
+  background-color: #c1d72e !important;
+  color: #161616 !important;
+}
+
+.cds--tag--green:hover {
+  background-color: #b4c927 !important;
+}
+
+/* Fix green tags in modals specifically */
+.cds--modal .cds--tag--green {
+  background-color: #c1d72e !important;
+  color: #161616 !important;
 }
