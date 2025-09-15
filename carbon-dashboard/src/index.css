@@ -606,9 +606,10 @@ td {
 
 .cds--modal .cds--data-table thead {
   position: sticky !important;
-  top: 48px !important; /* Account for toolbar height */
+  top: 47px !important; /* Tight against toolbar, no gap */
   z-index: 99 !important;
   background: white !important;
+  box-shadow: 0 1px 0 #e0e0e0 !important; /* Clean line at bottom */
 }
 
 .cds--modal .cds--data-table th {
@@ -616,10 +617,11 @@ td {
 }
 
 /* Sticky filter panel when expanded */
-.cds--modal div[style*="background: #f4f4f4"] {
+.cds--modal div[style*="background: #f4f4f4"]:not([style*="Showing"]) {
   position: sticky !important;
-  top: 48px !important; /* Same as toolbar height */
+  top: 47px !important; /* Tight against toolbar */
   z-index: 98 !important;
+  background: #f9f9f9 !important; /* Slightly lighter grey */
 }
 
 /* Sticky pagination at bottom */
@@ -633,13 +635,15 @@ td {
   padding: 0.5rem !important;
 }
 
-/* Sticky summary row (showing X of Y filtered) */
-.cds--modal div[style*="background: #f4f4f4"][style*="Showing"] {
+/* Sticky summary row (showing X of Y filtered) - REMOVED THE FADE */
+.cds--modal div[style*="Showing"] {
   position: sticky !important;
   bottom: 48px !important; /* Above pagination */
   z-index: 99 !important;
   margin: 0 !important;
   padding: 0.5rem 1rem !important;
+  background: white !important; /* Solid white, no grey */
+  border-top: 1px solid #e0e0e0 !important;
 }
 
 /* Remove extra bottom spacing from table elements */
@@ -647,6 +651,15 @@ td {
 .cds--modal .cds--data-table tbody,
 .cds--modal .cds--table-container {
   margin-bottom: 0 !important;
+}
+
+/* Remove any gradient or fade effects */
+.cds--modal::after,
+.cds--modal::before,
+.cds--modal-content::after,
+.cds--modal-content::before {
+  display: none !important;
+  background: none !important;
 }
 
 /* Compensate for scrollbar width on desktop too */
@@ -671,7 +684,7 @@ td {
     top: 44px !important; /* Smaller toolbar on mobile */
   }
 
-  .cds--modal div[style*="background: #f4f4f4"] {
+  .cds--modal div[style*="background: #f4f4f4"]:not([style*="Showing"]) {
     top: 44px !important;
   }
 
@@ -779,4 +792,14 @@ a:hover {
 .cds--modal .cds--tag--green {
   background-color: #c1d72e !important;
   color: #161616 !important;
+  white-space: nowrap !important;
+  padding: 0.125rem 0.5rem !important;
+  min-width: fit-content !important;
+}
+
+/* Make sure modal header tags don't overflow */
+.cds--modal-heading .cds--tag {
+  display: inline-flex !important;
+  align-items: center !important;
+  max-width: none !important;
 }
