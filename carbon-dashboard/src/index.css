@@ -163,30 +163,43 @@ body {
     margin-bottom: 1rem;
   }
 
-  /* Fix Summary Statistics to wrap on mobile - WITH PROPER SPACING */
+  /* Fix Summary Statistics to wrap on mobile - AGGRESSIVE SPACING FIX */
   .summary-stats-grid {
     display: block !important;
   }
   
-  .summary-stats-grid .cds--col-sm-4 {
+  /* Target ALL column variations that Carbon might use */
+  .summary-stats-grid .cds--col-sm-4,
+  .summary-stats-grid .cds--col,
+  .summary-stats-grid > div {
     width: 100% !important;
     max-width: 100% !important;
-    margin-bottom: 2.5rem !important;
+    margin-bottom: 3rem !important;
     display: block !important;
-    padding: 1.5rem 0 !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 2rem 1rem !important;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 8px;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
   }
   
   /* Remove the last item's border and margin */
-  .summary-stats-grid .cds--col-sm-4:last-child {
+  .summary-stats-grid .cds--col-sm-4:last-child,
+  .summary-stats-grid .cds--col:last-child,
+  .summary-stats-grid > div:last-child {
     margin-bottom: 0 !important;
     border-bottom: none !important;
-    padding-bottom: 0 !important;
   }
   
-  /* Add some visual breathing room to each stat block */
-  .summary-stats-grid .cds--col-sm-4 > div {
-    padding: 0.5rem 0;
+  /* Even MORE aggressive - target the actual stat divs */
+  .summary-statistics .cds--grid > * {
+    margin-bottom: 3rem !important;
+    padding: 1.5rem !important;
+  }
+  
+  .summary-statistics .cds--grid > *:last-child {
+    margin-bottom: 0 !important;
   }
 
   /* Fix import button dropdown position */
