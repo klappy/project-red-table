@@ -2460,6 +2460,7 @@ export default function App() {
 
             {/* Summary Statistics */}
             <div
+              className="summary-statistics"
               style={{
                 marginTop: "3rem",
                 padding: "2rem",
@@ -2468,7 +2469,7 @@ export default function App() {
                 boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
               }}
             >
-              <Grid style={{ display: "flex", justifyContent: "center" }}>
+              <Grid className="summary-stats-grid">
                 <Column lg={4} md={6} sm={4}>
                   <div
                     style={{

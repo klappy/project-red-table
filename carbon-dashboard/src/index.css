@@ -163,24 +163,21 @@ body {
     margin-bottom: 1rem;
   }
 
-  /* Fix middle Summary Statistics wrapping - the ones with click handlers */
-  div[style*="marginTop: '3rem'"] .cds--grid,
-  div[style*="marginTop: \"3rem\""] .cds--grid {
+  /* Fix Summary Statistics to wrap on mobile - NOW WITH PROPER CLASS NAMES */
+  .summary-stats-grid {
     display: block !important;
   }
   
-  div[style*="marginTop: '3rem'"] .cds--col-sm-4,
-  div[style*="marginTop: \"3rem\""] .cds--col-sm-4 {
+  .summary-stats-grid .cds--col-sm-4 {
     width: 100% !important;
     max-width: 100% !important;
     margin-bottom: 1.5rem !important;
-    padding: 0 !important;
+    display: block !important;
   }
   
-  /* Also target the row that contains these stats */
-  div[style*="display: 'flex'"][style*="justifyContent: 'center'"],
-  div[style*="display: flex"][style*="justifyContent: center"] {
-    flex-wrap: wrap !important;
+  /* Remove the last margin bottom */
+  .summary-stats-grid .cds--col-sm-4:last-child {
+    margin-bottom: 0 !important;
   }
 
   /* Fix import button dropdown position */
@@ -364,6 +361,12 @@ body {
 @media (min-width: 769px) {
   .countdown-short {
     display: none;
+  }
+  
+  /* Keep summary stats in a row on desktop */
+  .summary-stats-grid {
+    display: flex !important;
+    justify-content: center !important;
   }
 }
 
