@@ -152,48 +152,48 @@ body {
   .red-table-breakdown {
     font-size: 0.875rem !important;
   }
-  
+
   .red-table-breakdown th,
   .red-table-breakdown td {
     padding: 0.5rem 0.25rem !important;
   }
-  
+
   /* Make all headers smaller and wrap better */
   .red-table-breakdown th {
     font-size: 0.8rem !important;
     white-space: normal !important;
     line-height: 1.2 !important;
   }
-  
+
   .red-table-breakdown th:first-child {
     width: 40% !important;
   }
-  
+
   .red-table-breakdown th:nth-child(2) {
     width: 35% !important;
   }
-  
+
   .red-table-breakdown th:nth-child(3) {
     width: 25% !important;
   }
-  
+
   /* Reduce font size for numbers */
   .red-table-breakdown td:nth-child(2),
   .red-table-breakdown td:nth-child(3) {
     font-size: 0.8rem !important;
   }
-  
+
   /* Make the total row more compact */
   .red-table-breakdown tr:last-child td {
     font-size: 0.9rem !important;
     padding: 0.6rem 0.25rem !important;
   }
-  
+
   /* Reduce padding on the container around the table */
   div[style*="background: rgba(0,0,0,0.3)"] {
     padding: 0.5rem !important;
   }
-  
+
   /* Make "Two Full Bibles" wrap better */
   .red-table-breakdown td:first-child {
     font-size: 0.8rem !important;

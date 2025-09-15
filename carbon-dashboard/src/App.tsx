@@ -1972,7 +1972,7 @@ function HeroRedTable({ languages = [] }: { languages: any[] }) {
             }}
           >
             <table
-              className="red-table-breakdown"
+              className='red-table-breakdown'
               style={{
                 width: "100%",
                 minWidth: "320px",
@@ -2001,7 +2001,7 @@ function HeroRedTable({ languages = [] }: { languages: any[] }) {
                       color: "rgba(255,255,255,0.95)",
                     }}
                   >
-                    At Risk / Total w/ Goal
+                    At Risk / Total Goal
                   </th>
                   <th
                     style={{
