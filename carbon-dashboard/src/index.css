@@ -649,18 +649,18 @@ td {
   position: relative !important;
 }
 
-/* TEMPORARILY DISABLE STICKY - it's covering content */
 /* Sticky headers and footers for modal tables */
 .cds--modal .cds--table-toolbar {
-  position: relative !important; /* Was sticky, but it's broken */
+  position: sticky !important; /* RESTORED - this was working fine */
   top: 0 !important;
   z-index: 100 !important;
   background: white !important;
   border-bottom: 1px solid #e0e0e0 !important;
 }
 
+/* ONLY THE COLUMN HEADERS ARE BROKEN - KEEP THEM RELATIVE */
 .cds--modal .cds--data-table thead {
-  position: relative !important; /* Was sticky, but covering first row */
+  position: relative !important; /* NOT sticky - it covers first row */
   top: 0 !important;
   z-index: 99 !important;
   background: white !important;
@@ -671,17 +671,17 @@ td {
   background: white !important;
 }
 
-/* DISABLED - Sticky filter panel when expanded */
+/* Sticky filter panel when expanded - RESTORED */
 .cds--modal div[style*="background: #f4f4f4"]:not([style*="Showing"]) {
-  position: relative !important; /* Was sticky but interferes with scrolling */
-  top: 0 !important;
+  position: sticky !important; /* RESTORED - this was fine */
+  top: 48px !important; /* Below search toolbar */
   z-index: 98 !important;
   background: #f9f9f9 !important; /* Slightly lighter grey */
 }
 
-/* DISABLED - Sticky pagination at bottom */
+/* Sticky pagination at bottom - RESTORED */
 .cds--modal .cds--pagination {
-  position: relative !important; /* Was sticky but breaks with header fix */
+  position: sticky !important; /* RESTORED - this was working fine */
   bottom: 0 !important;
   z-index: 100 !important;
   background: white !important;
@@ -690,10 +690,10 @@ td {
   padding: 0.5rem !important;
 }
 
-/* DISABLED - Sticky summary row (showing X of Y filtered) */
+/* Sticky summary row (showing X of Y filtered) - RESTORED */
 .cds--modal div[style*="Showing"] {
-  position: relative !important; /* Was sticky but breaks with header fix */
-  bottom: 0 !important;
+  position: sticky !important; /* RESTORED - this was working fine */
+  bottom: 48px !important; /* Above pagination */
   z-index: 99 !important;
   margin: 0 !important;
   padding: 0.5rem 1rem !important;
@@ -734,13 +734,13 @@ td {
     top: 0 !important;
     padding: 0.5rem !important;
   }
-  
+
   .cds--modal .cds--data-table thead {
     top: 0 !important; /* Disabled sticky - was overlapping content */
   }
 
   .cds--modal div[style*="background: #f4f4f4"]:not([style*="Showing"]) {
-    top: 0 !important; /* Disabled sticky */
+    top: 44px !important; /* Below toolbar on mobile */
   }
 
   .cds--modal .cds--pagination {
