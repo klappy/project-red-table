@@ -526,7 +526,7 @@ td {
     margin: 5vh 0 !important;
     padding: 0 !important;
   }
-  
+
   /* The modal body that contains the actual content */
   .cds--modal-container .cds--modal-content {
     padding: 1rem !important;
@@ -536,24 +536,24 @@ td {
     overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch !important;
   }
-  
+
   /* Make sure the table container inside modal scrolls */
   .cds--modal-content > div {
     height: auto !important;
     max-height: 100% !important;
     overflow: visible !important;
   }
-  
+
   /* Hide the "Close" helper text on mobile */
   .cds--modal-close__icon {
     display: block !important;
   }
-  
+
   .cds--modal-close:after {
     content: "" !important;
     display: none !important;
   }
-  
+
   /* Fix modal close button position */
   .cds--modal-close {
     position: absolute !important;
@@ -561,12 +561,72 @@ td {
     right: 1rem !important;
     z-index: 10000 !important;
   }
-  
+
   /* Ensure the DataTable inside modal scrolls properly */
   .cds--modal .cds--data-table-container {
     overflow-x: auto !important;
     overflow-y: visible !important;
     -webkit-overflow-scrolling: touch !important;
+  }
+}
+
+/* Sticky headers and footers for modal tables */
+.cds--modal .cds--table-toolbar {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+  background: white !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+
+.cds--modal .cds--data-table thead {
+  position: sticky !important;
+  top: 48px !important; /* Account for toolbar height */
+  z-index: 99 !important;
+  background: white !important;
+}
+
+/* Sticky filter panel when expanded */
+.cds--modal div[style*="background: #f4f4f4"] {
+  position: sticky !important;
+  top: 48px !important; /* Same as toolbar height */
+  z-index: 98 !important;
+}
+
+/* Sticky pagination at bottom */
+.cds--modal .cds--pagination {
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 100 !important;
+  background: white !important;
+  border-top: 1px solid #e0e0e0 !important;
+  margin-top: 0 !important;
+}
+
+/* Sticky summary row (showing X of Y filtered) */
+.cds--modal div[style*="background: #f4f4f4"][style*="Showing"] {
+  position: sticky !important;
+  bottom: 48px !important; /* Above pagination */
+  z-index: 99 !important;
+}
+
+/* Mobile-specific adjustments for sticky elements */
+@media (max-width: 480px) {
+  .cds--modal .cds--table-toolbar {
+    top: 0 !important;
+    padding: 0.5rem !important;
+  }
+  
+  .cds--modal .cds--data-table thead {
+    top: 44px !important; /* Smaller toolbar on mobile */
+  }
+  
+  .cds--modal div[style*="background: #f4f4f4"] {
+    top: 44px !important;
+  }
+  
+  .cds--modal .cds--pagination {
+    padding: 0.75rem !important;
   }
 }
 
