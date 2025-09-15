@@ -649,9 +649,10 @@ td {
   position: relative !important;
 }
 
+/* TEMPORARILY DISABLE STICKY - it's covering content */
 /* Sticky headers and footers for modal tables */
 .cds--modal .cds--table-toolbar {
-  position: sticky !important;
+  position: relative !important; /* Was sticky, but it's broken */
   top: 0 !important;
   z-index: 100 !important;
   background: white !important;
@@ -659,28 +660,28 @@ td {
 }
 
 .cds--modal .cds--data-table thead {
-  position: sticky !important;
-  top: 47px !important; /* Tight against toolbar, no gap */
+  position: relative !important; /* Was sticky, but covering first row */
+  top: 0 !important;
   z-index: 99 !important;
   background: white !important;
-  box-shadow: 0 1px 0 #e0e0e0 !important; /* Clean line at bottom */
+  box-shadow: 0 1px 0 #e0e0e0 !important;
 }
 
 .cds--modal .cds--data-table th {
   background: white !important;
 }
 
-/* Sticky filter panel when expanded */
+/* DISABLED - Sticky filter panel when expanded */
 .cds--modal div[style*="background: #f4f4f4"]:not([style*="Showing"]) {
-  position: sticky !important;
-  top: 47px !important; /* Tight against toolbar */
+  position: relative !important; /* Was sticky but interferes with scrolling */
+  top: 0 !important;
   z-index: 98 !important;
   background: #f9f9f9 !important; /* Slightly lighter grey */
 }
 
-/* Sticky pagination at bottom */
+/* DISABLED - Sticky pagination at bottom */
 .cds--modal .cds--pagination {
-  position: sticky !important;
+  position: relative !important; /* Was sticky but breaks with header fix */
   bottom: 0 !important;
   z-index: 100 !important;
   background: white !important;
@@ -689,14 +690,14 @@ td {
   padding: 0.5rem !important;
 }
 
-/* Sticky summary row (showing X of Y filtered) - REMOVED THE FADE */
+/* DISABLED - Sticky summary row (showing X of Y filtered) */
 .cds--modal div[style*="Showing"] {
-  position: sticky !important;
-  bottom: 48px !important; /* Above pagination */
+  position: relative !important; /* Was sticky but breaks with header fix */
+  bottom: 0 !important;
   z-index: 99 !important;
   margin: 0 !important;
   padding: 0.5rem 1rem !important;
-  background: white !important; /* Solid white, no grey */
+  background: white !important;
   border-top: 1px solid #e0e0e0 !important;
 }
 
@@ -733,13 +734,13 @@ td {
     top: 0 !important;
     padding: 0.5rem !important;
   }
-
+  
   .cds--modal .cds--data-table thead {
-    top: 44px !important; /* Smaller toolbar on mobile */
+    top: 0 !important; /* Disabled sticky - was overlapping content */
   }
 
   .cds--modal div[style*="background: #f4f4f4"]:not([style*="Showing"]) {
-    top: 44px !important;
+    top: 0 !important; /* Disabled sticky */
   }
 
   .cds--modal .cds--pagination {
