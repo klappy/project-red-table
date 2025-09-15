@@ -526,7 +526,7 @@ td {
     margin: 1rem 0.5rem !important;
     padding: 0 !important;
   }
-  
+
   /* The modal body that contains the actual content */
   .cds--modal-container .cds--modal-content {
     padding: 0.5rem !important;
@@ -538,26 +538,28 @@ td {
     -webkit-overflow-scrolling: touch !important;
     margin-bottom: 0 !important;
   }
-  
+
   /* Make sure the table container inside modal scrolls */
   .cds--modal-content > div {
     height: auto !important;
     max-height: 100% !important;
-    overflow: visible !important;
+    overflow: auto !important; /* NEED THIS FOR STICKY TO WORK */
     margin-bottom: 0 !important;
     padding-bottom: 0 !important;
   }
-  
+
   /* Remove extra bottom padding/margin from modal elements */
   .cds--modal-content .cds--data-table-container {
     margin-bottom: 0 !important;
     padding-bottom: 0 !important;
   }
-  
+
   .cds--modal-content > div[style*="height: 70vh"] {
-    height: auto !important;
+    height: calc(100vh - 8rem) !important;
     max-height: calc(100vh - 6rem) !important;
     margin-bottom: 0 !important;
+    overflow: auto !important;
+    position: relative !important;
   }
 
   /* Hide the "Close" helper text on mobile */
@@ -581,9 +583,16 @@ td {
   /* Ensure the DataTable inside modal scrolls properly */
   .cds--modal .cds--data-table-container {
     overflow-x: auto !important;
-    overflow-y: visible !important;
+    overflow-y: auto !important; /* Changed to auto for sticky to work */
+    max-height: calc(100vh - 10rem) !important;
     -webkit-overflow-scrolling: touch !important;
   }
+}
+
+/* Fix the scrolling container for sticky to work */
+.cds--modal-content div[style*="height"] {
+  overflow: auto !important;
+  position: relative !important;
 }
 
 /* Sticky headers and footers for modal tables */
@@ -599,6 +608,10 @@ td {
   position: sticky !important;
   top: 48px !important; /* Account for toolbar height */
   z-index: 99 !important;
+  background: white !important;
+}
+
+.cds--modal .cds--data-table th {
   background: white !important;
 }
 
