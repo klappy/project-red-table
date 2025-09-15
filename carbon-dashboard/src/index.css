@@ -519,29 +519,45 @@ td {
 /* Fix Modal on mobile - proper scrolling for modal CONTENT */
 @media (max-width: 480px) {
   .cds--modal-container {
-    width: 100% !important;
-    height: 90vh !important;
-    max-width: 100vw !important;
-    max-height: 90vh !important;
-    margin: 5vh 0 !important;
+    width: calc(100% - 1rem) !important;
+    height: calc(100vh - 2rem) !important;
+    max-width: calc(100vw - 1rem) !important;
+    max-height: calc(100vh - 2rem) !important;
+    margin: 1rem 0.5rem !important;
     padding: 0 !important;
   }
-
+  
   /* The modal body that contains the actual content */
   .cds--modal-container .cds--modal-content {
-    padding: 1rem !important;
+    padding: 0.5rem !important;
+    padding-right: calc(0.5rem - 8px) !important; /* Account for scrollbar width */
     height: auto !important;
-    max-height: calc(90vh - 4rem) !important;
+    max-height: calc(100vh - 3rem) !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch !important;
+    margin-bottom: 0 !important;
   }
-
+  
   /* Make sure the table container inside modal scrolls */
   .cds--modal-content > div {
     height: auto !important;
     max-height: 100% !important;
     overflow: visible !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  
+  /* Remove extra bottom padding/margin from modal elements */
+  .cds--modal-content .cds--data-table-container {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  
+  .cds--modal-content > div[style*="height: 70vh"] {
+    height: auto !important;
+    max-height: calc(100vh - 6rem) !important;
+    margin-bottom: 0 !important;
   }
 
   /* Hide the "Close" helper text on mobile */
@@ -600,7 +616,8 @@ td {
   z-index: 100 !important;
   background: white !important;
   border-top: 1px solid #e0e0e0 !important;
-  margin-top: 0 !important;
+  margin: 0 !important;
+  padding: 0.5rem !important;
 }
 
 /* Sticky summary row (showing X of Y filtered) */
@@ -608,6 +625,26 @@ td {
   position: sticky !important;
   bottom: 48px !important; /* Above pagination */
   z-index: 99 !important;
+  margin: 0 !important;
+  padding: 0.5rem 1rem !important;
+}
+
+/* Remove extra bottom spacing from table elements */
+.cds--modal .cds--data-table,
+.cds--modal .cds--data-table tbody,
+.cds--modal .cds--table-container {
+  margin-bottom: 0 !important;
+}
+
+/* Compensate for scrollbar width on desktop too */
+.cds--modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Better scrollbar compensation */
+.cds--modal-container .cds--modal-content {
+  padding-right: 0.5rem !important;
+  scrollbar-gutter: stable !important;
 }
 
 /* Mobile-specific adjustments for sticky elements */
@@ -616,17 +653,17 @@ td {
     top: 0 !important;
     padding: 0.5rem !important;
   }
-  
+
   .cds--modal .cds--data-table thead {
     top: 44px !important; /* Smaller toolbar on mobile */
   }
-  
+
   .cds--modal div[style*="background: #f4f4f4"] {
     top: 44px !important;
   }
-  
+
   .cds--modal .cds--pagination {
-    padding: 0.75rem !important;
+    padding: 0.5rem !important;
   }
 }
 
