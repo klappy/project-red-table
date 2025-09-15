@@ -2460,7 +2460,7 @@ export default function App() {
 
             {/* Summary Statistics */}
             <div
-              className="summary-statistics"
+              className='summary-statistics'
               style={{
                 marginTop: "3rem",
                 padding: "2rem",
@@ -2469,7 +2469,7 @@ export default function App() {
                 boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
               }}
             >
-              <Grid className="summary-stats-grid">
+              <Grid className='summary-stats-grid'>
                 <Column lg={4} md={6} sm={4}>
                   <div
                     style={{
@@ -2503,7 +2503,7 @@ export default function App() {
                     onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
                     onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
                   >
-                    <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#24a148" }}>
+                    <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#c1d72e" }}>
                       {summary.totals.goalMet.toLocaleString()}
                     </div>
                     <div style={{ fontSize: "0.875rem", color: "#525252" }}>
@@ -2539,7 +2539,7 @@ export default function App() {
                 </Column>
                 <Column lg={4} md={6} sm={4}>
                   <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#24a148" }}>
+                    <div style={{ fontSize: "2.5rem", fontWeight: 700, color: "#c1d72e" }}>
                       2033
                     </div>
                     <div style={{ fontSize: "0.875rem", color: "#525252" }}>
