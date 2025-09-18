@@ -877,3 +877,19 @@ a:hover {
   height: 85vh !important;
   max-height: 85vh !important;
 }
+
+/* Remove scrollbars from map view */
+.language-list-modal .leaflet-container {
+  overflow: hidden !important;
+}
+
+/* Ensure no scrollbars on map wrapper */
+.language-list-modal div[style*="overflow: hidden"] {
+  overflow: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.language-list-modal div[style*="overflow: hidden"]::-webkit-scrollbar {
+  display: none !important;
+}

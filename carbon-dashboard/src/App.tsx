@@ -91,7 +91,7 @@ function LanguageListModal({
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"ASC" | "DESC">("ASC");
   const [showFilters, setShowFilters] = useState(false);
-  const [viewMode, setViewMode] = useState<"table" | "map">("table");
+  const [viewMode, setViewMode] = useState<"table" | "map">("map");
 
   // Filter states - initialize with any initial filters
   const [goalTypeFilter, setGoalTypeFilter] = useState<string[]>(
@@ -502,13 +502,15 @@ function LanguageListModal({
         }}
       >
         {/* Shared toolbar for both views */}
-        <div style={{ padding: "0.75rem 1rem", borderBottom: "1px solid #e0e0e0", background: "#fff" }}>
+        <div
+          style={{ padding: "0.75rem 1rem", borderBottom: "1px solid #e0e0e0", background: "#fff" }}
+        >
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             <Search
-              id="language-search"
-              size="sm"
-              placeholder="Search languages..."
-              labelText=""
+              id='language-search'
+              size='sm'
+              placeholder='Search languages...'
+              labelText=''
               value={searchTerm}
               onChange={(e: any) => setSearchTerm(e.target.value)}
               style={{ flex: "1", maxWidth: "400px" }}
@@ -594,184 +596,180 @@ function LanguageListModal({
 
         {/* Filter Panel for both views */}
         {showFilters && (
-                    <div
-                      style={{
-                        padding: "1.5rem",
-                        borderBottom: "1px solid #e0e0e0",
-                        background: "#f4f4f4",
-                      }}
-                    >
-                      <Grid narrow fullWidth>
-                        {/* First row: 3 columns of dropdowns */}
-                        <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
-                          <MultiSelect
-                            id='goal-type-filter'
-                            titleText='Goal Type'
-                            label='Select goal types...'
-                            items={filterOptions.goalTypes.map((type) => ({
-                              id: type,
-                              text: type,
-                              label: type,
-                            }))}
-                            itemToString={(item) => (item ? item.text : "")}
-                            selectedItems={goalTypeFilter.map((type) => ({
-                              id: type,
-                              text: type,
-                              label: type,
-                            }))}
-                            onChange={({ selectedItems }) => {
-                              setGoalTypeFilter(
-                                selectedItems ? selectedItems.map((item: any) => item.id) : []
-                              );
-                              setPage(1);
-                            }}
-                            size='sm'
-                          />
-                        </Column>
-                        <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
-                          <MultiSelect
-                            id='has-scripture-filter'
-                            titleText='Has Scripture'
-                            label='Select scripture types...'
-                            items={filterOptions.hasScripture.map((type) => ({
-                              id: type,
-                              text: type,
-                              label: type,
-                            }))}
-                            itemToString={(item) => (item ? item.text : "")}
-                            selectedItems={hasScriptureFilter.map((type) => ({
-                              id: type,
-                              text: type,
-                              label: type,
-                            }))}
-                            onChange={({ selectedItems }) => {
-                              setHasScriptureFilter(
-                                selectedItems ? selectedItems.map((item: any) => item.id) : []
-                              );
-                              setPage(1);
-                            }}
-                            size='sm'
-                          />
-                        </Column>
-                        <Column lg={6} md={4} sm={4} style={{ marginBottom: "1rem" }}>
-                          <MultiSelect
-                            id='access-status-filter'
-                            titleText='Access Status'
-                            label='Select access statuses...'
-                            items={filterOptions.accessStatuses.map((status) => ({
-                              id: status,
-                              text: status,
-                              label: status,
-                            }))}
-                            itemToString={(item) => (item ? item.text : "")}
-                            selectedItems={accessStatusFilter.map((status) => ({
-                              id: status,
-                              text: status,
-                              label: status,
-                            }))}
-                            onChange={({ selectedItems }) => {
-                              setAccessStatusFilter(
-                                selectedItems ? selectedItems.map((item: any) => item.id) : []
-                              );
-                              setPage(1);
-                            }}
-                            size='sm'
-                          />
-                        </Column>
+          <div
+            style={{
+              padding: "1.5rem",
+              borderBottom: "1px solid #e0e0e0",
+              background: "#f4f4f4",
+            }}
+          >
+            <Grid narrow fullWidth>
+              {/* First row: 3 columns of dropdowns */}
+              <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
+                <MultiSelect
+                  id='goal-type-filter'
+                  titleText='Goal Type'
+                  label='Select goal types...'
+                  items={filterOptions.goalTypes.map((type) => ({
+                    id: type,
+                    text: type,
+                    label: type,
+                  }))}
+                  itemToString={(item) => (item ? item.text : "")}
+                  selectedItems={goalTypeFilter.map((type) => ({
+                    id: type,
+                    text: type,
+                    label: type,
+                  }))}
+                  onChange={({ selectedItems }) => {
+                    setGoalTypeFilter(
+                      selectedItems ? selectedItems.map((item: any) => item.id) : []
+                    );
+                    setPage(1);
+                  }}
+                  size='sm'
+                />
+              </Column>
+              <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
+                <MultiSelect
+                  id='has-scripture-filter'
+                  titleText='Has Scripture'
+                  label='Select scripture types...'
+                  items={filterOptions.hasScripture.map((type) => ({
+                    id: type,
+                    text: type,
+                    label: type,
+                  }))}
+                  itemToString={(item) => (item ? item.text : "")}
+                  selectedItems={hasScriptureFilter.map((type) => ({
+                    id: type,
+                    text: type,
+                    label: type,
+                  }))}
+                  onChange={({ selectedItems }) => {
+                    setHasScriptureFilter(
+                      selectedItems ? selectedItems.map((item: any) => item.id) : []
+                    );
+                    setPage(1);
+                  }}
+                  size='sm'
+                />
+              </Column>
+              <Column lg={6} md={4} sm={4} style={{ marginBottom: "1rem" }}>
+                <MultiSelect
+                  id='access-status-filter'
+                  titleText='Access Status'
+                  label='Select access statuses...'
+                  items={filterOptions.accessStatuses.map((status) => ({
+                    id: status,
+                    text: status,
+                    label: status,
+                  }))}
+                  itemToString={(item) => (item ? item.text : "")}
+                  selectedItems={accessStatusFilter.map((status) => ({
+                    id: status,
+                    text: status,
+                    label: status,
+                  }))}
+                  onChange={({ selectedItems }) => {
+                    setAccessStatusFilter(
+                      selectedItems ? selectedItems.map((item: any) => item.id) : []
+                    );
+                    setPage(1);
+                  }}
+                  size='sm'
+                />
+              </Column>
 
-                        {/* Second row: 1 dropdown and 2 checkbox groups */}
-                        <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
-                          <MultiSelect
-                            id='translation-status-filter'
-                            titleText='Translation Status'
-                            label='Select translation statuses...'
-                            items={filterOptions.translationStatuses.map((status) => ({
-                              id: status,
-                              text: status,
-                              label: status,
-                            }))}
-                            itemToString={(item) => (item ? item.text : "")}
-                            selectedItems={translationStatusFilter.map((status) => ({
-                              id: status,
-                              text: status,
-                              label: status,
-                            }))}
-                            onChange={({ selectedItems }) => {
-                              setTranslationStatusFilter(
-                                selectedItems ? selectedItems.map((item: any) => item.id) : []
-                              );
-                              setPage(1);
-                            }}
-                            size='sm'
-                          />
-                        </Column>
-                        <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
-                          <MultiSelect
-                            id='active-translation-filter'
-                            titleText='Active Translation'
-                            label='Select status...'
-                            items={[
-                              { id: "yes", text: "Yes", label: "Yes" },
-                              { id: "no", text: "No", label: "No" },
-                            ]}
-                            itemToString={(item) => (item ? item.text : "")}
-                            selectedItems={
-                              activeTranslationFilter
-                                ? [
-                                    {
-                                      id: activeTranslationFilter,
-                                      text: activeTranslationFilter === "yes" ? "Yes" : "No",
-                                      label: activeTranslationFilter === "yes" ? "Yes" : "No",
-                                    },
-                                  ]
-                                : []
-                            }
-                            onChange={({ selectedItems }) => {
-                              setActiveTranslationFilter(
-                                selectedItems && selectedItems.length > 0
-                                  ? selectedItems[0].id
-                                  : null
-                              );
-                              setPage(1);
-                            }}
-                            size='sm'
-                          />
-                        </Column>
-                        <Column lg={6} md={4} sm={4} style={{ marginBottom: "1rem" }}>
-                          <MultiSelect
-                            id='active-langdev-filter'
-                            titleText='Active Language Dev'
-                            label='Select status...'
-                            items={[
-                              { id: "yes", text: "Yes", label: "Yes" },
-                              { id: "no", text: "No", label: "No" },
-                            ]}
-                            itemToString={(item) => (item ? item.text : "")}
-                            selectedItems={
-                              activeLangDevFilter
-                                ? [
-                                    {
-                                      id: activeLangDevFilter,
-                                      text: activeLangDevFilter === "yes" ? "Yes" : "No",
-                                      label: activeLangDevFilter === "yes" ? "Yes" : "No",
-                                    },
-                                  ]
-                                : []
-                            }
-                            onChange={({ selectedItems }) => {
-                              setActiveLangDevFilter(
-                                selectedItems && selectedItems.length > 0
-                                  ? selectedItems[0].id
-                                  : null
-                              );
-                              setPage(1);
-                            }}
-                            size='sm'
-                          />
-                        </Column>
-                      </Grid>
-                    </div>
-                  )}
+              {/* Second row: 1 dropdown and 2 checkbox groups */}
+              <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
+                <MultiSelect
+                  id='translation-status-filter'
+                  titleText='Translation Status'
+                  label='Select translation statuses...'
+                  items={filterOptions.translationStatuses.map((status) => ({
+                    id: status,
+                    text: status,
+                    label: status,
+                  }))}
+                  itemToString={(item) => (item ? item.text : "")}
+                  selectedItems={translationStatusFilter.map((status) => ({
+                    id: status,
+                    text: status,
+                    label: status,
+                  }))}
+                  onChange={({ selectedItems }) => {
+                    setTranslationStatusFilter(
+                      selectedItems ? selectedItems.map((item: any) => item.id) : []
+                    );
+                    setPage(1);
+                  }}
+                  size='sm'
+                />
+              </Column>
+              <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
+                <MultiSelect
+                  id='active-translation-filter'
+                  titleText='Active Translation'
+                  label='Select status...'
+                  items={[
+                    { id: "yes", text: "Yes", label: "Yes" },
+                    { id: "no", text: "No", label: "No" },
+                  ]}
+                  itemToString={(item) => (item ? item.text : "")}
+                  selectedItems={
+                    activeTranslationFilter
+                      ? [
+                          {
+                            id: activeTranslationFilter,
+                            text: activeTranslationFilter === "yes" ? "Yes" : "No",
+                            label: activeTranslationFilter === "yes" ? "Yes" : "No",
+                          },
+                        ]
+                      : []
+                  }
+                  onChange={({ selectedItems }) => {
+                    setActiveTranslationFilter(
+                      selectedItems && selectedItems.length > 0 ? selectedItems[0].id : null
+                    );
+                    setPage(1);
+                  }}
+                  size='sm'
+                />
+              </Column>
+              <Column lg={6} md={4} sm={4} style={{ marginBottom: "1rem" }}>
+                <MultiSelect
+                  id='active-langdev-filter'
+                  titleText='Active Language Dev'
+                  label='Select status...'
+                  items={[
+                    { id: "yes", text: "Yes", label: "Yes" },
+                    { id: "no", text: "No", label: "No" },
+                  ]}
+                  itemToString={(item) => (item ? item.text : "")}
+                  selectedItems={
+                    activeLangDevFilter
+                      ? [
+                          {
+                            id: activeLangDevFilter,
+                            text: activeLangDevFilter === "yes" ? "Yes" : "No",
+                            label: activeLangDevFilter === "yes" ? "Yes" : "No",
+                          },
+                        ]
+                      : []
+                  }
+                  onChange={({ selectedItems }) => {
+                    setActiveLangDevFilter(
+                      selectedItems && selectedItems.length > 0 ? selectedItems[0].id : null
+                    );
+                    setPage(1);
+                  }}
+                  size='sm'
+                />
+              </Column>
+            </Grid>
+          </div>
+        )}
 
         {/* View Mode Content */}
         {viewMode === "table" ? (
@@ -906,7 +904,7 @@ function LanguageListModal({
             )}
           </DataTable>
         ) : (
-          <div style={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column" }}>
+          <div style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
             {/* Filters section for map view - same as table view */}
             {showFilters && (
               <div
