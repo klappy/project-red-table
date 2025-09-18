@@ -995,7 +995,11 @@ function LanguageListModal({
               </div>
             )}
             <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, overflow: "hidden" }}>
-              <LanguageMap languages={filteredLanguages} color={color} />
+              <LanguageMap 
+                languages={filteredLanguages} 
+                allLanguages={languages}
+                color={color} 
+              />
             </div>
           </div>
         )}

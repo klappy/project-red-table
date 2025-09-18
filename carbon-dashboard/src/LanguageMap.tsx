@@ -89,10 +89,11 @@ const countryCoordinates: { [key: string]: [number, number] } = {
 
 interface LanguageMapProps {
   languages: any[];
+  allLanguages?: any[];
   color?: string;
 }
 
-export function LanguageMap({ languages, color = "#c1d72e" }: LanguageMapProps) {
+export function LanguageMap({ languages, allLanguages, color = "#c1d72e" }: LanguageMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
 
@@ -137,7 +138,21 @@ export function LanguageMap({ languages, color = "#c1d72e" }: LanguageMapProps) 
       }
     });
 
-    // Group languages by country
+    // First, group ALL languages by country to get total counts
+    const allLanguagesByCountry = (allLanguages || languages).reduce((acc: any, lang) => {
+      const country = lang["Country"] || lang["country"] || "Unknown";
+      if (!acc[country]) {
+        acc[country] = {
+          total: 0,
+          totalPopulation: 0,
+        };
+      }
+      acc[country].total++;
+      acc[country].totalPopulation += Number(lang["First Language Population"]) || 0;
+      return acc;
+    }, {});
+
+    // Then group FILTERED languages by country for current view
     const languagesByCountry = languages.reduce((acc: any, lang) => {
       const country = lang["Country"] || lang["country"] || "Unknown";
       if (!acc[country]) {
@@ -146,6 +161,8 @@ export function LanguageMap({ languages, color = "#c1d72e" }: LanguageMapProps) 
           totalPopulation: 0,
           atRisk: 0,
           completed: 0,
+          totalCount: allLanguagesByCountry[country]?.total || 0,
+          totalCountryPopulation: allLanguagesByCountry[country]?.totalPopulation || 0,
         };
       }
 
@@ -186,7 +203,12 @@ export function LanguageMap({ languages, color = "#c1d72e" }: LanguageMapProps) 
           <div style="min-width: 200px; font-family: 'IBM Plex Sans', sans-serif;">
             <h3 style="margin: 0 0 10px 0; font-size: 16px; font-weight: 600;">${country}</h3>
             <div style="display: flex; flex-direction: column; gap: 5px; font-size: 14px;">
-              <div><strong>Languages:</strong> ${data.languages.length}</div>
+              <div><strong>Total Languages:</strong> ${data.totalCount}</div>
+              ${
+                data.languages.length < data.totalCount 
+                  ? `<div style="font-size: 12px; color: #525252;"><em>Showing ${data.languages.length} (filtered)</em></div>`
+                  : ""
+              }
               ${
                 data.atRisk > 0
                   ? `<div style="color: #da1e28;"><strong>At Risk:</strong> ${data.atRisk}</div>`
@@ -197,13 +219,13 @@ export function LanguageMap({ languages, color = "#c1d72e" }: LanguageMapProps) 
                   ? `<div style="color: #24a148;"><strong>Goal Met:</strong> ${data.completed}</div>`
                   : ""
               }
-              <div><strong>Total Population:</strong> ${data.totalPopulation.toLocaleString()}</div>
+              <div><strong>Population (filtered):</strong> ${data.totalPopulation.toLocaleString()}</div>
             </div>
             <hr style="margin: 10px 0; border: none; border-top: 1px solid #e0e0e0;">
             <details style="cursor: pointer;">
-              <summary style="font-weight: 600; margin-bottom: 5px;">Languages (${
+              <summary style="font-weight: 600; margin-bottom: 5px;">Languages Shown (${
                 data.languages.length
-              })</summary>
+              }${data.languages.length < data.totalCount ? ` of ${data.totalCount}` : ''})</summary>
               <div style="max-height: 200px; overflow-y: auto; margin-top: 5px;">
                 ${data.languages
                   .map((lang: any) => {
@@ -238,7 +260,9 @@ export function LanguageMap({ languages, color = "#c1d72e" }: LanguageMapProps) 
 
         // Add tooltip for hover
         marker.bindTooltip(
-          `${country}: ${data.languages.length} language${data.languages.length !== 1 ? "s" : ""}`,
+          `${country}: ${data.totalCount} language${data.totalCount !== 1 ? "s" : ""}${
+            data.languages.length < data.totalCount ? ` (showing ${data.languages.length})` : ""
+          }`,
           {
             permanent: false,
             direction: "top",
@@ -279,7 +303,7 @@ export function LanguageMap({ languages, color = "#c1d72e" }: LanguageMapProps) 
     return () => {
       map.removeControl(legend);
     };
-  }, [languages, color]);
+  }, [languages, allLanguages, color]);
 
   return (
     <div
