@@ -203,9 +203,9 @@ export function LanguageMap({ languages, allLanguages, color = "#c1d72e" }: Lang
           <div style="min-width: 200px; font-family: 'IBM Plex Sans', sans-serif;">
             <h3 style="margin: 0 0 10px 0; font-size: 16px; font-weight: 600;">${country}</h3>
             <div style="display: flex; flex-direction: column; gap: 5px; font-size: 14px;">
-              <div><strong>Total Languages:</strong> ${data.totalCount}</div>
+              <div><strong>AAG Languages:</strong> ${data.totalCount}</div>
               ${
-                data.languages.length < data.totalCount 
+                data.languages.length < data.totalCount
                   ? `<div style="font-size: 12px; color: #525252;"><em>Showing ${data.languages.length} (filtered)</em></div>`
                   : ""
               }
@@ -223,9 +223,9 @@ export function LanguageMap({ languages, allLanguages, color = "#c1d72e" }: Lang
             </div>
             <hr style="margin: 10px 0; border: none; border-top: 1px solid #e0e0e0;">
             <details style="cursor: pointer;">
-              <summary style="font-weight: 600; margin-bottom: 5px;">Languages Shown (${
+              <summary style="font-weight: 600; margin-bottom: 5px;">AAG Languages Shown (${
                 data.languages.length
-              }${data.languages.length < data.totalCount ? ` of ${data.totalCount}` : ''})</summary>
+              }${data.languages.length < data.totalCount ? ` of ${data.totalCount}` : ""})</summary>
               <div style="max-height: 200px; overflow-y: auto; margin-top: 5px;">
                 ${data.languages
                   .map((lang: any) => {
@@ -260,7 +260,7 @@ export function LanguageMap({ languages, allLanguages, color = "#c1d72e" }: Lang
 
         // Add tooltip for hover
         marker.bindTooltip(
-          `${country}: ${data.totalCount} language${data.totalCount !== 1 ? "s" : ""}${
+          `${country}: ${data.totalCount} AAG language${data.totalCount !== 1 ? "s" : ""}${
             data.languages.length < data.totalCount ? ` (showing ${data.languages.length})` : ""
           }`,
           {
@@ -291,7 +291,8 @@ export function LanguageMap({ languages, allLanguages, color = "#c1d72e" }: Lang
             <span>Goal Met</span>
           </div>
           <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e0e0e0;">
-            <div style="color: #8d8d8d;">Circle size = # of languages</div>
+            <div style="color: #8d8d8d;">Circle size = # of AAG languages</div>
+            <div style="color: #8d8d8d; font-size: 10px; margin-top: 2px;">*All Access Goals dataset only</div>
           </div>
         </div>
       `;
