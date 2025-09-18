@@ -1,0 +1,41 @@
+{
+  "name": "Project Red Table - All Access Goals Dashboard",
+  "short_name": "Red Table",
+  "description": "Critical risk assessment dashboard tracking 1,788 languages at risk of having no Scripture access by 2033",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f5f5",
+  "theme_color": "#dc2626",
+  "orientation": "portrait-primary",
+  "categories": ["education", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/project-red-table-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/project-red-table-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "label": "Project Red Table Dashboard"
+    }
+  ],
+  "share_target": {
+    "action": "/",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}

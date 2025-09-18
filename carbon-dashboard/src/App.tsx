@@ -470,7 +470,7 @@ function LanguageListModal({
       onRequestClose={onClose}
       aria-label='Language list modal'
       selectorPrimaryFocus='.cds--modal-close'
-      className={`language-list-modal ${viewMode === 'map' ? 'map-view' : 'table-view'}`}
+      className={`language-list-modal ${viewMode === "map" ? "map-view" : "table-view"}`}
       modalHeading={
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           <div
@@ -994,12 +994,16 @@ function LanguageListModal({
                 </div>
               </div>
             )}
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, overflow: "hidden" }}>
-              <LanguageMap 
-                languages={filteredLanguages} 
-                allLanguages={languages}
-                color={color} 
-              />
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                minHeight: 0,
+                overflow: "hidden",
+              }}
+            >
+              <LanguageMap languages={filteredLanguages} allLanguages={languages} color={color} />
             </div>
           </div>
         )}
@@ -1659,19 +1663,23 @@ function AllAccessGoalsFooter({ rows }: { rows: any[] }) {
             flexWrap: "wrap",
           }}
         >
-          {/* ETEN Logo */}
+          {/* Project Red Table Logo */}
           <img
-            src='/eten-logo-on-dark.png'
-            alt='ETEN Logo'
+            src='/project-red-table-logo.png'
+            alt='Project Red Table'
             style={{
               height: "50px",
-              opacity: 0.8,
-              cursor: "pointer",
-              transition: "opacity 0.2s",
+              opacity: 0.9,
+              transition: "opacity 0.2s, transform 0.2s",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.8")}
-            onClick={() => window.open("https://eten.org", "_blank")}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = "1";
+              e.currentTarget.style.transform = "scale(1.05)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = "0.9";
+              e.currentTarget.style.transform = "scale(1)";
+            }}
           />
 
           <div style={{ textAlign: "center" }}>
@@ -2498,6 +2506,15 @@ export default function App() {
       >
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+          <img
+            src='/project-red-table-logo.png'
+            alt='Project Red Table Logo'
+            style={{
+              height: "120px",
+              marginBottom: "1.5rem",
+              filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.1))",
+            }}
+          />
           <h1
             style={{
               fontSize: "3rem",
