@@ -22,11 +22,9 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableToolbar,
-  TableToolbarContent,
-  TableToolbarSearch,
   Pagination,
   MultiSelect,
+  Search,
 } from "@carbon/react";
 import {
   Add,
@@ -43,11 +41,14 @@ import {
   Reset,
   ChevronUp,
   ChevronDown,
+  DataTable as DataTable_1,
+  LocationCompany,
 } from "@carbon/icons-react";
 
 // Carbon Charts imports
 import { SimpleBarChart } from "@carbon/charts-react";
 import "@carbon/charts/styles.css";
+import { LanguageMap } from "./LanguageMap";
 
 // ---------- Configuration ----------
 const DEFAULT_DATA_URL =
@@ -90,6 +91,7 @@ function LanguageListModal({
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"ASC" | "DESC">("ASC");
   const [showFilters, setShowFilters] = useState(false);
+  const [viewMode, setViewMode] = useState<"table" | "map">("table");
 
   // Filter states - initialize with any initial filters
   const [goalTypeFilter, setGoalTypeFilter] = useState<string[]>(
@@ -468,6 +470,7 @@ function LanguageListModal({
       onRequestClose={onClose}
       aria-label='Language list modal'
       selectorPrimaryFocus='.cds--modal-close'
+      className='language-list-modal'
       modalHeading={
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           <div
@@ -492,383 +495,512 @@ function LanguageListModal({
     >
       <div
         style={{
-          height: "70vh",
+          height: "80vh",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
         }}
       >
-        <DataTable
-          rows={rows}
-          headers={headers}
-          isSortable
-          sortRow={() => 0} // Return 0 to disable Carbon's sorting logic but keep headers clickable
-          radio={false}
-          useZebraStyles={false}
-        >
-          {({
-            rows,
-            headers,
-            getHeaderProps,
-            getRowProps,
-            getTableProps,
-            getTableContainerProps,
-          }) => (
-            <div style={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column" }}>
-              <TableContainer
-                title=''
-                description=''
-                {...getTableContainerProps()}
-                stickyHeader={false}
+        {/* Shared toolbar for both views */}
+        <div style={{ padding: "0.75rem 1rem", borderBottom: "1px solid #e0e0e0", background: "#fff" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <Search
+              id="language-search"
+              size="sm"
+              placeholder="Search languages..."
+              labelText=""
+              value={searchTerm}
+              onChange={(e: any) => setSearchTerm(e.target.value)}
+              style={{ flex: "1", maxWidth: "400px" }}
+            />
+            <div style={{ display: "flex", gap: "0.5rem" }}>
+              <button
+                className={`cds--btn cds--btn--sm ${
+                  viewMode === "table" ? "cds--btn--primary" : "cds--btn--ghost"
+                }`}
+                onClick={() => setViewMode("table")}
+                style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem" }}
               >
-                <TableToolbar aria-label='data table toolbar'>
-                  <TableToolbarContent>
-                    <TableToolbarSearch
-                      placeholder='Search languages...'
-                      persistent
-                      onChange={(e: any) => setSearchTerm(e.target.value)}
-                    />
-                    <button
-                      className='cds--btn cds--btn--ghost cds--btn--sm'
-                      onClick={() => setShowFilters(!showFilters)}
+                <DataTable_1 size={16} />
+                <span>Table</span>
+              </button>
+              <button
+                className={`cds--btn cds--btn--sm ${
+                  viewMode !== "table" ? "cds--btn--primary" : "cds--btn--ghost"
+                }`}
+                onClick={() => setViewMode("map")}
+                style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem" }}
+              >
+                <LocationCompany size={16} />
+                <span>Map</span>
+              </button>
+            </div>
+            <button
+              className='cds--btn cds--btn--ghost cds--btn--sm'
+              onClick={() => setShowFilters(!showFilters)}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.25rem",
+              }}
+            >
+              <Filter size={16} />
+              <span>Filters</span>
+              {(goalTypeFilter.length > 0 ||
+                hasScriptureFilter.length > 0 ||
+                activeTranslationFilter ||
+                activeLangDevFilter ||
+                accessStatusFilter.length > 0 ||
+                translationStatusFilter.length > 0) && (
+                <Tag type='green' size='sm' style={{ marginLeft: "0.25rem" }}>
+                  {
+                    [
+                      ...goalTypeFilter,
+                      ...hasScriptureFilter,
+                      ...accessStatusFilter,
+                      ...translationStatusFilter,
+                      activeTranslationFilter ? 1 : 0,
+                      activeLangDevFilter ? 1 : 0,
+                    ].filter(Boolean).length
+                  }
+                </Tag>
+              )}
+              {showFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+            {(goalTypeFilter.length > 0 ||
+              hasScriptureFilter.length > 0 ||
+              activeTranslationFilter ||
+              activeLangDevFilter ||
+              accessStatusFilter.length > 0 ||
+              translationStatusFilter.length > 0) && (
+              <Button
+                kind='ghost'
+                size='sm'
+                onClick={() => {
+                  setGoalTypeFilter([]);
+                  setHasScriptureFilter([]);
+                  setActiveTranslationFilter(null);
+                  setActiveLangDevFilter(null);
+                  setAccessStatusFilter([]);
+                  setTranslationStatusFilter([]);
+                }}
+                renderIcon={Reset}
+                hasIconOnly
+                iconDescription='Clear all filters'
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Filter Panel for both views */}
+        {showFilters && (
+                    <div
                       style={{
-                        marginLeft: "1rem",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "0.25rem",
+                        padding: "1.5rem",
+                        borderBottom: "1px solid #e0e0e0",
+                        background: "#f4f4f4",
                       }}
                     >
-                      <Filter size={16} />
-                      <span>Filters</span>
-                      {(goalTypeFilter.length > 0 ||
+                      <Grid narrow fullWidth>
+                        {/* First row: 3 columns of dropdowns */}
+                        <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
+                          <MultiSelect
+                            id='goal-type-filter'
+                            titleText='Goal Type'
+                            label='Select goal types...'
+                            items={filterOptions.goalTypes.map((type) => ({
+                              id: type,
+                              text: type,
+                              label: type,
+                            }))}
+                            itemToString={(item) => (item ? item.text : "")}
+                            selectedItems={goalTypeFilter.map((type) => ({
+                              id: type,
+                              text: type,
+                              label: type,
+                            }))}
+                            onChange={({ selectedItems }) => {
+                              setGoalTypeFilter(
+                                selectedItems ? selectedItems.map((item: any) => item.id) : []
+                              );
+                              setPage(1);
+                            }}
+                            size='sm'
+                          />
+                        </Column>
+                        <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
+                          <MultiSelect
+                            id='has-scripture-filter'
+                            titleText='Has Scripture'
+                            label='Select scripture types...'
+                            items={filterOptions.hasScripture.map((type) => ({
+                              id: type,
+                              text: type,
+                              label: type,
+                            }))}
+                            itemToString={(item) => (item ? item.text : "")}
+                            selectedItems={hasScriptureFilter.map((type) => ({
+                              id: type,
+                              text: type,
+                              label: type,
+                            }))}
+                            onChange={({ selectedItems }) => {
+                              setHasScriptureFilter(
+                                selectedItems ? selectedItems.map((item: any) => item.id) : []
+                              );
+                              setPage(1);
+                            }}
+                            size='sm'
+                          />
+                        </Column>
+                        <Column lg={6} md={4} sm={4} style={{ marginBottom: "1rem" }}>
+                          <MultiSelect
+                            id='access-status-filter'
+                            titleText='Access Status'
+                            label='Select access statuses...'
+                            items={filterOptions.accessStatuses.map((status) => ({
+                              id: status,
+                              text: status,
+                              label: status,
+                            }))}
+                            itemToString={(item) => (item ? item.text : "")}
+                            selectedItems={accessStatusFilter.map((status) => ({
+                              id: status,
+                              text: status,
+                              label: status,
+                            }))}
+                            onChange={({ selectedItems }) => {
+                              setAccessStatusFilter(
+                                selectedItems ? selectedItems.map((item: any) => item.id) : []
+                              );
+                              setPage(1);
+                            }}
+                            size='sm'
+                          />
+                        </Column>
+
+                        {/* Second row: 1 dropdown and 2 checkbox groups */}
+                        <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
+                          <MultiSelect
+                            id='translation-status-filter'
+                            titleText='Translation Status'
+                            label='Select translation statuses...'
+                            items={filterOptions.translationStatuses.map((status) => ({
+                              id: status,
+                              text: status,
+                              label: status,
+                            }))}
+                            itemToString={(item) => (item ? item.text : "")}
+                            selectedItems={translationStatusFilter.map((status) => ({
+                              id: status,
+                              text: status,
+                              label: status,
+                            }))}
+                            onChange={({ selectedItems }) => {
+                              setTranslationStatusFilter(
+                                selectedItems ? selectedItems.map((item: any) => item.id) : []
+                              );
+                              setPage(1);
+                            }}
+                            size='sm'
+                          />
+                        </Column>
+                        <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
+                          <MultiSelect
+                            id='active-translation-filter'
+                            titleText='Active Translation'
+                            label='Select status...'
+                            items={[
+                              { id: "yes", text: "Yes", label: "Yes" },
+                              { id: "no", text: "No", label: "No" },
+                            ]}
+                            itemToString={(item) => (item ? item.text : "")}
+                            selectedItems={
+                              activeTranslationFilter
+                                ? [
+                                    {
+                                      id: activeTranslationFilter,
+                                      text: activeTranslationFilter === "yes" ? "Yes" : "No",
+                                      label: activeTranslationFilter === "yes" ? "Yes" : "No",
+                                    },
+                                  ]
+                                : []
+                            }
+                            onChange={({ selectedItems }) => {
+                              setActiveTranslationFilter(
+                                selectedItems && selectedItems.length > 0
+                                  ? selectedItems[0].id
+                                  : null
+                              );
+                              setPage(1);
+                            }}
+                            size='sm'
+                          />
+                        </Column>
+                        <Column lg={6} md={4} sm={4} style={{ marginBottom: "1rem" }}>
+                          <MultiSelect
+                            id='active-langdev-filter'
+                            titleText='Active Language Dev'
+                            label='Select status...'
+                            items={[
+                              { id: "yes", text: "Yes", label: "Yes" },
+                              { id: "no", text: "No", label: "No" },
+                            ]}
+                            itemToString={(item) => (item ? item.text : "")}
+                            selectedItems={
+                              activeLangDevFilter
+                                ? [
+                                    {
+                                      id: activeLangDevFilter,
+                                      text: activeLangDevFilter === "yes" ? "Yes" : "No",
+                                      label: activeLangDevFilter === "yes" ? "Yes" : "No",
+                                    },
+                                  ]
+                                : []
+                            }
+                            onChange={({ selectedItems }) => {
+                              setActiveLangDevFilter(
+                                selectedItems && selectedItems.length > 0
+                                  ? selectedItems[0].id
+                                  : null
+                              );
+                              setPage(1);
+                            }}
+                            size='sm'
+                          />
+                        </Column>
+                      </Grid>
+                    </div>
+                  )}
+
+        {/* View Mode Content */}
+        {viewMode === "table" ? (
+          <DataTable
+            rows={rows}
+            headers={headers}
+            isSortable
+            sortRow={() => 0}
+            radio={false}
+            useZebraStyles={false}
+          >
+            {({
+              rows,
+              headers,
+              getHeaderProps,
+              getRowProps,
+              getTableProps,
+              getTableContainerProps,
+            }) => (
+              <div style={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column" }}>
+                <TableContainer
+                  title=''
+                  description=''
+                  {...getTableContainerProps()}
+                  stickyHeader={false}
+                >
+                  <Table {...getTableProps()} aria-label='Language list'>
+                    <TableHead>
+                      <TableRow>
+                        {headers.map((header) => (
+                          <TableHeader
+                            {...getHeaderProps({
+                              header,
+                              onClick: (e: any) => {
+                                // Prevent default to avoid scrolling
+                                e.preventDefault();
+                                e.stopPropagation();
+
+                                // Handle our custom sorting
+                                if (sortKey === header.key) {
+                                  // Toggle direction if same column
+                                  setSortDirection(sortDirection === "ASC" ? "DESC" : "ASC");
+                                } else {
+                                  // New column, default to ASC
+                                  setSortKey(header.key);
+                                  setSortDirection("ASC");
+                                }
+                                setPage(1); // Reset to first page when sorting
+                              },
+                            })}
+                            key={header.key}
+                            isSortHeader={sortKey === header.key}
+                            sortDirection={sortKey === header.key ? sortDirection : "NONE"}
+                            style={{ cursor: "pointer" }}
+                          >
+                            {header.header}
+                          </TableHeader>
+                        ))}
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {rows.map((row) => (
+                        <TableRow {...getRowProps({ row })} key={row.id}>
+                          {row.cells.map((cell: any) => (
+                            <TableCell key={cell.id}>
+                              {cell.info.header === "population" ||
+                              cell.info.header === "completed" ||
+                              cell.info.header === "goal"
+                                ? typeof cell.value === "number"
+                                  ? cell.value.toLocaleString()
+                                  : cell.value
+                                : cell.value}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  {filteredLanguages.length > 0 && (
+                    <div
+                      style={{
+                        padding: "0.5rem 1rem",
+                        background: "#f4f4f4",
+                        borderTop: "1px solid #e0e0e0",
+                        fontSize: "0.875rem",
+                        color: "#525252",
+                      }}
+                    >
+                      Showing {paginatedLanguages.length.toLocaleString()} of{" "}
+                      {filteredLanguages.length.toLocaleString()} filtered (
+                      {languages.length.toLocaleString()} total)
+                      {(searchTerm ||
+                        goalTypeFilter.length > 0 ||
                         hasScriptureFilter.length > 0 ||
                         activeTranslationFilter ||
                         activeLangDevFilter ||
                         accessStatusFilter.length > 0 ||
-                        translationStatusFilter.length > 0) && (
-                        <Tag type='green' size='sm' style={{ marginLeft: "0.25rem" }}>
-                          {
-                            [
-                              ...goalTypeFilter,
-                              ...hasScriptureFilter,
-                              ...accessStatusFilter,
-                              ...translationStatusFilter,
-                              activeTranslationFilter ? 1 : 0,
-                              activeLangDevFilter ? 1 : 0,
-                            ].filter(Boolean).length
-                          }
-                        </Tag>
-                      )}
-                      {showFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                    </button>
-                    {(goalTypeFilter.length > 0 ||
-                      hasScriptureFilter.length > 0 ||
-                      activeTranslationFilter ||
-                      activeLangDevFilter ||
-                      accessStatusFilter.length > 0 ||
-                      translationStatusFilter.length > 0) && (
-                      <Button
-                        kind='ghost'
-                        size='sm'
-                        onClick={() => {
-                          setGoalTypeFilter([]);
-                          setHasScriptureFilter([]);
-                          setActiveTranslationFilter(null);
-                          setActiveLangDevFilter(null);
-                          setAccessStatusFilter([]);
-                          setTranslationStatusFilter([]);
-                        }}
-                        renderIcon={Reset}
-                        hasIconOnly
-                        iconDescription='Clear all filters'
-                      />
-                    )}
-                  </TableToolbarContent>
-                </TableToolbar>
-
-                {/* Filter Panel */}
-                {showFilters && (
-                  <div
-                    style={{
-                      padding: "1.5rem",
-                      borderBottom: "1px solid #e0e0e0",
-                      background: "#f4f4f4",
+                        translationStatusFilter.length > 0) &&
+                        " (filtered)"}
+                    </div>
+                  )}
+                  {filteredLanguages.length > pageSize && (
+                    <Pagination
+                      backwardText='Previous page'
+                      forwardText='Next page'
+                      itemsPerPageText='Items per page:'
+                      page={page}
+                      pageNumberText='Page Number'
+                      pageSize={pageSize}
+                      pageSizes={[10, 25, 50, 100]}
+                      totalItems={filteredLanguages.length}
+                      onChange={({ page, pageSize }) => {
+                        setPage(page);
+                        setPageSize(pageSize);
+                      }}
+                    />
+                  )}
+                  {filteredLanguages.length === 0 && (
+                    <div
+                      style={{
+                        padding: "2rem",
+                        textAlign: "center",
+                        color: "#525252",
+                      }}
+                    >
+                      No languages found matching your filters
+                      {searchTerm && ` and search "${searchTerm}"`}
+                    </div>
+                  )}
+                </TableContainer>
+              </div>
+            )}
+          </DataTable>
+        ) : (
+          <div style={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column" }}>
+            {/* Filters section for map view - same as table view */}
+            {showFilters && (
+              <div
+                style={{
+                  padding: "1rem",
+                  background: "#f4f4f4",
+                  borderBottom: "1px solid #e0e0e0",
+                }}
+              >
+                <Grid narrow>
+                  {/* First row: 2 dropdowns */}
+                  <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
+                    <MultiSelect
+                      id='goal-type-filter'
+                      titleText='Goal Type'
+                      label='Select goal types...'
+                      items={filterOptions.goalTypes.map((type) => ({
+                        id: type,
+                        text: type,
+                        label: type,
+                      }))}
+                      itemToString={(item) => (item ? item.text : "")}
+                      selectedItems={goalTypeFilter.map((type) => ({
+                        id: type,
+                        text: type,
+                        label: type,
+                      }))}
+                      onChange={({ selectedItems }) => {
+                        setGoalTypeFilter(
+                          selectedItems ? selectedItems.map((item: any) => item.id) : []
+                        );
+                        setPage(1);
+                      }}
+                      size='sm'
+                    />
+                  </Column>
+                  <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
+                    <MultiSelect
+                      id='access-status-filter'
+                      titleText='Access Status'
+                      label='Select access statuses...'
+                      items={filterOptions.accessStatuses.map((status) => ({
+                        id: status,
+                        text: status,
+                        label: status,
+                      }))}
+                      itemToString={(item) => (item ? item.text : "")}
+                      selectedItems={accessStatusFilter.map((status) => ({
+                        id: status,
+                        text: status,
+                        label: status,
+                      }))}
+                      onChange={({ selectedItems }) => {
+                        setAccessStatusFilter(
+                          selectedItems ? selectedItems.map((item: any) => item.id) : []
+                        );
+                        setPage(1);
+                      }}
+                      size='sm'
+                    />
+                  </Column>
+                </Grid>
+                <div
+                  style={{
+                    marginTop: "0.5rem",
+                    display: "flex",
+                    gap: "0.5rem",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <button
+                    className='cds--btn cds--btn--ghost cds--btn--sm'
+                    onClick={() => {
+                      setGoalTypeFilter([]);
+                      setHasScriptureFilter([]);
+                      setActiveTranslationFilter(null);
+                      setActiveLangDevFilter(null);
+                      setAccessStatusFilter([]);
+                      setTranslationStatusFilter([]);
+                      setSearchTerm("");
+                      setPage(1);
                     }}
                   >
-                    <Grid narrow fullWidth>
-                      {/* First row: 3 columns of dropdowns */}
-                      <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
-                        <MultiSelect
-                          id='goal-type-filter'
-                          titleText='Goal Type'
-                          label='Select goal types...'
-                          items={filterOptions.goalTypes.map((type) => ({
-                            id: type,
-                            text: type,
-                            label: type,
-                          }))}
-                          itemToString={(item) => (item ? item.text : "")}
-                          selectedItems={goalTypeFilter.map((type) => ({
-                            id: type,
-                            text: type,
-                            label: type,
-                          }))}
-                          onChange={({ selectedItems }) => {
-                            setGoalTypeFilter(
-                              selectedItems ? selectedItems.map((item: any) => item.id) : []
-                            );
-                            setPage(1);
-                          }}
-                          size='sm'
-                        />
-                      </Column>
-                      <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
-                        <MultiSelect
-                          id='has-scripture-filter'
-                          titleText='Has Scripture'
-                          label='Select scripture types...'
-                          items={filterOptions.hasScripture.map((type) => ({
-                            id: type,
-                            text: type,
-                            label: type,
-                          }))}
-                          itemToString={(item) => (item ? item.text : "")}
-                          selectedItems={hasScriptureFilter.map((type) => ({
-                            id: type,
-                            text: type,
-                            label: type,
-                          }))}
-                          onChange={({ selectedItems }) => {
-                            setHasScriptureFilter(
-                              selectedItems ? selectedItems.map((item: any) => item.id) : []
-                            );
-                            setPage(1);
-                          }}
-                          size='sm'
-                        />
-                      </Column>
-                      <Column lg={6} md={4} sm={4} style={{ marginBottom: "1rem" }}>
-                        <MultiSelect
-                          id='access-status-filter'
-                          titleText='Access Status'
-                          label='Select access statuses...'
-                          items={filterOptions.accessStatuses.map((status) => ({
-                            id: status,
-                            text: status,
-                            label: status,
-                          }))}
-                          itemToString={(item) => (item ? item.text : "")}
-                          selectedItems={accessStatusFilter.map((status) => ({
-                            id: status,
-                            text: status,
-                            label: status,
-                          }))}
-                          onChange={({ selectedItems }) => {
-                            setAccessStatusFilter(
-                              selectedItems ? selectedItems.map((item: any) => item.id) : []
-                            );
-                            setPage(1);
-                          }}
-                          size='sm'
-                        />
-                      </Column>
-
-                      {/* Second row: 1 dropdown and 2 checkbox groups */}
-                      <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
-                        <MultiSelect
-                          id='translation-status-filter'
-                          titleText='Translation Status'
-                          label='Select translation statuses...'
-                          items={filterOptions.translationStatuses.map((status) => ({
-                            id: status,
-                            text: status,
-                            label: status,
-                          }))}
-                          itemToString={(item) => (item ? item.text : "")}
-                          selectedItems={translationStatusFilter.map((status) => ({
-                            id: status,
-                            text: status,
-                            label: status,
-                          }))}
-                          onChange={({ selectedItems }) => {
-                            setTranslationStatusFilter(
-                              selectedItems ? selectedItems.map((item: any) => item.id) : []
-                            );
-                            setPage(1);
-                          }}
-                          size='sm'
-                        />
-                      </Column>
-                      <Column lg={5} md={4} sm={4} style={{ marginBottom: "1rem" }}>
-                        <MultiSelect
-                          id='active-translation-filter'
-                          titleText='Active Translation'
-                          label='Select status...'
-                          items={[
-                            { id: "yes", text: "Yes", label: "Yes" },
-                            { id: "no", text: "No", label: "No" },
-                          ]}
-                          itemToString={(item) => (item ? item.text : "")}
-                          selectedItems={
-                            activeTranslationFilter
-                              ? [
-                                  {
-                                    id: activeTranslationFilter,
-                                    text: activeTranslationFilter === "yes" ? "Yes" : "No",
-                                    label: activeTranslationFilter === "yes" ? "Yes" : "No",
-                                  },
-                                ]
-                              : []
-                          }
-                          onChange={({ selectedItems }) => {
-                            setActiveTranslationFilter(
-                              selectedItems && selectedItems.length > 0 ? selectedItems[0].id : null
-                            );
-                            setPage(1);
-                          }}
-                          size='sm'
-                        />
-                      </Column>
-                      <Column lg={6} md={4} sm={4} style={{ marginBottom: "1rem" }}>
-                        <MultiSelect
-                          id='active-langdev-filter'
-                          titleText='Active Language Dev'
-                          label='Select status...'
-                          items={[
-                            { id: "yes", text: "Yes", label: "Yes" },
-                            { id: "no", text: "No", label: "No" },
-                          ]}
-                          itemToString={(item) => (item ? item.text : "")}
-                          selectedItems={
-                            activeLangDevFilter
-                              ? [
-                                  {
-                                    id: activeLangDevFilter,
-                                    text: activeLangDevFilter === "yes" ? "Yes" : "No",
-                                    label: activeLangDevFilter === "yes" ? "Yes" : "No",
-                                  },
-                                ]
-                              : []
-                          }
-                          onChange={({ selectedItems }) => {
-                            setActiveLangDevFilter(
-                              selectedItems && selectedItems.length > 0 ? selectedItems[0].id : null
-                            );
-                            setPage(1);
-                          }}
-                          size='sm'
-                        />
-                      </Column>
-                    </Grid>
-                  </div>
-                )}
-                <Table {...getTableProps()} aria-label='Language list'>
-                  <TableHead>
-                    <TableRow>
-                      {headers.map((header) => (
-                        <TableHeader
-                          {...getHeaderProps({
-                            header,
-                            onClick: (e: any) => {
-                              // Prevent default to avoid scrolling
-                              e.preventDefault();
-                              e.stopPropagation();
-
-                              // Handle our custom sorting
-                              if (sortKey === header.key) {
-                                // Toggle direction if same column
-                                setSortDirection(sortDirection === "ASC" ? "DESC" : "ASC");
-                              } else {
-                                // New column, default to ASC
-                                setSortKey(header.key);
-                                setSortDirection("ASC");
-                              }
-                              setPage(1); // Reset to first page when sorting
-                            },
-                          })}
-                          key={header.key}
-                          isSortHeader={sortKey === header.key}
-                          sortDirection={sortKey === header.key ? sortDirection : "NONE"}
-                          style={{ cursor: "pointer" }}
-                        >
-                          {header.header}
-                        </TableHeader>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {rows.map((row) => (
-                      <TableRow {...getRowProps({ row })} key={row.id}>
-                        {row.cells.map((cell: any) => (
-                          <TableCell key={cell.id}>
-                            {cell.info.header === "population" ||
-                            cell.info.header === "completed" ||
-                            cell.info.header === "goal"
-                              ? typeof cell.value === "number"
-                                ? cell.value.toLocaleString()
-                                : cell.value
-                              : cell.value}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                {filteredLanguages.length > 0 && (
-                  <div
-                    style={{
-                      padding: "0.5rem 1rem",
-                      background: "#f4f4f4",
-                      borderTop: "1px solid #e0e0e0",
-                      fontSize: "0.875rem",
-                      color: "#525252",
-                    }}
-                  >
-                    Showing {paginatedLanguages.length.toLocaleString()} of{" "}
-                    {filteredLanguages.length.toLocaleString()} filtered (
-                    {languages.length.toLocaleString()} total)
-                    {(searchTerm ||
-                      goalTypeFilter.length > 0 ||
-                      hasScriptureFilter.length > 0 ||
-                      activeTranslationFilter ||
-                      activeLangDevFilter ||
-                      accessStatusFilter.length > 0 ||
-                      translationStatusFilter.length > 0) &&
-                      " (filtered)"}
-                  </div>
-                )}
-                {filteredLanguages.length > pageSize && (
-                  <Pagination
-                    backwardText='Previous page'
-                    forwardText='Next page'
-                    itemsPerPageText='Items per page:'
-                    page={page}
-                    pageNumberText='Page Number'
-                    pageSize={pageSize}
-                    pageSizes={[10, 25, 50, 100]}
-                    totalItems={filteredLanguages.length}
-                    onChange={({ page, pageSize }) => {
-                      setPage(page);
-                      setPageSize(pageSize);
-                    }}
-                  />
-                )}
-                {filteredLanguages.length === 0 && (
-                  <div
-                    style={{
-                      padding: "2rem",
-                      textAlign: "center",
-                      color: "#525252",
-                    }}
-                  >
-                    No languages found matching your filters
-                    {searchTerm && ` and search "${searchTerm}"`}
-                  </div>
-                )}
-              </TableContainer>
+                    <Reset size={16} />
+                    <span style={{ marginLeft: "0.25rem" }}>Clear Filters</span>
+                  </button>
+                </div>
+              </div>
+            )}
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+              <LanguageMap languages={filteredLanguages} color={color} />
             </div>
-          )}
-        </DataTable>
+          </div>
+        )}
       </div>
     </Modal>
   );

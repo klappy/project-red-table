@@ -858,3 +858,22 @@ a:hover {
   align-items: center !important;
   max-width: none !important;
 }
+
+/* Make the language list modal wider for map view */
+.language-list-modal .cds--modal-container {
+  max-width: 90vw !important;
+  width: 90vw !important;
+}
+
+@media (min-width: 1200px) {
+  .language-list-modal .cds--modal-container {
+    max-width: 1400px !important;
+    width: 90vw !important;
+  }
+}
+
+/* Ensure map fills available height */
+.language-list-modal .cds--modal-content > div[style*="height"] {
+  height: 85vh !important;
+  max-height: 85vh !important;
+}
