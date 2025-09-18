@@ -874,8 +874,9 @@ a:hover {
 
 /* Ensure map fills available height */
 .language-list-modal .cds--modal-content > div[style*="height"] {
-  height: 85vh !important;
-  max-height: 85vh !important;
+  height: 80vh !important;
+  max-height: 80vh !important;
+  overflow: hidden !important;
 }
 
 /* Remove scrollbars from map view */
@@ -892,4 +893,57 @@ a:hover {
 
 .language-list-modal div[style*="overflow: hidden"]::-webkit-scrollbar {
   display: none !important;
+}
+
+/* More aggressive scrollbar removal for modal content */
+.language-list-modal .cds--modal-content {
+  overflow: hidden !important;
+}
+
+/* Kill all scrollbars in the modal body when showing map */
+.language-list-modal .cds--modal-content > div {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.language-list-modal .cds--modal-content > div::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Specifically target the flex containers in map view */
+.language-list-modal div[style*="flex: 1"] {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.language-list-modal div[style*="flex: 1"]::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* MAP VIEW SPECIFIC - Target modal content containers only */
+.language-list-modal.map-view .cds--modal-content,
+.language-list-modal.map-view .cds--modal-content > div {
+  overflow: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.language-list-modal.map-view .cds--modal-content::-webkit-scrollbar,
+.language-list-modal.map-view .cds--modal-content > div::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Leaflet container should handle its own overflow */
+.language-list-modal.map-view .leaflet-container {
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+/* Allow scrolling ONLY in table view */
+.language-list-modal.table-view .cds--modal-content > div {
+  overflow: auto !important;
 }

@@ -470,7 +470,7 @@ function LanguageListModal({
       onRequestClose={onClose}
       aria-label='Language list modal'
       selectorPrimaryFocus='.cds--modal-close'
-      className='language-list-modal'
+      className={`language-list-modal ${viewMode === 'map' ? 'map-view' : 'table-view'}`}
       modalHeading={
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           <div
@@ -994,7 +994,7 @@ function LanguageListModal({
                 </div>
               </div>
             )}
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, overflow: "hidden" }}>
               <LanguageMap languages={filteredLanguages} color={color} />
             </div>
           </div>
